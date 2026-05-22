@@ -21,17 +21,32 @@ export default async function ThemaPage({ params }: Props) {
 
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '1.5rem', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-          <Link href="/unterricht" style={{ color: 'var(--gold)', textDecoration: 'none', fontWeight: 600 }}>
+          <Link href="/unterricht" style={{ color: topic.classB ? '#60a5fa' : 'var(--gold)', textDecoration: 'none', fontWeight: 600 }}>
             Unterricht
           </Link>
           <span>›</span>
-          <span>Thema {topic.id}</span>
+          <span>{topic.tag ?? `Thema ${topic.id}`}</span>
         </div>
+
+        {/* Klasse-B Banner */}
+        {topic.classB && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            background: 'rgba(59,130,246,0.07)',
+            border: '1px solid rgba(59,130,246,0.25)',
+            borderRadius: '0.75rem', padding: '0.7rem 1rem',
+            marginBottom: '1.25rem',
+            fontSize: '0.78rem', color: '#93c5fd', fontWeight: 600,
+          }}>
+            <span style={{ fontSize: '1rem' }}>🚙</span>
+            Dieses Thema ist ausschließlich für <strong style={{ color: '#60a5fa' }}>Führerschein Klasse B</strong>
+          </div>
+        )}
 
         {/* Topic header */}
         <div style={{
           background: 'var(--surface)',
-          border: '1px solid rgba(201,162,39,0.22)',
+          border: `1px solid ${topic.classB ? 'rgba(59,130,246,0.3)' : 'rgba(201,162,39,0.22)'}`,
           borderRadius: '1.25rem',
           padding: '1.75rem',
           marginBottom: '2rem',
@@ -39,9 +54,18 @@ export default async function ThemaPage({ params }: Props) {
         }}>
           <div style={{ fontSize: '3rem', flexShrink: 0 }}>{topic.icon}</div>
           <div>
-            <p style={{ margin: '0 0 0.2rem', fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
-              Thema {topic.id}
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.2rem' }}>
+              {topic.tag && (
+                <span style={{
+                  fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.06em',
+                  background: 'rgba(59,130,246,0.12)', color: '#60a5fa',
+                  border: '1px solid rgba(59,130,246,0.3)', borderRadius: '20px', padding: '1px 8px',
+                }}>{topic.tag}</span>
+              )}
+              <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+                {topic.tag ? 'Klasse B' : `Thema ${topic.id}`}
+              </p>
+            </div>
             <h1 style={{ margin: '0 0 0.35rem', fontSize: '1.3rem', fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.01em' }}>
               {topic.title}
             </h1>

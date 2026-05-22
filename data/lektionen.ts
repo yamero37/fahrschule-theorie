@@ -12,6 +12,8 @@ export interface Lesson {
 
 export interface Topic {
   id: number
+  tag?: string          // e.g. 'B1', 'B2'
+  classB?: boolean      // true = Klasse-B-only topic
   title: string
   icon: string
   subtitle: string
@@ -1178,5 +1180,129 @@ export const TOPICS: Topic[] = [
         ],
       },
     ],
+  },
+
+  /* ── Klasse B ────────────────────────────────────────── */
+  {
+    id: 13,
+    tag: 'B1',
+    classB: true,
+    icon: '🔧',
+    title: 'Technische Bedingungen & Umweltbewusster Umgang',
+    subtitle: 'Fahrzeugtechnik, Reifen, Beleuchtung, Ladungssicherung',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion B1 – Technische Bedingungen / Umweltbewusster Umgang mit Kraftfahrzeugen',
+        blocks: [
+          { type: 'highlight', text: 'In dieser Lektion geht es um die Technik des Fahrzeugs, Verkehrssicherheit und den umweltbewussten Umgang mit dem Auto.' },
+
+          { type: 'heading', text: 'Verkehrssicherheit des Fahrzeugs' },
+          { type: 'list', items: [
+            'Vor jeder Fahrt solltest du kontrollieren:',
+            '→ Reifen',
+            '→ Licht',
+            '→ Bremsen',
+            '→ Spiegel',
+            '→ Warnzeichen im Cockpit',
+          ]},
+          { type: 'highlight', text: '⚠️ Das Fahrzeug muss verkehrssicher sein.' },
+
+          { type: 'heading', text: 'Reifen' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'list', items: [
+            'genügend Profiltiefe',
+            'richtiger Reifendruck',
+            'keine Schäden',
+          ]},
+          { type: 'highlight', text: '📏 Gesetzliche Mindestprofiltiefe: 1,6 mm — empfohlen deutlich mehr, besonders bei Regen.' },
+
+          { type: 'heading', text: 'Beleuchtung' },
+          { type: 'list', items: [
+            'Kontrollieren:',
+            '→ Abblendlicht',
+            '→ Bremslicht',
+            '→ Blinker',
+            '→ Rücklicht',
+          ]},
+          { type: 'note', text: '⚠️ Defekte Beleuchtung erhöht Unfallgefahr und kann Bußgeld geben.' },
+
+          { type: 'heading', text: 'Warnleuchten' },
+          { type: 'list', items: [
+            'Wichtige Kontrolllampen ernst nehmen:',
+            '→ Öl',
+            '→ Batterie',
+            '→ Motorkontrolle',
+            '→ Temperatur',
+          ]},
+          { type: 'highlight', text: '🔴 Rot = meist sofort handeln.' },
+
+          { type: 'heading', text: 'Ladung & Beladung' },
+          { type: 'list', items: [
+            'Ladung muss:',
+            '→ gesichert sein',
+            '→ niemanden gefährden',
+            '→ stabil transportiert werden',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Umweltbewusstes Verhalten' },
+          { type: 'list', items: [
+            'Kraftstoff sparen durch:',
+            '→ früh hochschalten',
+            '→ unnötige Last vermeiden',
+            '→ Reifendruck prüfen',
+            '→ Motor nicht warmlaufen lassen',
+          ]},
+          { type: 'list', items: [
+            'Umweltbelastung reduzieren — vermeiden:',
+            '→ unnötigen Motorlauf',
+            '→ aggressives Beschleunigen',
+            '→ hohe Drehzahlen',
+          ]},
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'heading', text: 'Reifen – Prüfungsfragen' },
+          { type: 'question', text: 'Typische Fragen: Mindestprofiltiefe? Auswirkungen falschen Reifendrucks? Aquaplaning-Gefahr?' },
+          { type: 'answer', items: [
+            'Mindestprofiltiefe: 1,6 mm',
+            'Zu wenig Profil = längerer Bremsweg',
+            'Falscher Reifendruck = höhere Aquaplaning-Gefahr',
+          ]},
+
+          { type: 'heading', text: 'Kontrollleuchten' },
+          { type: 'list', items: [
+            'Rot = Gefahr / Störung → sofort handeln',
+            'Gelb = prüfen lassen',
+          ]},
+
+          { type: 'heading', text: 'Ladungssicherung' },
+          { type: 'note', text: '⚠️ Ungesicherte Ladung kann verrutschen, verlängert den Bremsweg und gefährdet andere!' },
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Das Fahrzeug muss verkehrssicher sein',
+            'Reifen: Mindestprofiltiefe 1,6 mm — mehr ist besser',
+            'Ladung immer sichern',
+            'Früh hochschalten spart Kraftstoff',
+            'Warnleuchten niemals ignorieren',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Technikfragen ist oft entscheidend — was erhöht Sicherheit und schont Umwelt? Die ruhigere, sicherere und sparsamere Antwort ist meistens richtig.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 14,
+    tag: 'B2',
+    classB: true,
+    icon: '🚙',
+    title: 'Fahren mit Anhänger & Sonderfälle',
+    subtitle: 'Anhängerbetrieb, Geschwindigkeit, Sondersituationen',
+    available: false,
+    lessons: [],
   },
 ]
