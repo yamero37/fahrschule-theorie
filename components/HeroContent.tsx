@@ -93,31 +93,23 @@ export default function HeroContent({ totalQuestions, topicsCount }: Props) {
         {/* Buttons */}
         <div className="anim-6" style={{
           display: 'flex',
-          flexDirection: 'column',
           gap: '0.75rem',
-          maxWidth: isMobile ? '320px' : '400px',
+          alignItems: 'flex-start',
+          maxWidth: isMobile ? '320px' : '420px',
           margin: isMobile ? '0 auto' : '0',
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <Link href="/login" className="btn-ghost" style={{ textAlign: 'center' }}>
-              Anmelden
-            </Link>
+          {/* Links: Registrieren + Anmelden übereinander */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
             <Link href="/register" className="btn-gold" style={{ textAlign: 'center' }}>
               Registrieren →
             </Link>
+            <Link href="/login" className="btn-ghost" style={{ textAlign: 'center' }}>
+              Anmelden
+            </Link>
           </div>
-          <Link href="/demo" style={{
-            textAlign: 'center',
-            fontSize: '0.75rem',
-            color: 'var(--text-muted)',
-            padding: '0.5rem',
-            textDecoration: 'none',
-            transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            Demo starten (1 Stunde, kostenlos)
+          {/* Rechts: Demo */}
+          <Link href="/demo" className="btn-register" style={{ textAlign: 'center', flex: 1 }}>
+            Demo starten
           </Link>
         </div>
 
