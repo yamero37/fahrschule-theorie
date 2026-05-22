@@ -70,7 +70,7 @@ function Ticker({ quotes, duration }: { quotes: string[]; duration: number }) {
 export default function QuoteTicker({ width = 160 }: { width?: number }) {
   return (
     <>
-      {/* Left ticker */}
+      {/* Left ticker only */}
       <div style={{
         position: 'absolute',
         left: 0,
@@ -82,7 +82,7 @@ export default function QuoteTicker({ width = 160 }: { width?: number }) {
       }}>
         <Ticker quotes={QUOTES_LEFT} duration={30} />
 
-        {/* Gold border — inner right edge with gap */}
+        {/* Gold border — inner right edge */}
         <div style={{
           position: 'absolute',
           right: 0,
@@ -92,30 +92,6 @@ export default function QuoteTicker({ width = 160 }: { width?: number }) {
           background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
           boxShadow: '0 0 8px rgba(201,162,39,0.3)',
         }} />
-      </div>
-
-      {/* Right ticker */}
-      <div style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: `${width}px`,
-        zIndex: 6,
-        pointerEvents: 'none',
-      }}>
-        {/* Gold border — inner left edge with gap */}
-        <div style={{
-          position: 'absolute',
-          left: 0,
-          top: '6%',
-          bottom: '6%',
-          width: '2px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
-          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
-        }} />
-
-        <Ticker quotes={QUOTES_RIGHT} duration={36} />
       </div>
     </>
   )

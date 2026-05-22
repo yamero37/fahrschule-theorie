@@ -10,7 +10,7 @@ const SLIDES = [
 ]
 
 const TICKER_W = 180
-const AVATAR_W = 150
+const RIGHT_PANEL_W = 260
 
 export default function HeroSlideshow({ children }: { children: React.ReactNode }) {
   const [current, setCurrent] = useState(0)
@@ -79,7 +79,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
             position: 'absolute',
             top: 0,
             left: `${TICKER_W + 8}px`,
-            right: `${TICKER_W + AVATAR_W + 8}px`,
+            right: `${RIGHT_PANEL_W + 8}px`,
             height: '100%',
             backgroundImage: `url(${slide.url})`,
             backgroundSize: 'contain',
@@ -116,36 +116,70 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         zIndex: 10,
       }} />
 
-      {/* Avatar zwischen Ferrari und rechtem Ticker */}
+      {/* Rechtes Panel: Avatar + Über mich Text */}
       <div style={{
         position: 'absolute',
-        right: `${TICKER_W + 8}px`,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        width: `${AVATAR_W - 6}px`,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: `${RIGHT_PANEL_W}px`,
+        zIndex: 7,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '8px',
-        zIndex: 7,
+        justifyContent: 'center',
+        padding: '2rem 18px',
+        gap: '1rem',
         pointerEvents: 'none',
+        overflow: 'hidden',
       }}>
+        {/* Gold border — linke Kante */}
+        <div style={{
+          position: 'absolute',
+          left: 0,
+          top: '6%',
+          bottom: '6%',
+          width: '2px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
+          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
+        }} />
+
+        {/* Avatar */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/avatar.jpeg" alt="Fahrlehrer" style={{
-          width: '120px', height: '120px',
+        <img src="/avatar.jpeg" alt="Tolga" style={{
+          width: '110px', height: '110px',
           objectFit: 'cover', objectPosition: 'center top',
           borderRadius: '50%',
           border: '2px solid rgba(201,162,39,0.7)',
           boxShadow: '0 0 20px rgba(201,162,39,0.35), 0 0 40px rgba(201,162,39,0.12)',
           background: '#fff',
+          flexShrink: 0,
         }} />
+
         <span style={{
-          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.12em',
-          textTransform: 'uppercase', color: 'rgba(201,162,39,0.75)',
-          textAlign: 'center', lineHeight: 1.4,
+          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em',
+          textTransform: 'uppercase', color: 'rgba(201,162,39,0.8)',
+          textAlign: 'center',
         }}>
-          Dein<br />Fahrlehrer
+          Dein Fahrlehrer
         </span>
+
+        {/* Über mich Text */}
+        <p style={{
+          fontSize: '0.68rem',
+          color: 'rgba(245,234,208,0.5)',
+          lineHeight: 1.65,
+          textAlign: 'center',
+          margin: 0,
+        }}>
+          Hey, ich bin Tolga, 28 Jahre alt und seit über 6 Jahren leidenschaftlicher Fahrlehrer.
+          <br /><br />
+          Mit dieser Seite möchte ich Menschen wie dir helfen, motivieren und auf dem Weg zum Führerschein unterstützen.
+          <br /><br />
+          Ich weiß aus eigener Erfahrung, dass die Theorie manchmal anstrengend wirken kann – genau deshalb habe ich diese Plattform erstellt.
+          <br /><br />
+          Egal ob Tipps oder Theoriefragen – hier findest du alles, was dir hilft. 🚗
+        </p>
       </div>
 
       <QuoteTicker width={TICKER_W} />
