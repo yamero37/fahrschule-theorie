@@ -18,9 +18,7 @@ export default function FragenClient({ questions }: Props) {
     try {
       const stored = JSON.parse(localStorage.getItem('learnedIds') ?? '[]')
       setLearnedIds(new Set(stored))
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   }, [])
 
   const toggleLearned = (id: string) => {
@@ -43,80 +41,24 @@ export default function FragenClient({ questions }: Props) {
   const topicCounts: Record<string, number> = {}
   for (const q of questions) topicCounts[q.topic] = (topicCounts[q.topic] ?? 0) + 1
 
-  const learnedPercent = Math.round((learnedIds.size / questions.length) * 100)
+  const learnedPercent = questions.length > 0 ? Math.round((learnedIds.size / questions.length) * 100) : 0
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      {/* Sidebar */}
-      <aside className="lg:w-60 shrink-0">
+    <div className="flex flex-col lg:flex-row gap-8">
+
+      {/* ── Sidebar ── */}
+      <aside className="lg:w-56 shrink-0">
         <div
-          className="rounded-xl p-4 sticky top-4"
+          className="rounded-xl overflow-hidden sticky top-6"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
-          <p
-            className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: 'var(--gold)' }}
-          >
-            Themen
-          </p>
-          <ul className="space-y-0.5">
-            {(['Alle', ...TOPICS] as const).map((t) => {
-              const active = selectedTopic === t
-              const cnt = t === 'Alle' ? questions.length : (topicCounts[t] ?? 0)
-              return (
-                <li key={t}>
-                  <button
-                    onClick={() => setSelectedTopic(t)}
-                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-150 flex items-center justify-between"
-                    style={
-                      active
-                        ? {
-                            background: 'linear-gradient(90deg, var(--green-dark) 0%, #0a4020 100%)',
-                            color: '#fff',
-                            border: '1px solid var(--green)',
-                            boxShadow: '0 0 10px var(--green-glow)',
-                          }
-                        : {
-                            color: 'var(--text-muted)',
-                            border: '1px solid transparent',
-                          }
-                    }
-                  >
-                    <span>{t}</span>
-                    <span
-                      className="text-xs ml-2 font-bold"
-                      style={{ color: active ? '#86efac' : 'var(--text-dim)' }}
-                    >
-                      {cnt}
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-
-          {/* Progress */}
-          <div
-            className="mt-4 pt-4"
-            style={{ borderTop: '1px solid var(--border)' }}
-          >
-            <label className="flex items-center gap-2 text-sm cursor-pointer mb-3" style={{ color: 'var(--text-muted)' }}>
-              <input
-                type="checkbox"
-                checked={showOnlyUnlearned}
-                onChange={(e) => setShowOnlyUnlearned(e.target.checked)}
-                className="rounded"
-              />
-              Nur ungelernte
-            </label>
-            <div className="flex justify-between text-xs mb-1.5" style={{ color: 'var(--text-dim)' }}>
-              <span>{learnedIds.size} gelernt</span>
-              <span style={{ color: 'var(--gold)' }}>{learnedPercent}%</span>
+          {/* Progress block */}
+          <div className="p-5" style={{ borderBottom: '1px solid var(--border)' }}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>Fortschritt</span>
+              <span className="text-xs font-bold" style={{ color: 'var(--gold)' }}>{learnedPercent}%</span>
             </div>
-            <div
-              className="h-1.5 rounded-full overflow-hidden"
-              style={{ background: 'var(--border)' }}
-            >
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
@@ -125,27 +67,76 @@ export default function FragenClient({ questions }: Props) {
                 }}
               />
             </div>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-dim)' }}>
+              {learnedIds.size} / {questions.length} gelernt
+            </p>
+          </div>
+
+          {/* Filter */}
+          <div className="p-3" style={{ borderBottom: '1px solid var(--border)' }}>
+            <label className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors"
+              style={{ color: 'var(--text-muted)' }}>
+              <input
+                type="checkbox"
+                checked={showOnlyUnlearned}
+                onChange={(e) => setShowOnlyUnlearned(e.target.checked)}
+                className="rounded"
+                style={{ accentColor: 'var(--green)' }}
+              />
+              Nur ungelernte
+            </label>
+          </div>
+
+          {/* Topics */}
+          <div className="p-3">
+            <p className="text-xs font-bold tracking-widest uppercase px-2 mb-2" style={{ color: 'var(--text-dim)' }}>
+              Thema
+            </p>
+            <ul className="space-y-0.5">
+              {(['Alle', ...TOPICS] as const).map((t) => {
+                const active = selectedTopic === t
+                const cnt = t === 'Alle' ? questions.length : (topicCounts[t] ?? 0)
+                return (
+                  <li key={t}>
+                    <button
+                      onClick={() => setSelectedTopic(t)}
+                      className="w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-all"
+                      style={
+                        active
+                          ? { background: 'var(--green-glow)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.2)' }
+                          : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                      }
+                    >
+                      <span>{t}</span>
+                      <span style={{ color: active ? 'var(--green)' : 'var(--text-dim)' }}>{cnt}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </div>
       </aside>
 
-      {/* Main */}
+      {/* ── Main ── */}
       <div className="flex-1 min-w-0">
-        <div className="mb-4">
+
+        {/* Search */}
+        <div className="mb-5">
           <input
             type="text"
             placeholder="Frage suchen…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm rounded-xl focus:outline-none transition-all"
+            className="w-full px-4 py-3 text-sm rounded-xl focus:outline-none transition-all"
             style={{
               background: 'var(--surface)',
               border: '1px solid var(--border)',
               color: 'var(--text)',
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--green-dark)'
-              e.currentTarget.style.boxShadow = '0 0 12px var(--green-glow)'
+              e.currentTarget.style.borderColor = 'var(--green)'
+              e.currentTarget.style.boxShadow = '0 0 0 3px var(--green-glow)'
             }}
             onBlur={(e) => {
               e.currentTarget.style.borderColor = 'var(--border)'
@@ -153,8 +144,10 @@ export default function FragenClient({ questions }: Props) {
             }}
           />
         </div>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
-          {filtered.length} Fragen
+
+        <p className="text-xs mb-5 font-medium" style={{ color: 'var(--text-dim)' }}>
+          {filtered.length} {filtered.length === 1 ? 'Frage' : 'Fragen'}
+          {selectedTopic !== 'Alle' && <span style={{ color: 'var(--gold)' }}> · {selectedTopic}</span>}
         </p>
 
         <div className="space-y-3">
@@ -167,9 +160,10 @@ export default function FragenClient({ questions }: Props) {
             />
           ))}
           {filtered.length === 0 && (
-            <p className="text-center py-16" style={{ color: 'var(--text-dim)' }}>
-              Keine Fragen gefunden.
-            </p>
+            <div className="text-center py-20" style={{ color: 'var(--text-dim)' }}>
+              <p className="text-3xl mb-3">◎</p>
+              <p className="text-sm">Keine Fragen gefunden</p>
+            </div>
           )}
         </div>
       </div>
@@ -188,107 +182,83 @@ function QuestionCard({
 }) {
   const [open, setOpen] = useState(false)
 
-  const pointStyle =
-    q.points >= 5
-      ? { bg: 'rgba(239,68,68,0.1)', color: '#f87171', border: 'rgba(239,68,68,0.3)' }
-      : q.points === 4
-      ? { bg: 'rgba(251,146,60,0.1)', color: '#fb923c', border: 'rgba(251,146,60,0.3)' }
-      : { bg: 'var(--gold-glow)', color: 'var(--gold)', border: 'rgba(240,180,41,0.3)' }
+  const pointColor =
+    q.points >= 5 ? '#f87171' : q.points === 4 ? '#fb923c' : 'var(--gold)'
 
   return (
     <div
       className="rounded-xl overflow-hidden transition-all duration-200"
       style={{
         background: 'var(--surface)',
-        border: `1px solid ${learned ? 'rgba(34,197,94,0.3)' : 'var(--border)'}`,
-        opacity: learned ? 0.75 : 1,
-        boxShadow: open ? '0 0 20px var(--green-glow)' : 'none',
+        border: `1px solid ${open ? 'var(--border-light)' : 'var(--border)'}`,
+        opacity: learned && !open ? 0.65 : 1,
       }}
     >
-      {/* Header */}
+      {/* Question header */}
       <div
-        className="p-4 cursor-pointer select-none"
+        className="p-5 cursor-pointer select-none flex items-start gap-4"
         onClick={() => setOpen((v) => !v)}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="flex flex-wrap gap-2 mb-2">
-              <span
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                style={{
-                  background: 'var(--green-glow)',
-                  color: 'var(--green)',
-                  border: '1px solid rgba(34,197,94,0.2)',
-                }}
-              >
-                {q.topic}
-              </span>
-              <span
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                style={{
-                  background: pointStyle.bg,
-                  color: pointStyle.color,
-                  border: `1px solid ${pointStyle.border}`,
-                }}
-              >
-                {q.points} Fehlerpunkte
-              </span>
-              <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
-                {q.id}
-              </span>
-            </div>
-            <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--text)' }}>
-              {q.question}
-            </p>
-          </div>
+        {/* Left: point badge */}
+        <div
+          className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black mt-0.5"
+          style={{
+            background: `${pointColor}18`,
+            color: pointColor,
+            border: `1px solid ${pointColor}40`,
+          }}
+        >
+          {q.points}
+        </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={(e) => { e.stopPropagation(); onToggleLearned() }}
-              title={learned ? 'Als ungelernt markieren' : 'Als gelernt markieren'}
-              className="w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all"
-              style={
-                learned
-                  ? { background: 'rgba(34,197,94,0.15)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.4)' }
-                  : { background: 'var(--surface-2)', color: 'var(--text-dim)', border: '1px solid var(--border)' }
-              }
-            >
-              {learned ? '✓' : '○'}
-            </button>
-            <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
-              {open ? '▲' : '▼'}
-            </span>
-          </div>
+        {/* Middle: question text + topic */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs mb-1.5 font-medium" style={{ color: 'var(--text-dim)' }}>
+            {q.topic} · {q.id}
+          </p>
+          <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--text)' }}>
+            {q.question}
+          </p>
+        </div>
+
+        {/* Right: actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleLearned() }}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+            title={learned ? 'Als ungelernt markieren' : 'Als gelernt markieren'}
+            style={
+              learned
+                ? { background: 'rgba(34,197,94,0.15)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.3)' }
+                : { background: 'var(--surface-2)', color: 'var(--text-dim)', border: '1px solid var(--border)' }
+            }
+          >
+            {learned ? '✓' : '○'}
+          </button>
+          <span className="text-xs w-4 text-center" style={{ color: 'var(--text-dim)' }}>
+            {open ? '▲' : '▼'}
+          </span>
         </div>
       </div>
 
       {/* Answers */}
       {open && (
-        <div
-          className="px-4 pb-4 pt-0 space-y-2"
-          style={{ borderTop: '1px solid var(--border)' }}
-        >
-          <div className="pt-3" />
+        <div className="px-5 pb-5 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
+          <p className="text-xs font-bold tracking-widest uppercase pt-4 mb-3" style={{ color: 'var(--text-dim)' }}>
+            Antwortmöglichkeiten
+          </p>
           {q.answers.map((a) => (
             <div
               key={a.id}
-              className="flex items-start gap-3 p-3 rounded-lg text-sm"
+              className="flex items-start gap-3 p-3.5 rounded-xl text-sm"
               style={
                 a.correct
-                  ? {
-                      background: 'rgba(34,197,94,0.08)',
-                      border: '1px solid rgba(34,197,94,0.3)',
-                      color: '#86efac',
-                    }
-                  : {
-                      background: 'var(--surface-2)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-muted)',
-                    }
+                  ? { background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.25)', color: '#86efac' }
+                  : { background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-muted)' }
               }
             >
               <span
-                className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
                 style={
                   a.correct
                     ? { background: 'var(--green)', color: '#000' }
@@ -299,9 +269,7 @@ function QuestionCard({
               </span>
               <span className="flex-1">{a.text}</span>
               {a.correct && (
-                <span className="font-bold shrink-0" style={{ color: 'var(--green)' }}>
-                  ✓
-                </span>
+                <span className="text-xs font-bold shrink-0" style={{ color: 'var(--green)' }}>Richtig</span>
               )}
             </div>
           ))}

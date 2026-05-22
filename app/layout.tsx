@@ -6,8 +6,8 @@ import Navigation from '@/components/Navigation'
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
 export const metadata: Metadata = {
-  title: 'Fahrschule Theorie – Lernplattform',
-  description: 'Alle Theoriefragen für die Führerscheinprüfung (Klasse B) – Lernen und Quiz-Modus',
+  title: 'TolDrive – Führerschein Theorie',
+  description: 'Alle Theoriefragen für die Führerscheinprüfung Klasse B – Lernen und Quiz-Modus',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

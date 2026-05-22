@@ -4,78 +4,54 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const links = [
-  { href: '/', label: 'Start' },
-  { href: '/fragen', label: 'Alle Fragen' },
-  { href: '/quiz', label: 'Quiz' },
+  { href: '/', label: 'Start', icon: '⌂' },
+  { href: '/fragen', label: 'Lernen', icon: '◎' },
+  { href: '/quiz', label: 'Quiz', icon: '◆' },
 ]
 
 export default function Navigation() {
   const pathname = usePathname()
 
   return (
-    <nav
-      style={{
-        background: 'linear-gradient(90deg, #060e07 0%, #0a1a0c 50%, #060e07 100%)',
-        borderBottom: '1px solid var(--border-light)',
-        boxShadow: '0 2px 20px rgba(0,0,0,0.5)',
-      }}
-    >
-      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-16">
+    <header style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+      <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
+
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2.5">
           <span
-            className="text-xl font-bold tracking-tight"
-            style={{
-              background: 'linear-gradient(135deg, var(--green) 0%, var(--gold) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
+            style={{ background: 'linear-gradient(135deg, var(--green-dark), var(--green))', color: '#000' }}
           >
-            🚗 Fahrschule Theorie
+            T
+          </span>
+          <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text)' }}>
+            TolDrive
           </span>
         </Link>
 
-        {/* Links */}
-        <div className="flex gap-1">
-          {links.map(({ href, label }) => {
+        {/* Nav */}
+        <nav className="flex items-center gap-1">
+          {links.map(({ href, label, icon }) => {
             const active = pathname === href
             return (
               <Link
                 key={href}
                 href={href}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150"
                 style={
                   active
-                    ? {
-                        background: 'linear-gradient(135deg, var(--green-dark) 0%, #0f5c2a 100%)',
-                        color: '#fff',
-                        border: '1px solid var(--green)',
-                        boxShadow: '0 0 12px var(--green-glow)',
-                      }
-                    : {
-                        color: 'var(--text-muted)',
-                        border: '1px solid transparent',
-                      }
+                    ? { background: 'var(--green-glow)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.25)' }
+                    : { color: 'var(--text-muted)', border: '1px solid transparent' }
                 }
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:text-white"
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.background = 'var(--surface-2)'
-                    e.currentTarget.style.borderColor = 'var(--border-light)'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.borderColor = 'transparent'
-                  }
-                }}
               >
+                <span className="text-xs">{icon}</span>
                 {label}
               </Link>
             )
           })}
-        </div>
+        </nav>
+
       </div>
-    </nav>
+    </header>
   )
 }
