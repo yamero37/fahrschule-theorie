@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import QuoteTicker from './QuoteTicker'
 
 const SLIDES = [
   { url: 'https://images.pexels.com/photos/4119601/pexels-photo-4119601.jpeg?auto=compress&cs=tinysrgb&w=1600',    brand: 'Lamborghini' },
@@ -143,6 +144,9 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 75%, transparent 100%)',
         zIndex: 10,
       }} />
+
+      {/* Quote tickers left & right */}
+      <QuoteTicker />
 
       {/* Content slot */}
       <div style={{ position: 'relative', zIndex: 5, width: '100%' }}>

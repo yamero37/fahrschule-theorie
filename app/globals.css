@@ -74,6 +74,11 @@ body {
   to   { width: 100%; opacity: 1; }
 }
 
+@keyframes tickerDown {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
 /* ── Utility animation classes ──────────────────────────── */
 
 .hero-logo {
