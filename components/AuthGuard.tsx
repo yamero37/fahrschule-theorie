@@ -2,36 +2,36 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getAuth } from '@/lib/auth'
+import { isAuthorized, getDemoExpiry } from '@/lib/auth'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    if (!getAuth()) {
-      router.replace('/')
-    } else {
-      setReady(true)
-    }
+    isAuthorized().then(ok => {
+      if (!ok) router.replace('/')
+      else setReady(true)
+    })
   }, [router])
 
-  // Check demo expiry every 15 seconds
+  // Check demo expiry every 15s
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!getAuth()) router.replace('/')
+      isAuthorized().then(ok => { if (!ok) router.replace('/') })
     }, 15000)
-    return () => clearInterval(interval)
+    // Also watch for demo countdown hitting zero
+    const demoCheck = setInterval(() => {
+      if (getDemoExpiry() === null) {
+        isAuthorized().then(ok => { if (!ok) router.replace('/') })
+      }
+    }, 5000)
+    return () => { clearInterval(interval); clearInterval(demoCheck) }
   }, [router])
 
   if (!ready) {
     return (
-      <div style={{
-        minHeight: '80vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: 'var(--gold)', fontSize: '0.9rem', letterSpacing: '0.1em' }}>
           Wird geladen…
         </span>

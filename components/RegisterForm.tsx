@@ -9,11 +9,12 @@ export default function RegisterForm() {
   const router = useRouter()
   const [form, setForm] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(prev => ({ ...prev, [field]: e.target.value }))
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -30,8 +31,20 @@ export default function RegisterForm() {
       return
     }
 
-    registerUser(form.username.trim(), form.email.trim())
-    router.replace('/fragen')
+    setLoading(true)
+    try {
+      await registerUser(form.username.trim(), form.email.trim(), form.password)
+      router.replace('/fragen')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Registrierung fehlgeschlagen.'
+      if (msg.includes('already registered') || msg.includes('already been registered')) {
+        setError('Diese E-Mail ist bereits registriert.')
+      } else {
+        setError(msg)
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -63,69 +76,35 @@ export default function RegisterForm() {
           />
         </div>
 
-        {/* Title */}
-        <h1 style={{
-          textAlign: 'center',
-          fontSize: '1.4rem',
-          fontWeight: 900,
-          color: 'var(--gold)',
-          marginBottom: '0.4rem',
-          letterSpacing: '-0.01em',
-        }}>
+        <h1 style={{ textAlign: 'center', fontSize: '1.4rem', fontWeight: 900, color: 'var(--gold)', marginBottom: '0.4rem', letterSpacing: '-0.01em' }}>
           Konto erstellen
         </h1>
         <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
           Kostenlos registrieren &amp; alle Fragen lernen
         </p>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
           <div>
             <label className="form-label">Benutzername</label>
-            <input
-              className="form-input"
-              type="text"
-              placeholder="z.B. MaxMustermann"
-              value={form.username}
-              onChange={set('username')}
-              autoComplete="username"
-            />
+            <input className="form-input" type="text" placeholder="z.B. MaxMustermann"
+              value={form.username} onChange={set('username')} autoComplete="username" />
           </div>
 
           <div>
             <label className="form-label">E-Mail</label>
-            <input
-              className="form-input"
-              type="email"
-              placeholder="email@beispiel.de"
-              value={form.email}
-              onChange={set('email')}
-              autoComplete="email"
-            />
+            <input className="form-input" type="email" placeholder="email@beispiel.de"
+              value={form.email} onChange={set('email')} autoComplete="email" />
           </div>
 
           <div>
             <label className="form-label">Passwort</label>
-            <input
-              className="form-input"
-              type="password"
-              placeholder="Mindestens 6 Zeichen"
-              value={form.password}
-              onChange={set('password')}
-              autoComplete="new-password"
-            />
+            <input className="form-input" type="password" placeholder="Mindestens 6 Zeichen"
+              value={form.password} onChange={set('password')} autoComplete="new-password" />
           </div>
 
           {error && (
-            <p style={{
-              fontSize: '0.8rem',
-              color: '#ff6b6b',
-              background: 'rgba(255,107,107,0.08)',
-              border: '1px solid rgba(255,107,107,0.25)',
-              borderRadius: '0.5rem',
-              padding: '0.6rem 0.9rem',
-            }}>
+            <p style={{ fontSize: '0.8rem', color: '#ff6b6b', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.25)', borderRadius: '0.5rem', padding: '0.6rem 0.9rem' }}>
               {error}
             </p>
           )}
@@ -133,24 +112,21 @@ export default function RegisterForm() {
           <button
             type="submit"
             className="btn-gold"
-            style={{ width: '100%', textAlign: 'center', marginTop: '0.25rem', cursor: 'pointer' }}
+            disabled={loading}
+            style={{ width: '100%', textAlign: 'center', marginTop: '0.25rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
           >
-            Registrieren →
+            {loading ? 'Wird registriert…' : 'Registrieren →'}
           </button>
         </form>
 
-        {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '1.5rem 0' }}>
           <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
           <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>oder</span>
           <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
         </div>
 
-        <Link
-          href="/demo"
-          className="btn-ghost"
-          style={{ display: 'block', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}
-        >
+        <Link href="/demo" className="btn-ghost"
+          style={{ display: 'block', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
           Demo starten (1 Stunde)
         </Link>
 

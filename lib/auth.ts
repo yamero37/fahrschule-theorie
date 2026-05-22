@@ -1,35 +1,52 @@
-export type AuthState =
-  | { type: 'demo'; expiresAt: number }
-  | { type: 'user'; username: string; email: string }
+import { supabase } from './supabase'
 
-const KEY = 'toldrive_auth'
+// ── Supabase Auth ────────────────────────────────────────
 
-export function getAuth(): AuthState | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const raw = localStorage.getItem(KEY)
-    if (!raw) return null
-    const auth = JSON.parse(raw) as AuthState
-    if (auth.type === 'demo' && auth.expiresAt < Date.now()) {
-      localStorage.removeItem(KEY)
-      return null
-    }
-    return auth
-  } catch {
-    return null
-  }
+export async function registerUser(username: string, email: string, password: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { username } },
+  })
+  if (error) throw error
+  return data
 }
+
+export async function getSession() {
+  const { data } = await supabase.auth.getSession()
+  return data.session
+}
+
+export async function signOut() {
+  clearDemo()
+  await supabase.auth.signOut()
+}
+
+// ── Demo mode (localStorage, no backend) ────────────────
+
+const DEMO_KEY = 'toldrive_demo'
 
 export function startDemo() {
-  const auth: AuthState = { type: 'demo', expiresAt: Date.now() + 60 * 60 * 1000 }
-  localStorage.setItem(KEY, JSON.stringify(auth))
+  localStorage.setItem(DEMO_KEY, String(Date.now() + 60 * 60 * 1000))
 }
 
-export function registerUser(username: string, email: string) {
-  const auth: AuthState = { type: 'user', username, email }
-  localStorage.setItem(KEY, JSON.stringify(auth))
+export function getDemoExpiry(): number | null {
+  if (typeof window === 'undefined') return null
+  const raw = localStorage.getItem(DEMO_KEY)
+  if (!raw) return null
+  const exp = Number(raw)
+  if (exp < Date.now()) { clearDemo(); return null }
+  return exp
 }
 
-export function clearAuth() {
-  localStorage.removeItem(KEY)
+export function clearDemo() {
+  if (typeof window !== 'undefined') localStorage.removeItem(DEMO_KEY)
+}
+
+// ── Combined check ───────────────────────────────────────
+
+export async function isAuthorized(): Promise<boolean> {
+  if (getDemoExpiry() !== null) return true
+  const session = await getSession()
+  return session !== null
 }
