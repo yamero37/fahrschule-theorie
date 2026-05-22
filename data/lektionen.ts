@@ -318,7 +318,119 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 4,  icon: '🛣️', title: 'Geschwindigkeit & Abstand',   subtitle: 'Tempolimits, Sicherheitsabstand',       available: false, lessons: [] },
+  {
+    id: 4,
+    icon: '🚂',
+    title: 'Straßenverkehrssystem & Bahnübergänge',
+    subtitle: 'Verkehrsteilnehmer, Bahnübergänge, Andreaskreuz',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 4 – Straßenverkehrssystem & Bahnübergänge (Kurzfassung)',
+        blocks: [
+          { type: 'highlight', text: 'In dieser Lektion geht es darum, wie verschiedene Verkehrsteilnehmer zusammenarbeiten und wie man sich besonders an Bahnübergängen richtig verhält.' },
+
+          { type: 'heading', text: 'Unterschiedliche Verkehrsteilnehmer' },
+          { type: 'list', items: [
+            'Im Straßenverkehr gibt es:',
+            '→ Autos',
+            '→ Motorräder',
+            '→ Fahrräder',
+            '→ Fußgänger',
+            '→ Busse',
+            '→ LKWs',
+          ]},
+          { type: 'note', text: '⚠️ Jeder verhält sich unterschiedlich und hat andere Risiken.' },
+
+          { type: 'heading', text: 'Besondere Vorsicht' },
+          { type: 'list', items: [
+            'Besonders gefährdet sind:',
+            '→ Kinder',
+            '→ ältere Menschen',
+            '→ Menschen mit Behinderung',
+            '→ Fahrradfahrer',
+          ]},
+          { type: 'highlight', text: '⚠️ Du musst jederzeit mit Fehlern anderer rechnen.' },
+
+          { type: 'heading', text: 'Öffentliche Verkehrsmittel' },
+          { type: 'list', items: [
+            'Bei Bussen und Straßenbahnen:',
+            '→ vorsichtig vorbeifahren',
+            '→ auf aussteigende Personen achten',
+            '→ ggf. Schrittgeschwindigkeit',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '🚂 Bahnübergänge' },
+
+          { type: 'heading', text: 'Verhalten am Bahnübergang' },
+          { type: 'list', items: [
+            'Du musst:',
+            '→ Geschwindigkeit verringern',
+            '→ aufmerksam sein',
+            '→ auf Signale achten',
+          ]},
+
+          { type: 'heading', text: 'Wann musst du warten?' },
+          { type: 'list', items: [
+            'Immer warten bei:',
+            '→ rotem Blinklicht',
+            '→ geschlossenen Schranken',
+            '→ sich senkenden Schranken',
+            '→ hörbaren Signalen',
+            '→ Zugverkehr',
+          ]},
+
+          { type: 'heading', text: 'Wichtig zu wissen – Züge' },
+          { type: 'list', items: [
+            'Züge können nicht ausweichen',
+            'Züge haben einen sehr langen Bremsweg',
+            'Züge sind oft schneller als sie wirken',
+          ]},
+
+          { type: 'heading', text: 'Verhalten bei Stau' },
+          { type: 'note', text: '🚫 Nie auf einen Bahnübergang fahren, wenn dahinter kein Platz ist!' },
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+
+          { type: 'heading', text: 'Andreaskreuz' },
+          { type: 'highlight', text: '✖️ Das Andreaskreuz bedeutet: Bahnübergang hat Vorrang. Du musst Züge immer durchlassen.' },
+
+          { type: 'heading', text: 'Rotes Blinklicht' },
+          { type: 'question', text: 'Typische Frage: „Wie verhalten Sie sich bei rotem Blinklicht am Bahnübergang?"' },
+          { type: 'answer', items: [
+            'Sofort anhalten',
+            'Vor dem Bahnübergang warten',
+          ]},
+
+          { type: 'heading', text: 'Überholen am Bahnübergang' },
+          { type: 'note', text: '🚫 Verboten: kurz vor Bahnübergängen überholen. Sehr wichtige Prüfungsfrage!' },
+
+          { type: 'heading', text: 'Verhalten bei Schranken' },
+          { type: 'question', text: 'Was gilt schon bei sich schließenden Schranken?' },
+          { type: 'answer', items: [
+            'Anhalten — nicht „noch schnell rüberfahren"',
+          ]},
+
+          { type: 'heading', text: 'Halteverbot' },
+          { type: 'note', text: '🚫 Vor Bahnübergängen gilt oft: absolutes Halteverbot.' },
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Züge haben immer Vorrang',
+            'Bei Rotlicht oder Schranken immer warten',
+            'Niemals auf Bahnübergängen stehen bleiben',
+            'Vor Bahnübergängen nicht überholen',
+            'Vorsicht bei Kindern und Fußgängern',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Bahnübergängen ist die sicherste Antwort fast immer richtig — lieber warten als Risiko eingehen.' },
+        ],
+      },
+    ],
+  },
   { id: 5,  icon: '🚗', title: 'Überholen & Spurwechsel',     subtitle: 'Überholverbote, Fahrspurregeln',        available: false, lessons: [] },
   { id: 6,  icon: '🅿️', title: 'Parken & Halten',             subtitle: 'Halte- und Parkverbote',               available: false, lessons: [] },
   { id: 7,  icon: '🌧️', title: 'Fahren bei schlechtem Wetter',subtitle: 'Regen, Schnee, Nebel, Eis',             available: false, lessons: [] },
