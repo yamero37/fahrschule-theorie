@@ -94,40 +94,54 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function load() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { router.replace('/login'); return }
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) { router.replace('/login'); return }
 
-      setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
-      setUserId(session.user.id)
+        setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
+        setUserId(session.user.id)
 
-      const { data: stats } = await supabase
-        .from('user_stats')
-        .select('points, tutorial_done')
-        .eq('user_id', session.user.id)
-        .single()
+        // Check localStorage fallback first (works even if table doesn't exist)
+        let localDone = false
+        try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
 
-      // Check localStorage as fallback (in case DB column not yet added)
-      let localDone = false
-      try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
+        try {
+          const { data: stats } = await supabase
+            .from('user_stats')
+            .select('points, tutorial_done')
+            .eq('user_id', session.user.id)
+            .single()
 
-      if (stats) {
-        setPoints(stats.points)
-        const done = !!stats.tutorial_done || localDone
-        setTutorialDone(done)
-        if (!done) setShowTutorial(true)
-      } else {
-        if (localDone) {
-          setTutorialDone(true)
-        } else {
-          setShowTutorial(true)
+          if (stats) {
+            setPoints(stats.points ?? 0)
+            const done = !!stats.tutorial_done || localDone
+            setTutorialDone(done)
+            if (!done) setShowTutorial(true)
+          } else {
+            if (localDone) {
+              setTutorialDone(true)
+            } else {
+              setShowTutorial(true)
+            }
+          }
+        } catch {
+          // Table might not exist yet — still show dashboard
+          if (localDone) {
+            setTutorialDone(true)
+          } else {
+            setShowTutorial(true)
+          }
         }
+
+        try {
+          const lbRes = await fetch('/api/leaderboard')
+          const lbData = await lbRes.json()
+          if (Array.isArray(lbData)) setTopEntries(lbData.slice(0, 3))
+        } catch { /* leaderboard optional */ }
+
+      } finally {
+        setLoading(false)
       }
-
-      const lbRes = await fetch('/api/leaderboard')
-      const lbData = await lbRes.json()
-      if (Array.isArray(lbData)) setTopEntries(lbData.slice(0, 3))
-
-      setLoading(false)
     }
     load()
   }, [router])
