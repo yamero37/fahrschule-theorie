@@ -180,6 +180,56 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           <br /><br />
           Egal ob Tipps oder Theoriefragen – hier findest du alles, was dir hilft. 🚗
         </p>
+
+        {/* Social Links */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', pointerEvents: 'auto' }}>
+          <a
+            href="https://www.instagram.com/tolga_ar/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: '0.7rem', fontWeight: 700,
+              color: 'var(--gold)',
+              textDecoration: 'none',
+              letterSpacing: '0.05em',
+              textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+              transition: 'text-shadow 0.3s, color 0.3s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(201,162,39,0.5)'
+              e.currentTarget.style.color = 'var(--gold-light)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.textShadow = '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)'
+              e.currentTarget.style.color = 'var(--gold)'
+            }}
+          >
+            📷 @tolga_ar
+          </a>
+          <a
+            href="https://www.tiktok.com/@fahrlehrertolga"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: '0.7rem', fontWeight: 700,
+              color: 'var(--gold)',
+              textDecoration: 'none',
+              letterSpacing: '0.05em',
+              textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+              transition: 'text-shadow 0.3s, color 0.3s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(201,162,39,0.5)'
+              e.currentTarget.style.color = 'var(--gold-light)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.textShadow = '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)'
+              e.currentTarget.style.color = 'var(--gold)'
+            }}
+          >
+            🎵 @fahrlehrertolga
+          </a>
+        </div>
       </div>
 
       <QuoteTicker width={TICKER_W} />
