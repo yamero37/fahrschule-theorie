@@ -78,19 +78,21 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           <div key={i} style={{
             position: 'absolute',
             top: 0,
-            left: `${TICKER_W + 8}px`,
-            right: `${RIGHT_PANEL_W + 8}px`,
+            left: `${TICKER_W}px`,
+            right: `${RIGHT_PANEL_W}px`,
             height: '100%',
             backgroundImage: `url(${slide.url})`,
-            backgroundSize: 'contain',
+            backgroundSize: 'auto 88%',
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center center',
+            backgroundPosition: 'right center',
             opacity: i === current ? 1 : 0,
             transition: 'opacity 2s ease',
             transform: i === current ? 'scale(1.03)' : 'scale(1)',
             transitionProperty: 'opacity, transform',
             transitionDuration: '2s, 12s',
             transitionTimingFunction: 'ease, ease-out',
+            maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.9) 55%, black 70%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.9) 55%, black 70%)',
           }} />
         ))}
       </div>
