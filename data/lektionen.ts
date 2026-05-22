@@ -602,7 +602,105 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 7,  icon: '🌧️', title: 'Fahren bei schlechtem Wetter',subtitle: 'Regen, Schnee, Nebel, Eis',             available: false, lessons: [] },
+  {
+    id: 7,
+    icon: '🚀',
+    title: 'Überholen & Vorbeifahren',
+    subtitle: 'Überholregeln, Überholverbot, Seitenabstand',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 7 – Überholen & Vorbeifahren',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: richtig überholen · Gefahren erkennen · sicheres Vorbeifahren · Überholverbote verstehen' },
+
+          { type: 'heading', text: 'Grundregeln beim Überholen' },
+          { type: 'list', items: [
+            'Vor dem Überholen musst du:',
+            '→ den Verkehr beobachten',
+            '→ genügend Abstand halten',
+            '→ den Blinker setzen',
+            '→ sicherstellen, dass niemand gefährdet wird',
+          ]},
+          { type: 'list', items: [
+            'Überholen nur wenn:',
+            '→ die Straße frei ist',
+            '→ genügend Sicht vorhanden ist',
+            '→ genug Platz vorhanden ist',
+            '→ niemand behindert wird',
+          ]},
+
+          { type: 'heading', text: 'Überholverbot' },
+          { type: 'note', text: '🚫 Du darfst nicht überholen:' },
+          { type: 'list', items: [
+            'bei unklarer Verkehrslage',
+            'in Kurven',
+            'bei schlechter Sicht',
+            'an Fußgängerüberwegen',
+            'wenn ein Überholverbotsschild vorhanden ist',
+          ]},
+
+          { type: 'heading', text: 'Rechts überholen' },
+          { type: 'highlight', text: '📌 Grundsatz: Links überholen!' },
+          { type: 'list', items: [
+            'Rechts überholen nur in bestimmten Situationen erlaubt:',
+            '→ auf Autobahnen bei Stau',
+            '→ auf mehreren Fahrstreifen in gleicher Richtung',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Vorbeifahren' },
+          { type: 'highlight', text: 'Vorbeifahren = an haltenden Fahrzeugen oder Hindernissen vorbeifahren.' },
+          { type: 'list', items: [
+            'Dabei:',
+            '→ langsam fahren',
+            '→ genügend Seitenabstand halten',
+            '→ auf Fußgänger und Gegenverkehr achten',
+          ]},
+
+          { type: 'heading', text: 'Seitenabstand' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'list', items: [
+            'Besonders wichtig bei:',
+            '→ Fahrrädern',
+            '→ E-Scootern',
+            '→ Fußgängern',
+          ]},
+          { type: 'note', text: '⚠️ Zu wenig Seitenabstand kann sehr gefährlich sein!' },
+
+          { type: 'heading', text: 'Verhalten nach dem Überholen' },
+          { type: 'list', items: [
+            'genügend Abstand halten',
+            'erst dann wieder einscheren',
+            'niemanden schneiden',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'trotz schlechter Sicht überholen',
+            'zu knapp einscheren',
+            'Gegenverkehr unterschätzen',
+            'Fahrradfahrer zu eng überholen',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Immer links überholen — rechts nur in Ausnahmen',
+            'Vor dem Überholen: Beobachten, Blinken, Sicherheit prüfen',
+            'In Kurven und bei schlechter Sicht nie überholen',
+            'An Fußgängerüberwegen nicht überholen',
+            'Seitenabstand zu Fahrrädern und Fußgängern einhalten',
+            'Erst einscheren wenn genügend Abstand da ist',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Überholfragen immer prüfen — gibt es ein Verbot? Genug Sicht? Genug Platz? Wenn nicht sicher: nicht überholen.' },
+        ],
+      },
+    ],
+  },
   { id: 8,  icon: '🚨', title: 'Verkehrszeichen',              subtitle: 'Gebots-, Verbots- und Gefahrenzeichen', available: false, lessons: [] },
   { id: 9,  icon: '🛑', title: 'Ampeln & Lichtzeichen',        subtitle: 'Lichtzeichenanlagen, Blinkzeichen',    available: false, lessons: [] },
   { id: 10, icon: '⛽', title: 'Fahrzeugtechnik',              subtitle: 'Bremsen, Reifen, Beleuchtung',         available: false, lessons: [] },
