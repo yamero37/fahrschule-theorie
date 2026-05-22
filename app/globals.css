@@ -155,3 +155,21 @@ body {
   box-shadow: 0 0 20px rgba(201,162,39,0.25);
   transform: translateY(-1px);
 }
+
+.btn-register {
+  display: inline-block;
+  padding: 0.9rem 2.2rem;
+  border-radius: 0.65rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: linear-gradient(135deg, rgba(201,162,39,0.18), rgba(201,162,39,0.08));
+  color: #f5ead0;
+  border: 1px solid rgba(201,162,39,0.45);
+  text-decoration: none;
+  transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+}
+.btn-register:hover {
+  background: linear-gradient(135deg, rgba(201,162,39,0.28), rgba(201,162,39,0.15));
+  box-shadow: 0 0 24px rgba(201,162,39,0.3);
+  transform: translateY(-1px);
+}
