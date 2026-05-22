@@ -19,13 +19,13 @@ export default function HomePage() {
             minHeight: '96vh',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'center',
-            textAlign: 'center',
-            padding: '5rem 1.5rem 5rem',
+            textAlign: 'left',
+            padding: '5rem 2rem 5rem max(2rem, calc(50vw - 600px))',
           }}
         >
-          <div style={{ maxWidth: '680px', width: '100%' }}>
+          <div style={{ maxWidth: '480px', width: '100%' }}>
 
             {/* Logo */}
             <div className="anim-1" style={{ marginBottom: '2rem' }}>
@@ -35,9 +35,8 @@ export default function HomePage() {
                 alt="TolDrive Logo"
                 className="hero-logo"
                 style={{
-                  width: 'clamp(190px, 32vw, 280px)',
+                  width: 'clamp(150px, 22vw, 220px)',
                   height: 'auto',
-                  margin: '0 auto',
                   display: 'block',
                   borderRadius: '12px',
                 }}
@@ -47,20 +46,20 @@ export default function HomePage() {
             {/* Gold divider */}
             <div
               className="anim-2"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '1.75rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.75rem' }}
             >
-              <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, transparent, var(--gold))' }} />
+              <div style={{ height: '1px', width: '40px', background: 'linear-gradient(90deg, var(--gold), transparent)' }} />
               <span style={{ color: 'var(--gold)', fontSize: '0.6rem' }}>◆</span>
-              <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, var(--gold), transparent)' }} />
+              <div style={{ height: '1px', width: '40px', background: 'linear-gradient(90deg, transparent, var(--gold))' }} />
             </div>
 
             {/* Headline */}
             <h1
               className="anim-3 gold-shimmer"
               style={{
-                fontSize: 'clamp(1.8rem, 5vw, 3rem)',
+                fontSize: 'clamp(1.6rem, 3.5vw, 2.6rem)',
                 fontWeight: 900,
-                lineHeight: 1.1,
+                lineHeight: 1.12,
                 letterSpacing: '-0.02em',
                 marginBottom: '1rem',
               }}

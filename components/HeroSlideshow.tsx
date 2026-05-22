@@ -3,16 +3,16 @@
 import { useState, useEffect } from 'react'
 
 const SLIDES = [
-  { url: 'https://images.pexels.com/photos/4119601/pexels-photo-4119601.jpeg?auto=compress&cs=tinysrgb&w=1920',    brand: 'Lamborghini',    pos: 'center 40%' },
-  { url: 'https://images.pexels.com/photos/31239242/pexels-photo-31239242.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'BMW',            pos: 'center center' },
-  { url: 'https://images.pexels.com/photos/20398058/pexels-photo-20398058.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'BMW',            pos: 'center 55%' },
-  { url: 'https://images.pexels.com/photos/15469367/pexels-photo-15469367.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'Audi',           pos: 'center center' },
-  { url: 'https://images.pexels.com/photos/3122809/pexels-photo-3122809.jpeg?auto=compress&cs=tinysrgb&w=1920',    brand: 'Mercedes-Benz',  pos: 'center 50%' },
-  { url: 'https://images.pexels.com/photos/16139695/pexels-photo-16139695.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'Mercedes-Benz',  pos: 'center center' },
-  { url: 'https://images.pexels.com/photos/18433994/pexels-photo-18433994.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'Ferrari',        pos: 'center 45%' },
-  { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'Ferrari',        pos: 'center center' },
-  { url: 'https://images.pexels.com/photos/18690927/pexels-photo-18690927.jpeg?auto=compress&cs=tinysrgb&w=1920',  brand: 'Volkswagen',     pos: 'center 50%' },
-  { url: 'https://images.pexels.com/photos/9764734/pexels-photo-9764734.jpeg?auto=compress&cs=tinysrgb&w=1920',    brand: 'Koenigsegg',     pos: 'center center' },
+  { url: 'https://images.pexels.com/photos/4119601/pexels-photo-4119601.jpeg?auto=compress&cs=tinysrgb&w=1600',    brand: 'Lamborghini' },
+  { url: 'https://images.pexels.com/photos/31239242/pexels-photo-31239242.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'BMW' },
+  { url: 'https://images.pexels.com/photos/20398058/pexels-photo-20398058.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'BMW' },
+  { url: 'https://images.pexels.com/photos/15469367/pexels-photo-15469367.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'Audi' },
+  { url: 'https://images.pexels.com/photos/3122809/pexels-photo-3122809.jpeg?auto=compress&cs=tinysrgb&w=1600',    brand: 'Mercedes-Benz' },
+  { url: 'https://images.pexels.com/photos/16139695/pexels-photo-16139695.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'Mercedes-Benz' },
+  { url: 'https://images.pexels.com/photos/18433994/pexels-photo-18433994.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'Ferrari' },
+  { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'Ferrari' },
+  { url: 'https://images.pexels.com/photos/18690927/pexels-photo-18690927.jpeg?auto=compress&cs=tinysrgb&w=1600',  brand: 'Volkswagen' },
+  { url: 'https://images.pexels.com/photos/9764734/pexels-photo-9764734.jpeg?auto=compress&cs=tinysrgb&w=1600',    brand: 'Koenigsegg' },
 ]
 
 export default function HeroSlideshow({ children }: { children: React.ReactNode }) {
@@ -33,49 +33,54 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
   }, [current])
 
   return (
-    <section style={{ position: 'relative', minHeight: '96vh', overflow: 'hidden', background: '#080808' }}>
+    <section style={{ position: 'relative', minHeight: '96vh', overflow: 'hidden', background: '#080808', display: 'flex' }}>
 
-      {/* Slide layers — always rendered, opacity controls visibility */}
-      {SLIDES.map((slide, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `url(${slide.url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: slide.pos,
-            opacity: i === current ? 1 : 0,
-            transition: 'opacity 2s ease',
-            transform: i === current ? 'scale(1.04)' : 'scale(1)',
-            transitionProperty: 'opacity, transform',
-            transitionDuration: '2s, 12s',
-            transitionTimingFunction: 'ease, ease-out',
-          }}
-        />
-      ))}
-
-      {/* Dark overlay — dezent, Bilder trotzdem sichtbar */}
-      <div
-        style={{
+      {/* ── Car image panel (right 55%) ─────────────────────── */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex' }}>
+        {/* Left dark gradient — text area */}
+        <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.6) 100%)',
+          background: 'linear-gradient(to right, #080808 0%, #080808 38%, rgba(8,8,8,0.85) 52%, rgba(8,8,8,0.15) 72%, transparent 88%)',
           zIndex: 2,
-        }}
-      />
+          pointerEvents: 'none',
+        }} />
 
-      {/* Subtle gold glow center */}
-      <div
-        style={{
+        {/* Top & bottom fade */}
+        <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 55% 50% at 50% 42%, rgba(201,162,39,0.06) 0%, transparent 65%)',
-          zIndex: 3,
-        }}
-      />
+          background: 'linear-gradient(to bottom, rgba(8,8,8,0.5) 0%, transparent 20%, transparent 80%, rgba(8,8,8,0.7) 100%)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }} />
 
-      {/* Brand label top-right */}
+        {/* Slides — object-fit contain so full car is visible */}
+        {SLIDES.map((slide, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '62%',
+              height: '100%',
+              backgroundImage: `url(${slide.url})`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center center',
+              opacity: i === current ? 1 : 0,
+              transition: 'opacity 2s ease',
+              transform: i === current ? 'scale(1.03)' : 'scale(1)',
+              transitionProperty: 'opacity, transform',
+              transitionDuration: '2s, 12s',
+              transitionTimingFunction: 'ease, ease-out',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Brand label */}
       <div
         style={{
           position: 'absolute',
@@ -86,36 +91,32 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           transition: 'opacity 0.8s ease',
         }}
       >
-        <span
-          style={{
-            fontSize: '0.65rem',
-            fontWeight: 700,
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: 'var(--gold)',
-            background: 'rgba(0,0,0,0.55)',
-            backdropFilter: 'blur(8px)',
-            padding: '5px 14px',
-            borderRadius: '20px',
-            border: '1px solid rgba(201,162,39,0.3)',
-          }}
-        >
+        <span style={{
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: 'var(--gold)',
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(8px)',
+          padding: '5px 14px',
+          borderRadius: '20px',
+          border: '1px solid rgba(201,162,39,0.3)',
+        }}>
           {SLIDES[current].brand}
         </span>
       </div>
 
       {/* Dot indicators */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '1.75rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '7px',
-          zIndex: 10,
-        }}
-      >
+      <div style={{
+        position: 'absolute',
+        bottom: '1.75rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '7px',
+        zIndex: 10,
+      }}>
         {SLIDES.map((_, i) => (
           <button
             key={i}
@@ -135,20 +136,16 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
       </div>
 
       {/* Horizon line */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: '1px',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 75%, transparent 100%)',
-          zIndex: 10,
-        }}
-      />
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 75%, transparent 100%)',
+        zIndex: 10,
+      }} />
 
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 5 }}>
+      {/* Content slot */}
+      <div style={{ position: 'relative', zIndex: 5, width: '100%' }}>
         {children}
       </div>
     </section>
