@@ -1080,5 +1080,103 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 12, icon: '🌍', title: 'Umwelt & Energie',             subtitle: 'Kraftstoff sparen, Emissionen',        available: false, lessons: [] },
+  {
+    id: 12,
+    icon: '🌍',
+    title: 'Geschwindigkeit, Abstand & Umwelt',
+    subtitle: 'Bremsweg-Formeln, Aquaplaning, Sprit sparen',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 12 – Geschwindigkeit, Abstand & umweltschonende Fahrweise',
+        blocks: [
+          { type: 'highlight', text: 'In dieser Lektion geht es um die richtige Geschwindigkeit, Sicherheitsabstände und wie man sicher sowie umweltbewusst fährt.' },
+
+          { type: 'heading', text: 'Geschwindigkeit anpassen' },
+          { type: 'list', items: [
+            'Du musst deine Geschwindigkeit immer anpassen an:',
+            '→ Wetter',
+            '→ Sicht',
+            '→ Verkehr',
+            '→ Straßenverhältnisse',
+            '→ Fahrzeugzustand',
+          ]},
+          { type: 'note', text: '⚠️ Auch wenn du theoretisch schneller fahren dürftest!' },
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt – Formeln' },
+          { type: 'heading', text: 'Reaktionsweg & Bremsweg' },
+
+          { type: 'heading', text: 'Reaktionsweg' },
+          { type: 'note', text: '🧮 Formel: (Geschwindigkeit ÷ 10) × 3\nBeispiel bei 50 km/h: 5 × 3 = 15 Meter' },
+
+          { type: 'heading', text: 'Bremsweg' },
+          { type: 'note', text: '🧮 Formel: (Geschwindigkeit ÷ 10) × (Geschwindigkeit ÷ 10)\nBeispiel bei 50 km/h: 5 × 5 = 25 Meter' },
+
+          { type: 'heading', text: 'Anhalteweg' },
+          { type: 'question', text: 'Typische Prüfungsfrage: Wie lang ist der Anhalteweg bei 50 km/h?' },
+          { type: 'answer', items: [
+            'Anhalteweg = Reaktionsweg + Bremsweg',
+            'Bei 50 km/h: 15 m + 25 m = 40 Meter',
+          ]},
+
+          { type: 'heading', text: 'Sicherheitsabstand' },
+          { type: 'question', text: 'Typische Frage: „Welcher Abstand ist ausreichend?"' },
+          { type: 'answer', items: ['Halber Tachowert in Metern — Beispiel: 100 km/h → mindestens 50 m'] },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Aquaplaning' },
+          { type: 'badge', text: '⚡ Prüfungsfalle' },
+          { type: 'list', items: [
+            'Gefahr bei:',
+            '→ starkem Regen',
+            '→ hoher Geschwindigkeit',
+            '→ abgefahrenen Reifen',
+          ]},
+          { type: 'question', text: 'Was tust du bei Aquaplaning?' },
+          { type: 'answer', items: [
+            'Gas wegnehmen',
+            'NICHT stark bremsen',
+            'Lenkrad ruhig halten',
+          ]},
+          { type: 'note', text: '🚫 Prüfungsfalle: Starkes Bremsen bei Aquaplaning ist FALSCH!' },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Umweltbewusstes Fahren' },
+          { type: 'list', items: [
+            'Sprit sparen durch:',
+            '→ früh hochschalten',
+            '→ niedrige Drehzahl halten',
+            '→ Motor nicht unnötig laufen lassen',
+            '→ gleichmäßig fahren',
+            '→ starkes Beschleunigen vermeiden',
+          ]},
+          { type: 'note', text: '⚠️ Motor im Stand unnötig laufen lassen: kostet Kraftstoff und belastet die Umwelt.' },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Prüfungsfragen' },
+          { type: 'list', items: [
+            'Reaktionsweg berechnen',
+            'Bremsweg berechnen',
+            'Anhalteweg berechnen',
+            'Richtiger Abstand bei X km/h',
+            'Verhalten bei Aquaplaning',
+            'Umweltschonendes Fahren',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Höhere Geschwindigkeit = viel längerer Bremsweg',
+            'Abstand rettet Leben — halber Tachowert',
+            'Bei Aquaplaning: Gas weg, nicht bremsen, ruhig halten',
+            'Defensive Fahrer sparen Sprit und vermeiden Unfälle',
+            'Geschwindigkeit immer den Umständen anpassen',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Rechenaufgaben immer in dieser Reihenfolge: 1. Reaktionsweg berechnen → 2. Bremsweg berechnen → 3. Zusammenrechnen = Anhalteweg.' },
+        ],
+      },
+    ],
+  },
 ]
