@@ -92,17 +92,32 @@ export default function HeroContent({ totalQuestions, topicsCount }: Props) {
 
         {/* Buttons */}
         <div className="anim-6" style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr',
+          display: 'flex',
+          flexDirection: 'column',
           gap: '0.75rem',
-          maxWidth: isMobile ? '320px' : '100%',
+          maxWidth: isMobile ? '320px' : '400px',
           margin: isMobile ? '0 auto' : '0',
         }}>
-          <Link href="/demo" className="btn-ghost" style={{ textAlign: 'center' }}>
-            Demo starten
-          </Link>
-          <Link href="/register" className="btn-gold" style={{ textAlign: 'center' }}>
-            Registrieren →
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <Link href="/login" className="btn-ghost" style={{ textAlign: 'center' }}>
+              Anmelden
+            </Link>
+            <Link href="/register" className="btn-gold" style={{ textAlign: 'center' }}>
+              Registrieren →
+            </Link>
+          </div>
+          <Link href="/demo" style={{
+            textAlign: 'center',
+            fontSize: '0.75rem',
+            color: 'var(--text-muted)',
+            padding: '0.5rem',
+            textDecoration: 'none',
+            transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            Demo starten (1 Stunde, kostenlos)
           </Link>
         </div>
 

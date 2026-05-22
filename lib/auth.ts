@@ -12,6 +12,12 @@ export async function registerUser(username: string, email: string, password: st
   return data
 }
 
+export async function loginUser(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data
+}
+
 export async function getSession() {
   const { data } = await supabase.auth.getSession()
   return data.session
