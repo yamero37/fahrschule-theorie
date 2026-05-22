@@ -27,7 +27,7 @@ export default function LoginForm() {
     try {
       const data = await loginUser(form.email.trim(), form.password)
       if (data.session?.user.app_metadata?.approved === true) {
-        router.replace('/fragen')
+        router.replace('/dashboard')
       } else {
         router.replace('/warten')
       }

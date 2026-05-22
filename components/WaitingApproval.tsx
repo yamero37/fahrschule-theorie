@@ -15,7 +15,7 @@ export default function WaitingApproval() {
     setMessage('')
     const { data } = await supabase.auth.refreshSession()
     if (data.session?.user.app_metadata?.approved === true) {
-      router.replace('/fragen')
+      router.replace('/dashboard')
     } else {
       setMessage('Noch nicht freigeschaltet. Bitte warte auf die Bestätigung.')
     }

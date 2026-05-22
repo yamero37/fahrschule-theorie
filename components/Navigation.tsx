@@ -6,6 +6,7 @@ import DemoCountdown from './DemoCountdown'
 
 const links = [
   { href: '/', label: 'Start' },
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/fragen', label: 'Lernen' },
   { href: '/quiz', label: 'Quiz' },
 ]
