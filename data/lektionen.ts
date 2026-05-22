@@ -1299,10 +1299,112 @@ export const TOPICS: Topic[] = [
     id: 14,
     tag: 'B2',
     classB: true,
-    icon: '🚙',
-    title: 'Fahren mit Anhänger & Sonderfälle',
-    subtitle: 'Anhängerbetrieb, Geschwindigkeit, Sondersituationen',
-    available: false,
-    lessons: [],
+    icon: '👁️',
+    title: 'Solokraftfahrzeuge & Verkehrsbeobachtung',
+    subtitle: 'Schulterblick, Toter Winkel, Blicktechnik, Kurven',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion B2 – Fahren mit Solokraftfahrzeugen & Zügen / Verkehrsbeobachtung',
+        blocks: [
+          { type: 'highlight', text: 'In dieser Lektion geht es darum, wie du dein Fahrzeug richtig führst, den Verkehr beobachtest und Gefahren frühzeitig erkennst.' },
+
+          { type: 'heading', text: 'Verkehrsbeobachtung' },
+          { type: 'list', items: [
+            'Du musst ständig beobachten:',
+            '→ vorne',
+            '→ hinten',
+            '→ seitlich',
+          ]},
+          { type: 'list', items: [
+            'Wichtig sind:',
+            '→ Spiegel',
+            '→ Schulterblick',
+            '→ Blickführung',
+          ]},
+
+          { type: 'heading', text: 'Blicktechnik' },
+          { type: 'note', text: '🚫 Nicht direkt vor das Auto schauen!' },
+          { type: 'highlight', text: '✅ Richtig: weit vorausschauen.' },
+          { type: 'list', items: [
+            'Dadurch erkennst du:',
+            '→ Gefahren früher',
+            '→ Bremsvorgänge rechtzeitig',
+            '→ Verkehrszeichen rechtzeitig',
+          ]},
+
+          { type: 'heading', text: 'Schulterblick' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'list', items: [
+            'Pflicht bei:',
+            '→ Abbiegen',
+            '→ Spurwechsel',
+            '→ Anfahren',
+          ]},
+          { type: 'list', items: [
+            'Besonders wegen:',
+            '→ Fahrradfahrern',
+            '→ E-Scootern',
+            '→ Motorrädern',
+          ]},
+
+          { type: 'heading', text: 'Toter Winkel' },
+          { type: 'note', text: '⚠️ Bereiche, die man im Spiegel nicht sieht. Spiegel allein reichen nicht — immer Schulterblick machen!' },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Fahrzeugbedienung' },
+          { type: 'list', items: [
+            'ruhig lenken',
+            'passend schalten',
+            'gleichmäßig bremsen',
+            'Fahrzeug kontrolliert führen',
+          ]},
+
+          { type: 'heading', text: 'Kurven fahren' },
+          { type: 'list', items: ['Vor der Kurve: Geschwindigkeit reduzieren'] },
+          { type: 'note', text: '🚫 Nicht: stark in der Kurve bremsen!' },
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+
+          { type: 'heading', text: 'Schulterblick – Prüfungsfrage' },
+          { type: 'question', text: 'Typische Frage: „Wann müssen Sie den Schulterblick durchführen?"' },
+          { type: 'answer', items: [
+            'vor Spurwechsel',
+            'vor dem Abbiegen',
+            'beim Anfahren',
+          ]},
+
+          { type: 'heading', text: 'Toter Winkel – Prüfungsfalle' },
+          { type: 'note', text: '⚠️ Motorräder und Fahrräder können leicht übersehen werden — Schulterblick rettet Leben!' },
+
+          { type: 'heading', text: 'Blickführung' },
+          { type: 'question', text: 'Was ist die richtige Blicktechnik?' },
+          { type: 'answer', items: [
+            'Weit nach vorne schauen',
+            'Verkehr früh erkennen',
+            'Nicht nur direkt vors Fahrzeug schauen',
+          ]},
+
+          { type: 'heading', text: 'Verkehrsbeobachtung' },
+          { type: 'list', items: [
+            'Spiegel regelmäßig nutzen',
+            'Umfeld ständig kontrollieren',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Spiegel + Schulterblick gehören zusammen',
+            'Der tote Winkel kann lebensgefährlich sein',
+            'Weitblick verbessert Reaktionszeit',
+            'Vor der Kurve bremsen — nie in der Kurve',
+            'Gute Fahrer beobachten ständig den Verkehr',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Beobachtungsfragen ist oft richtig — früh erkennen, ruhig handeln und doppelt absichern.' },
+        ],
+      },
+    ],
   },
 ]
