@@ -107,19 +107,7 @@ export default function HomePage() {
           <Link
             key={topic}
             href={`/fragen?topic=${encodeURIComponent(topic)}`}
-            className="group rounded-xl p-4 transition-all duration-200"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--green-dark)'
-              e.currentTarget.style.boxShadow = '0 0 16px var(--green-glow)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
+            className="topic-card rounded-xl p-4"
           >
             <div className="flex items-center justify-between">
               <span className="font-medium text-sm" style={{ color: 'var(--text)' }}>

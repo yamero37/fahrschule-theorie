@@ -40,3 +40,13 @@ body {
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--green-dark); }
+
+.topic-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.topic-card:hover {
+  border-color: var(--green-dark);
+  box-shadow: 0 0 16px var(--green-glow);
+}
