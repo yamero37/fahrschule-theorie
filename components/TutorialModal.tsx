@@ -205,13 +205,27 @@ export default function TutorialModal({ username, userId, onComplete }: Props) {
   /* ── Complete tutorial ─────────────────────────────────── */
   async function handleComplete() {
     setCompleting(true)
+
+    // Get current points first so we add 100, not overwrite
+    const { data: existing } = await supabase
+      .from('user_stats')
+      .select('points')
+      .eq('user_id', userId)
+      .single()
+
+    const newPoints = (existing?.points ?? 0) + 100
+
     await supabase.from('user_stats').upsert({
       user_id: userId,
-      points: 100,
+      points: newPoints,
       tutorial_done: true,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' })
-    onComplete(100)
+
+    // Fallback: localStorage so tutorial never shows again even if DB column missing
+    try { localStorage.setItem(`tutorial_done_${userId}`, '1') } catch {}
+
+    onComplete(newPoints)
   }
 
   /* ── Battle score ──────────────────────────────────────── */

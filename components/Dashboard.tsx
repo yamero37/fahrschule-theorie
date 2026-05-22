@@ -106,12 +106,21 @@ export default function Dashboard() {
         .eq('user_id', session.user.id)
         .single()
 
+      // Check localStorage as fallback (in case DB column not yet added)
+      let localDone = false
+      try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
+
       if (stats) {
         setPoints(stats.points)
-        setTutorialDone(!!stats.tutorial_done)
-        if (!stats.tutorial_done) setShowTutorial(true)
+        const done = !!stats.tutorial_done || localDone
+        setTutorialDone(done)
+        if (!done) setShowTutorial(true)
       } else {
-        setShowTutorial(true)
+        if (localDone) {
+          setTutorialDone(true)
+        } else {
+          setShowTutorial(true)
+        }
       }
 
       const lbRes = await fetch('/api/leaderboard')
@@ -307,23 +316,14 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          {tutorialDone ? (
-            <span style={{
-              padding: '5px 14px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700,
-              background: 'rgba(34,197,94,0.12)', color: '#22c55e',
-              border: '1px solid rgba(34,197,94,0.25)',
-            }}>
-              ✓ Abgeschlossen
-            </span>
-          ) : (
-            <button
-              onClick={() => setShowTutorial(true)}
-              className="btn-gold"
-              style={{ padding: '8px 18px', fontSize: '0.78rem', cursor: 'pointer', border: 'none' }}
-            >
-              Starten →
-            </button>
-          )}
+          <span style={{
+            padding: '5px 14px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700,
+            background: tutorialDone ? 'rgba(34,197,94,0.12)' : 'rgba(201,162,39,0.10)',
+            color: tutorialDone ? '#22c55e' : 'var(--gold)',
+            border: `1px solid ${tutorialDone ? 'rgba(34,197,94,0.25)' : 'rgba(201,162,39,0.25)'}`,
+          }}>
+            {tutorialDone ? '✓ Abgeschlossen' : '⏳ Läuft…'}
+          </span>
         </div>
 
         {/* Leaderboard Preview */}
