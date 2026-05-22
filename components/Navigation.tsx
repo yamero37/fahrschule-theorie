@@ -1,11 +1,17 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import DemoCountdown from './DemoCountdown'
+import { supabase } from '@/lib/supabase'
+import { getDemoExpiry } from '@/lib/auth'
 
-const links = [
+const GUEST_LINKS = [
   { href: '/', label: 'Start' },
+]
+
+const AUTH_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/fragen', label: 'Lernen' },
   { href: '/quiz', label: 'Quiz' },
@@ -14,6 +20,22 @@ const links = [
 
 export default function Navigation() {
   const pathname = usePathname()
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    async function check() {
+      const isDemo = getDemoExpiry() !== null
+      if (isDemo) { setLoggedIn(true); return }
+      const { data } = await supabase.auth.getSession()
+      setLoggedIn(!!data.session?.user.app_metadata?.approved)
+    }
+    check()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => check())
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const links = loggedIn ? AUTH_LINKS : [...GUEST_LINKS, ...AUTH_LINKS]
 
   return (
     <header style={{
@@ -35,7 +57,7 @@ export default function Navigation() {
       }}>
 
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+        <Link href={loggedIn ? '/dashboard' : '/'} style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/Toldrive.jpeg" alt="TolDrive" style={{
             width: '30px', height: '30px',
