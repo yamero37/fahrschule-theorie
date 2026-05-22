@@ -505,7 +505,103 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 6,  icon: '🅿️', title: 'Parken & Halten',             subtitle: 'Halte- und Parkverbote',               available: false, lessons: [] },
+  {
+    id: 6,
+    icon: '🏎️',
+    title: 'Geschwindigkeit & Abstand',
+    subtitle: 'Tempolimits, Bremsweg, Sicherheitsabstand',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 6 – Geschwindigkeit & Abstand',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: Geschwindigkeiten richtig einschätzen · Sicherheitsabstände einhalten · Bremsweg verstehen · typische Prüfungsfehler vermeiden' },
+
+          { type: 'heading', text: 'Geschwindigkeit' },
+          { type: 'list', items: [
+            'Innerorts → maximal 50 km/h (wenn nichts anderes vorgeschrieben)',
+            'Außerorts → maximal 100 km/h mit dem Pkw',
+            'Autobahn → Richtgeschwindigkeit 130 km/h',
+          ]},
+
+          { type: 'heading', text: 'Geschwindigkeit anpassen' },
+          { type: 'list', items: [
+            'Du musst langsamer fahren bei:',
+            '→ Regen',
+            '→ Nebel',
+            '→ Schnee',
+            '→ Dunkelheit',
+            '→ schlechter Sicht',
+            '→ viel Verkehr',
+            '→ engen Kurven',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Sicherheitsabstand' },
+
+          { type: 'heading', text: 'Grundregel' },
+          { type: 'highlight', text: '📏 Abstand = halber Tachowert. Beispiel: 100 km/h → mindestens 50 Meter Abstand.' },
+
+          { type: 'heading', text: 'Warum Abstand wichtig ist' },
+          { type: 'list', items: [
+            'Zu wenig Abstand führt zu:',
+            '→ längerem Bremsweg',
+            '→ höherer Unfallgefahr',
+            '→ wenig Reaktionszeit',
+          ]},
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt – Formeln' },
+
+          { type: 'heading', text: 'Reaktionsweg' },
+          { type: 'highlight', text: 'Strecke, die du während des Reagierens zurücklegst.' },
+          { type: 'note', text: '🧮 Formel: Geschwindigkeit ÷ 10 × 3\nBeispiel bei 50 km/h: 5 × 3 = 15 Meter' },
+
+          { type: 'heading', text: 'Bremsweg' },
+          { type: 'highlight', text: 'Strecke vom Bremsen bis zum Stillstand.' },
+          { type: 'note', text: '🧮 Formel: (Geschwindigkeit ÷ 10) × (Geschwindigkeit ÷ 10)\nBeispiel bei 50 km/h: 5 × 5 = 25 Meter' },
+
+          { type: 'heading', text: 'Anhalteweg' },
+          { type: 'question', text: 'Was ist der Anhalteweg bei 50 km/h?' },
+          { type: 'answer', items: [
+            'Reaktionsweg + Bremsweg = Anhalteweg',
+            '15 m + 25 m = 40 Meter',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Wichtige Regeln' },
+          { type: 'list', items: [
+            'Immer vorausschauend fahren',
+            'Abstand bei schlechtem Wetter vergrößern',
+            'Nicht drängeln',
+            'Geschwindigkeit der Situation anpassen',
+          ]},
+
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'Zu dicht auffahren',
+            'Bremsweg unterschätzen',
+            'Bei Regen zu schnell fahren',
+            'Nur auf Tempolimits achten statt auf die Verkehrssituation',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Innerorts: 50 km/h · Außerorts: 100 km/h · Autobahn: 130 km/h (Richtlinie)',
+            'Abstand = halber Tachowert in Metern',
+            'Reaktionsweg: (v ÷ 10) × 3',
+            'Bremsweg: (v ÷ 10) × (v ÷ 10)',
+            'Anhalteweg = Reaktionsweg + Bremsweg',
+            'Bei schlechtem Wetter immer mehr Abstand',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Rechenaufgaben zum Bremsweg kommen oft vor — die Formeln auswendig lernen!' },
+        ],
+      },
+    ],
+  },
   { id: 7,  icon: '🌧️', title: 'Fahren bei schlechtem Wetter',subtitle: 'Regen, Schnee, Nebel, Eis',             available: false, lessons: [] },
   { id: 8,  icon: '🚨', title: 'Verkehrszeichen',              subtitle: 'Gebots-, Verbots- und Gefahrenzeichen', available: false, lessons: [] },
   { id: 9,  icon: '🛑', title: 'Ampeln & Lichtzeichen',        subtitle: 'Lichtzeichenanlagen, Blinkzeichen',    available: false, lessons: [] },
