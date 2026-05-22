@@ -10,7 +10,7 @@ const SLIDES = [
 ]
 
 const TICKER_W  = 180  // Breite der Ticker links/rechts
-const AVATAR_W  = 110  // Platz für Avatar zwischen Auto und rechtem Ticker
+const AVATAR_W  = 150  // Platz für Avatar zwischen Auto und rechtem Ticker
 
 export default function HeroSlideshow({ children }: { children: React.ReactNode }) {
   const [current, setCurrent] = useState(0)
@@ -118,7 +118,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         right: `${TICKER_W + 8}px`,
         top: '50%',
         transform: 'translateY(-50%)',
-        width: `${AVATAR_W - 8}px`,
+        width: `${AVATAR_W - 6}px`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -131,8 +131,8 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           src="/avatar.jpeg"
           alt="Fahrlehrer"
           style={{
-            width: '82px',
-            height: '82px',
+            width: '120px',
+            height: '120px',
             objectFit: 'cover',
             objectPosition: 'center top',
             borderRadius: '50%',
