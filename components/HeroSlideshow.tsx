@@ -7,12 +7,6 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 const SLIDES = [
   { url: 'https://images.pexels.com/photos/18433994/pexels-photo-18433994.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
   { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
-  { url: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Lamborghini' },
-  { url: 'https://images.pexels.com/photos/1035108/pexels-photo-1035108.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Lamborghini' },
-  { url: 'https://images.pexels.com/photos/3972623/pexels-photo-3972623.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Bugatti' },
-  { url: 'https://images.pexels.com/photos/2116469/pexels-photo-2116469.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Porsche' },
-  { url: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'McLaren' },
-  { url: 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
 ]
 
 const TICKER_W = 180
