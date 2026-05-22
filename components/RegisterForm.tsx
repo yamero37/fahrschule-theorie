@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { registerUser } from '@/lib/auth'
@@ -10,6 +10,14 @@ export default function RegisterForm() {
   const [form, setForm] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [demoExpired, setDemoExpired] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('reason') === 'demo_expired') setDemoExpired(true)
+    }
+  }, [])
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(prev => ({ ...prev, [field]: e.target.value }))
@@ -79,9 +87,25 @@ export default function RegisterForm() {
         <h1 style={{ textAlign: 'center', fontSize: '1.4rem', fontWeight: 900, color: 'var(--gold)', marginBottom: '0.4rem', letterSpacing: '-0.01em' }}>
           Konto erstellen
         </h1>
-        <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
+        <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: demoExpired ? '1rem' : '2rem' }}>
           Kostenlos registrieren &amp; alle Fragen lernen
         </p>
+
+        {demoExpired && (
+          <div style={{
+            background: 'rgba(201,162,39,0.08)',
+            border: '1px solid rgba(201,162,39,0.3)',
+            borderRadius: '0.6rem',
+            padding: '0.75rem 1rem',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            fontSize: '0.82rem',
+            color: 'var(--gold)',
+          }}>
+            Deine Demo-Stunde ist abgelaufen.<br />
+            Registriere dich für vollen Zugang.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 

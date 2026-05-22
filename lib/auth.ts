@@ -24,9 +24,16 @@ export async function signOut() {
 
 // ── Demo mode (localStorage, no backend) ────────────────
 
-const DEMO_KEY = 'toldrive_demo'
+const DEMO_KEY      = 'toldrive_demo'
+const DEMO_USED_KEY = 'toldrive_demo_used'
+
+export function hasDemoBeenUsed(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem(DEMO_USED_KEY) === 'true'
+}
 
 export function startDemo() {
+  localStorage.setItem(DEMO_USED_KEY, 'true')
   localStorage.setItem(DEMO_KEY, String(Date.now() + 60 * 60 * 1000))
 }
 
@@ -41,6 +48,7 @@ export function getDemoExpiry(): number | null {
 
 export function clearDemo() {
   if (typeof window !== 'undefined') localStorage.removeItem(DEMO_KEY)
+  // DEMO_USED_KEY bleibt — verhindert erneute Demo
 }
 
 // ── Combined check ───────────────────────────────────────

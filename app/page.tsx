@@ -72,23 +72,15 @@ export default function HomePage() {
             Sicher. Kompetent. Vertrauen.
           </p>
 
-          {/* Buttons 2×2 */}
+          {/* Buttons */}
           <div className="anim-5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-
-            <Link href="/fragen" className="btn-gold" style={{ textAlign: 'center' }}>
-              Jetzt lernen →
-            </Link>
-
-            <Link href="/quiz" className="btn-ghost" style={{ textAlign: 'center' }}>
-              Kostenlos starten
-            </Link>
 
             <Link href="/demo" className="btn-ghost" style={{ textAlign: 'center' }}>
               Demo starten
             </Link>
 
-            <Link href="/register" className="btn-register" style={{ textAlign: 'center' }}>
-              Registrieren
+            <Link href="/register" className="btn-gold" style={{ textAlign: 'center' }}>
+              Registrieren →
             </Link>
 
           </div>
