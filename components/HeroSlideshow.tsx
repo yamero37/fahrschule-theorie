@@ -9,8 +9,8 @@ const SLIDES = [
   { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
 ]
 
-// Ticker-Breite — wird hier definiert damit HeroSlideshow das Auto entsprechend einrückt
-const TICKER_W = 180
+const TICKER_W  = 180  // Breite der Ticker links/rechts
+const AVATAR_W  = 110  // Platz für Avatar zwischen Auto und rechtem Ticker
 
 export default function HeroSlideshow({ children }: { children: React.ReactNode }) {
   const [current, setCurrent] = useState(0)
@@ -52,7 +52,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           pointerEvents: 'none',
         }} />
 
-        {/* Slides — nur im Bereich zwischen den Tickern */}
+        {/* Slides — zwischen linkem Ticker und Avatar-Slot */}
         {SLIDES.map((slide, i) => (
           <div
             key={i}
@@ -60,7 +60,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
               position: 'absolute',
               top: 0,
               left: `${TICKER_W + 8}px`,
-              right: `${TICKER_W + 8}px`,
+              right: `${TICKER_W + AVATAR_W + 8}px`,
               height: '100%',
               backgroundImage: `url(${slide.url})`,
               backgroundSize: 'contain',
@@ -111,6 +111,48 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 75%, transparent 100%)',
         zIndex: 10,
       }} />
+
+      {/* Avatar — mittig zwischen Ferrari und rechtem Ticker */}
+      <div style={{
+        position: 'absolute',
+        right: `${TICKER_W + 8}px`,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        width: `${AVATAR_W - 8}px`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '8px',
+        zIndex: 7,
+        pointerEvents: 'none',
+      }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/avatar.jpeg"
+          alt="Fahrlehrer"
+          style={{
+            width: '82px',
+            height: '82px',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            borderRadius: '50%',
+            border: '2px solid rgba(201,162,39,0.7)',
+            boxShadow: '0 0 20px rgba(201,162,39,0.35), 0 0 40px rgba(201,162,39,0.12)',
+            background: '#fff',
+          }}
+        />
+        <span style={{
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'rgba(201,162,39,0.75)',
+          textAlign: 'center',
+          lineHeight: 1.4,
+        }}>
+          Dein<br />Fahrlehrer
+        </span>
+      </div>
 
       {/* Quote tickers */}
       <QuoteTicker width={TICKER_W} />
