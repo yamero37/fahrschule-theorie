@@ -895,7 +895,95 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 10, icon: '⛽', title: 'Fahrzeugtechnik',              subtitle: 'Bremsen, Reifen, Beleuchtung',         available: false, lessons: [] },
+  {
+    id: 10,
+    icon: '🌿',
+    title: 'Umweltbewusstes & Rücksichtsvolles Fahren',
+    subtitle: 'Kraftstoff sparen, Emissionen, Rücksicht',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 10 – Umweltbewusstes & Rücksichtsvolles Fahren',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: kraftstoffsparend fahren · Umweltbelastung reduzieren · rücksichtsvoll fahren · typische Fehler vermeiden' },
+
+          { type: 'heading', text: 'Umweltbewusst fahren' },
+          { type: 'list', items: [
+            'Du sparst Kraftstoff durch:',
+            '→ vorausschauendes Fahren',
+            '→ frühzeitiges Hochschalten',
+            '→ gleichmäßige Geschwindigkeit',
+            '→ unnötiges Bremsen vermeiden',
+            '→ Motor nicht unnötig laufen lassen',
+          ]},
+          { type: 'highlight', text: '🔑 Im Stand: Motor ausschalten wenn möglich. Das spart Kraftstoff, Kosten und Emissionen.' },
+
+          { type: 'heading', text: 'Richtige Geschwindigkeit' },
+          { type: 'list', items: [
+            'Hohe Geschwindigkeit:',
+            '→ erhöht den Kraftstoffverbrauch',
+            '→ belastet die Umwelt stärker',
+          ]},
+
+          { type: 'heading', text: 'Fahrzeug regelmäßig prüfen' },
+          { type: 'list', items: [
+            'richtiger Reifendruck',
+            'Wartung einhalten',
+            'unnötiges Gewicht vermeiden',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Rücksicht im Straßenverkehr' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'list', items: [
+            'Achte besonders auf:',
+            '→ Fußgänger',
+            '→ Fahrradfahrer',
+            '→ Kinder',
+            '→ ältere Menschen',
+          ]},
+
+          { type: 'heading', text: 'Lärm vermeiden' },
+          { type: 'list', items: [
+            'unnötiges Beschleunigen vermeiden',
+            'Motor nicht hochdrehen',
+            'besonders nachts rücksichtsvoll fahren',
+          ]},
+
+          { type: 'heading', text: 'Gefahrenerkennung' },
+          { type: 'list', items: [
+            'Vorausschauendes Fahren hilft:',
+            '→ Unfälle vermeiden',
+            '→ ruhiger fahren',
+            '→ Sprit sparen',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'zu spätes Hochschalten',
+            'aggressives Beschleunigen',
+            'unnötiger Leerlauf',
+            'fehlende Rücksichtnahme',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Vorausschauend fahren spart Sprit und schützt alle',
+            'Motor im Stand ausschalten',
+            'Frühzeitig hochschalten = weniger Verbrauch',
+            'Hohe Geschwindigkeit = hoher Verbrauch',
+            'Richtiger Reifendruck spart Kraftstoff',
+            'Besondere Rücksicht: Kinder, ältere Menschen, Fahrradfahrer',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Umwelt-Fragen drehen sich fast immer um vorausschauendes Fahren, frühes Hochschalten und Motordrehzahl. Die umweltfreundlichste Antwort ist meistens richtig.' },
+        ],
+      },
+    ],
+  },
   { id: 11, icon: '🏥', title: 'Erste Hilfe & Unfall',         subtitle: 'Verhalten nach dem Unfall, Notruf',    available: false, lessons: [] },
   { id: 12, icon: '🌍', title: 'Umwelt & Energie',             subtitle: 'Kraftstoff sparen, Emissionen',        available: false, lessons: [] },
 ]
