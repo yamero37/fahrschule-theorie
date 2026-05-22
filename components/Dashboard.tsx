@@ -9,10 +9,13 @@ import { signOut } from '@/lib/auth'
 /* ── Rank System ───────────────────────────────────────── */
 
 const RANKS = [
-  { id: 'D', name: 'Anfänger',      min: 0,   max: 99,       color: '#6b7280', glow: 'rgba(107,114,128,0.3)' },
-  { id: 'C', name: 'Amateur',       min: 100, max: 299,      color: '#3b82f6', glow: 'rgba(59,130,246,0.3)'  },
-  { id: 'B', name: 'Fortgeschritten', min: 300, max: 599,    color: '#8b5cf6', glow: 'rgba(139,92,246,0.3)'  },
-  { id: 'A', name: 'Profi',         min: 600, max: Infinity,  color: '#c9a227', glow: 'rgba(201,162,39,0.35)' },
+  { id: 'D',        name: 'Anfänger',       min: 0,    max: 99,       color: '#6b7280', glow: 'rgba(107,114,128,0.3)'  },
+  { id: 'C',        name: 'Amateur',        min: 100,  max: 299,      color: '#3b82f6', glow: 'rgba(59,130,246,0.3)'   },
+  { id: 'B',        name: 'Fortgeschritten',min: 300,  max: 599,      color: '#8b5cf6', glow: 'rgba(139,92,246,0.3)'   },
+  { id: 'A',        name: 'Profi',          min: 600,  max: 999,      color: '#c9a227', glow: 'rgba(201,162,39,0.35)'  },
+  { id: 'S',        name: 'Experte',        min: 1000, max: 1499,     color: '#f97316', glow: 'rgba(249,115,22,0.35)'  },
+  { id: 'SS',       name: 'Meister',        min: 1500, max: 1999,     color: '#ef4444', glow: 'rgba(239,68,68,0.35)'   },
+  { id: 'Legende',  name: 'Legende',        min: 2000, max: Infinity,  color: '#ffd700', glow: 'rgba(255,215,0,0.4)'   },
 ]
 
 function getRank(points: number) {
@@ -156,9 +159,24 @@ export default function Dashboard() {
               border: `3px solid ${rank.color}`,
               boxShadow: `0 0 24px ${rank.glow}, 0 0 48px ${rank.glow}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: `${rank.color}15`,
+              background: rank.id === 'Legende'
+                ? 'linear-gradient(135deg, #3a2a00, #1a1000)'
+                : `${rank.color}15`,
+              animation: rank.id === 'Legende' ? 'borderPulse 2s ease-in-out infinite' : 'none',
             }}>
-              <span style={{ fontSize: '2.2rem', fontWeight: 900, color: rank.color, letterSpacing: '-0.02em' }}>
+              <span style={{
+                fontSize: rank.id === 'SS' ? '1.5rem' : rank.id === 'Legende' ? '1rem' : '2.2rem',
+                fontWeight: 900,
+                letterSpacing: '-0.02em',
+                ...(rank.id === 'Legende' ? {
+                  background: 'linear-gradient(90deg, #ffd700, #fff5c0, #ffd700)',
+                  backgroundSize: '200% auto',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  animation: 'goldShine 2s linear infinite',
+                } : { color: rank.color }),
+              }}>
                 {rank.id}
               </span>
             </div>
@@ -207,11 +225,12 @@ export default function Dashboard() {
                   opacity: r.id === rank.id ? 1 : 0.35,
                 }}>
                   <span style={{
-                    width: '24px', height: '24px', borderRadius: '50%',
+                    width: '28px', height: '24px', borderRadius: '12px',
                     border: `2px solid ${r.color}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.65rem', fontWeight: 900, color: r.color,
+                    fontSize: '0.55rem', fontWeight: 900, color: r.color,
                     background: r.id === rank.id ? `${r.color}20` : 'transparent',
+                    flexShrink: 0,
                   }}>{r.id}</span>
                   <span style={{ fontSize: '0.7rem', color: r.id === rank.id ? r.color : 'var(--text-dim)', fontWeight: 600 }}>
                     {r.name}
