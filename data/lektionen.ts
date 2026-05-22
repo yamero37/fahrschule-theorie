@@ -1,0 +1,115 @@
+export interface LessonBlock {
+  type: 'heading' | 'badge' | 'list' | 'highlight' | 'question' | 'answer' | 'note' | 'divider'
+  text?: string
+  items?: string[]
+}
+
+export interface Lesson {
+  id: number
+  title: string
+  blocks: LessonBlock[]
+}
+
+export interface Topic {
+  id: number
+  title: string
+  icon: string
+  subtitle: string
+  available: boolean
+  lessons: Lesson[]
+}
+
+export const TOPICS: Topic[] = [
+  {
+    id: 1,
+    icon: '🧠',
+    title: 'Verhalten im Straßenverkehr',
+    subtitle: 'Alkohol, Müdigkeit, Defensives Fahren',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 1 – Wichtige Punkte für die Theorieprüfung',
+        blocks: [
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'heading', text: 'Alkohol & Probezeit' },
+          { type: 'list', items: ['In der Probezeit gilt: 0,0 Promille'] },
+          { type: 'list', items: [
+            'Alkohol führt zu:',
+            '→ schlechter Reaktion',
+            '→ schlechter Wahrnehmung',
+            '→ Selbstüberschätzung',
+            '→ Müdigkeit',
+          ]},
+          { type: 'heading', text: 'Müdigkeit' },
+          { type: 'list', items: [
+            'Müdigkeit kann zu folgenden Folgen führen:',
+            '→ Sekundenschlaf',
+            '→ Konzentrationsfehlern',
+            '→ längeren Reaktionszeiten',
+          ]},
+          { type: 'question', text: 'Typische Prüfungsfrage: „Wie wirkt sich Müdigkeit aus?"' },
+          { type: 'answer', items: [
+            'Reaktionszeit verlängert sich',
+            'Aufmerksamkeit sinkt',
+            'Ablenkung nimmt zu',
+          ]},
+          { type: 'highlight', text: 'Besonders wichtig: Ablenkung am Steuer' },
+          { type: 'list', items: [
+            'Handy am Steuer',
+            'Navigation einstellen während der Fahrt',
+            'Essen / Trinken beim Fahren',
+          ]},
+          { type: 'note', text: '⚠️ Schon 2 Sekunden Blindflug können gefährlich sein.' },
+          { type: 'divider' },
+          { type: 'heading', text: 'Gefühle & Emotionen' },
+          { type: 'badge', text: '📋 Prüfungsrelevant' },
+          { type: 'list', items: ['Stress', 'Aggression', 'Zeitdruck', 'Wut'] },
+          { type: 'note', text: 'Diese Dinge erhöhen das Unfallrisiko.' },
+          { type: 'divider' },
+          { type: 'heading', text: 'Defensives Fahren' },
+          { type: 'badge', text: '⚡ Sehr wichtig in Prüfungsfragen' },
+          { type: 'list', items: [
+            'vorausschauend fahren',
+            'Fehler anderer ausgleichen',
+            'Abstand halten',
+            'Rücksicht nehmen',
+          ]},
+          { type: 'heading', text: 'Schwächere Verkehrsteilnehmer' },
+          { type: 'list', items: [
+            'Du musst besonders achten auf:',
+            '→ Kinder',
+            '→ ältere Menschen',
+            '→ Fahrradfahrer',
+            '→ Fußgänger',
+          ]},
+          { type: 'question', text: 'Typische Frage: „Warum sind Kinder im Straßenverkehr besonders gefährdet?"' },
+          { type: 'answer', items: [
+            'Sie können Entfernungen/Geschwindigkeiten schlecht einschätzen',
+            'Sie handeln oft spontan',
+          ]},
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merke dir' },
+          { type: 'list', items: [
+            'Menschliches Fehlverhalten = Hauptursache vieler Unfälle',
+            'Handy + Fahren = große Gefahr',
+            'Müdigkeit ≈ Wirkung wie Alkohol',
+            'In Probezeit: absolut kein Alkohol',
+            'Defensive Fahrer vermeiden Unfälle',
+          ]},
+        ],
+      },
+    ],
+  },
+  { id: 2,  icon: '🚦', title: 'Vorfahrt & Vorrang',          subtitle: 'Rechts vor Links, Vorfahrtsschilder', available: false, lessons: [] },
+  { id: 3,  icon: '🛣️', title: 'Geschwindigkeit & Abstand',   subtitle: 'Tempolimits, Sicherheitsabstand',     available: false, lessons: [] },
+  { id: 4,  icon: '🚗', title: 'Überholen & Spurwechsel',     subtitle: 'Überholverbote, Fahrspurregeln',      available: false, lessons: [] },
+  { id: 5,  icon: '🅿️', title: 'Parken & Halten',             subtitle: 'Halte- und Parkverbote',             available: false, lessons: [] },
+  { id: 6,  icon: '🌧️', title: 'Fahren bei schlechtem Wetter',subtitle: 'Regen, Schnee, Nebel, Eis',          available: false, lessons: [] },
+  { id: 7,  icon: '🚨', title: 'Verkehrszeichen',              subtitle: 'Gebots-, Verbots- und Gefahrenzeichen',available: false, lessons: [] },
+  { id: 8,  icon: '🛑', title: 'Ampeln & Lichtzeichen',        subtitle: 'Lichtzeichenanlagen, Blinkzeichen',  available: false, lessons: [] },
+  { id: 9,  icon: '⛽', title: 'Fahrzeugtechnik',              subtitle: 'Bremsen, Reifen, Beleuchtung',       available: false, lessons: [] },
+  { id: 10, icon: '🏥', title: 'Erste Hilfe & Unfall',         subtitle: 'Verhalten nach dem Unfall, Notruf',  available: false, lessons: [] },
+  { id: 11, icon: '🌍', title: 'Umwelt & Energie',             subtitle: 'Kraftstoff sparen, Emissionen',      available: false, lessons: [] },
+  { id: 12, icon: '📋', title: 'Führerschein & Recht',         subtitle: 'Probezeit, Punkte, Bußgelder',       available: false, lessons: [] },
+]

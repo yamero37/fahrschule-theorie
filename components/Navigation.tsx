@@ -13,6 +13,7 @@ const GUEST_LINKS = [
 
 const AUTH_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
+  { href: '/unterricht', label: 'Unterricht' },
   { href: '/fragen', label: 'Lernen' },
   { href: '/quiz', label: 'Quiz' },
   { href: '/rangliste', label: 'Rangliste' },
