@@ -186,7 +186,138 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 3,  icon: '🚦', title: 'Vorfahrt & Vorrang',           subtitle: 'Rechts vor Links, Vorfahrtsschilder',   available: false, lessons: [] },
+  {
+    id: 3,
+    icon: '🚦',
+    title: 'Grundregeln & Verkehrszeichen',
+    subtitle: 'Rechtsfahrgebot, Gefahrzeichen, Vorschriftzeichen',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 3 – Grundregeln / Verkehrszeichen & Verkehrseinrichtungen',
+        blocks: [
+          { type: 'highlight', text: 'In Lektion 3 lernst du die wichtigsten Grundregeln im Straßenverkehr sowie Verkehrszeichen und deren Bedeutung.' },
+
+          { type: 'heading', text: 'Grundregeln im Straßenverkehr' },
+          { type: 'list', items: [
+            'Jeder Verkehrsteilnehmer muss:',
+            '→ vorsichtig fahren',
+            '→ aufmerksam sein',
+            '→ Rücksicht nehmen',
+            '→ niemanden gefährden',
+          ]},
+
+          { type: 'heading', text: 'Rechtsfahrgebot' },
+          { type: 'note', text: '⚠️ Immer möglichst weit rechts fahren.' },
+          { type: 'list', items: [
+            'Besonders wichtig:',
+            '→ auf mehrspurigen Straßen',
+            '→ außer beim Überholen',
+          ]},
+
+          { type: 'heading', text: 'Geschwindigkeit anpassen' },
+          { type: 'list', items: [
+            'Du musst deine Geschwindigkeit anpassen an:',
+            '→ Wetter',
+            '→ Sicht',
+            '→ Verkehr',
+            '→ Straßenverhältnisse',
+          ]},
+          { type: 'note', text: '⚠️ Auch wenn kein Schild steht!' },
+
+          { type: 'heading', text: 'Abstand halten' },
+          { type: 'list', items: [
+            'Genügend Abstand halten:',
+            '→ nach vorne',
+            '→ beim Überholen',
+            '→ zu Fahrradfahrern',
+          ]},
+          { type: 'highlight', text: '📏 Merksatz: Abstand = Sicherheit.' },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Verkehrszeichen' },
+
+          { type: 'heading', text: '⚠️ Gefahrzeichen' },
+          { type: 'list', items: [
+            'Warnen vor Gefahren:',
+            '→ Kurve',
+            '→ Baustelle',
+            '→ Kinder',
+            '→ Wildwechsel',
+          ]},
+          { type: 'highlight', text: '🔺 Form: Dreieckig mit rotem Rand.' },
+
+          { type: 'heading', text: '🛑 Vorschriftzeichen' },
+          { type: 'list', items: [
+            'Gebote oder Verbote:',
+            '→ Stoppschild',
+            '→ Vorfahrt achten',
+            '→ Geschwindigkeitsbegrenzung',
+          ]},
+          { type: 'highlight', text: '🔴 Form: Meist rund.' },
+
+          { type: 'heading', text: '🔷 Richtzeichen' },
+          { type: 'list', items: [
+            'Geben Hinweise:',
+            '→ Parken',
+            '→ Autobahn',
+            '→ Einbahnstraße',
+          ]},
+          { type: 'highlight', text: '🔵 Form: Meist rechteckig / blau.' },
+
+          { type: 'heading', text: 'Verkehrseinrichtungen' },
+          { type: 'list', items: [
+            'Dazu gehören:',
+            '→ Leitpfosten',
+            '→ Baustellenbaken',
+            '→ Ampeln',
+            '→ Fahrbahnmarkierungen',
+          ]},
+          { type: 'note', text: '💡 Sie helfen bei Orientierung und Sicherheit.' },
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+
+          { type: 'heading', text: 'Rechtsfahrgebot' },
+          { type: 'question', text: 'Typische Frage: „Wo müssen Sie fahren?"' },
+          { type: 'answer', items: ['Möglichst weit rechts'] },
+
+          { type: 'heading', text: 'Geschwindigkeit – Prüfungsfalle' },
+          { type: 'note', text: '⚠️ Auch ohne Tempolimit musst du langsamer fahren bei: Nebel, Regen, Schnee, schlechter Sicht.' },
+
+          { type: 'heading', text: 'Verkehrszeichen erkennen' },
+          { type: 'question', text: 'Du musst unterscheiden können: Gefahrzeichen – Vorschriftzeichen – Richtzeichen. Das kommt extrem oft dran.' },
+          { type: 'answer', items: [
+            'Dreieck mit rotem Rand → Gefahrzeichen',
+            'Rund → Vorschriftzeichen (Gebot/Verbot)',
+            'Rechteckig/Blau → Richtzeichen (Hinweis)',
+          ]},
+
+          { type: 'heading', text: 'Verkehrszeichen mit hoher Prüfungsquote' },
+          { type: 'list', items: [
+            'Stoppschild',
+            'Vorfahrt achten',
+            'Verbot der Einfahrt',
+            'Einbahnstraße',
+            'Fußgängerüberweg',
+            'Geschwindigkeitsbegrenzung',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Fahre defensiv und rücksichtsvoll',
+            'Geschwindigkeit immer anpassen',
+            'Rechts fahren außer beim Überholen',
+            'Verkehrszeichen früh erkennen',
+            'Abstand rettet Leben',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Verkehrszeichen-Fragen → Form erkennen → Farbe erkennen → Bedeutung ableiten. Dreieck = Gefahr · Rund = Gebot/Verbot · Rechteckig = Hinweis' },
+        ],
+      },
+    ],
+  },
   { id: 4,  icon: '🛣️', title: 'Geschwindigkeit & Abstand',   subtitle: 'Tempolimits, Sicherheitsabstand',       available: false, lessons: [] },
   { id: 5,  icon: '🚗', title: 'Überholen & Spurwechsel',     subtitle: 'Überholverbote, Fahrspurregeln',        available: false, lessons: [] },
   { id: 6,  icon: '🅿️', title: 'Parken & Halten',             subtitle: 'Halte- und Parkverbote',               available: false, lessons: [] },
