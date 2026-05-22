@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import DemoCountdown from './DemoCountdown'
 
 const links = [
   { href: '/', label: 'Start' },
@@ -51,34 +52,32 @@ export default function Navigation() {
           </span>
         </Link>
 
-        {/* Nav */}
-        <nav className="flex items-center gap-1">
-          {links.map(({ href, label }) => {
-            const active = pathname === href
-            return (
-              <Link
-                key={href}
-                href={href}
-                className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150"
-                style={
-                  active
-                    ? {
-                        background: 'rgba(201,162,39,0.12)',
-                        color: 'var(--gold)',
-                        border: '1px solid rgba(201,162,39,0.3)',
-                      }
-                    : {
-                        color: 'var(--text-muted)',
-                        border: '1px solid transparent',
-                      }
-                }
-              >
-                {label}
-              </Link>
-            )
-          })}
-        </nav>
+        {/* Right side: nav + demo countdown */}
+        <div className="flex items-center gap-3">
 
+          <DemoCountdown />
+
+          <nav className="flex items-center gap-1">
+            {links.map(({ href, label }) => {
+              const active = pathname === href
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150"
+                  style={
+                    active
+                      ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
+                      : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                  }
+                >
+                  {label}
+                </Link>
+              )
+            })}
+          </nav>
+
+        </div>
       </div>
     </header>
   )

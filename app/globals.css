@@ -103,6 +103,39 @@ body {
   animation: goldShine 5s linear infinite;
 }
 
+/* ── Form inputs ────────────────────────────────────────── */
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(201,162,39,0.04);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 0.6rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.form-input:focus {
+  border-color: rgba(201,162,39,0.55);
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.1);
+}
+.form-input::placeholder {
+  color: var(--text-dim);
+}
+
 /* ── Cards ──────────────────────────────────────────────── */
 
 .topic-card {
