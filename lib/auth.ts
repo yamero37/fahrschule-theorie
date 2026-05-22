@@ -61,6 +61,8 @@ export function clearDemo() {
 
 export async function isAuthorized(): Promise<boolean> {
   if (getDemoExpiry() !== null) return true
-  const session = await getSession()
-  return session !== null
+  const { data } = await supabase.auth.getSession()
+  const session = data.session
+  if (!session) return false
+  return session.user.app_metadata?.approved === true
 }

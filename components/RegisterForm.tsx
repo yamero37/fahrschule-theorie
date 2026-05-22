@@ -42,7 +42,7 @@ export default function RegisterForm() {
     setLoading(true)
     try {
       await registerUser(form.username.trim(), form.email.trim(), form.password)
-      router.replace('/fragen')
+      router.replace('/warten')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Registrierung fehlgeschlagen.'
       if (msg.includes('already registered') || msg.includes('already been registered')) {

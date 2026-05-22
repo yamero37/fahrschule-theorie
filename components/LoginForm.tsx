@@ -25,8 +25,12 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
-      await loginUser(form.email.trim(), form.password)
-      router.replace('/fragen')
+      const data = await loginUser(form.email.trim(), form.password)
+      if (data.session?.user.app_metadata?.approved === true) {
+        router.replace('/fragen')
+      } else {
+        router.replace('/warten')
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Anmeldung fehlgeschlagen.'
       if (msg.includes('Invalid login') || msg.includes('invalid_credentials')) {

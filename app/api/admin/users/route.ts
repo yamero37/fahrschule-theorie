@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     email,
     password,
     user_metadata: { username: username || email.split('@')[0] },
+    app_metadata: { approved: true },
     email_confirm: true,
   })
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
