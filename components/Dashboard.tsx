@@ -71,6 +71,7 @@ export default function Dashboard() {
   const [userId, setUserId] = useState('')
   const [points, setPoints] = useState(0)
   const [showTutorial, setShowTutorial] = useState(false)
+  const [tutorialDone, setTutorialDone] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function Dashboard() {
 
       if (stats) {
         setPoints(stats.points)
+        setTutorialDone(!!stats.tutorial_done)
         if (!stats.tutorial_done) setShowTutorial(true)
       } else {
         setShowTutorial(true)
@@ -124,6 +126,7 @@ export default function Dashboard() {
           onComplete={(pts) => {
             setPoints(pts)
             setShowTutorial(false)
+            setTutorialDone(true)
           }}
         />
       )}
@@ -258,6 +261,46 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Tutorial Status */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: tutorialDone ? 'rgba(34,197,94,0.06)' : 'rgba(201,162,39,0.06)',
+          border: `1px solid ${tutorialDone ? 'rgba(34,197,94,0.2)' : 'rgba(201,162,39,0.2)'}`,
+          borderRadius: '0.85rem', padding: '1rem 1.25rem',
+          marginBottom: '2rem', flexWrap: 'wrap', gap: '0.75rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '1.2rem' }}>{tutorialDone ? '✅' : '📖'}</span>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 700, color: tutorialDone ? '#22c55e' : 'var(--gold)' }}>
+                Tutorial {tutorialDone ? 'abgeschlossen' : 'verfügbar'}
+              </p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                {tutorialDone
+                  ? 'Du hast das Tutorial erfolgreich abgeschlossen und +100 Punkte erhalten.'
+                  : 'Schließe das Tutorial ab und erhalte +100 Punkte als Belohnung.'}
+              </p>
+            </div>
+          </div>
+          {tutorialDone ? (
+            <span style={{
+              padding: '5px 14px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700,
+              background: 'rgba(34,197,94,0.12)', color: '#22c55e',
+              border: '1px solid rgba(34,197,94,0.25)',
+            }}>
+              ✓ Abgeschlossen
+            </span>
+          ) : (
+            <button
+              onClick={() => setShowTutorial(true)}
+              className="btn-gold"
+              style={{ padding: '8px 18px', fontSize: '0.78rem', cursor: 'pointer', border: 'none' }}
+            >
+              Starten →
+            </button>
+          )}
         </div>
 
         {/* Feature Cards */}
