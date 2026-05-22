@@ -84,7 +84,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
             backgroundImage: `url(${slide.url})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center center',
+            backgroundPosition: '75% center',
             opacity: i === current ? 1 : 0,
             transition: 'opacity 2s ease',
             transform: i === current ? 'scale(1.03)' : 'scale(1)',
