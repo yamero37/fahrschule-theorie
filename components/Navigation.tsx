@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 const links = [
@@ -18,12 +19,14 @@ export default function Navigation() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <span
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
-            style={{ background: 'linear-gradient(135deg, var(--green-dark), var(--green))', color: '#000' }}
-          >
-            T
-          </span>
+          <Image
+            src="/logo.png"
+            alt="TolDrive Logo"
+            width={36}
+            height={36}
+            className="rounded-full"
+            style={{ border: '2px solid var(--green-dark)' }}
+          />
           <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text)' }}>
             TolDrive
           </span>
