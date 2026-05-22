@@ -236,3 +236,13 @@ body {
     display: none;
   }
 }
+
+.mobile-about {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-about {
+    display: flex;
+  }
+}
