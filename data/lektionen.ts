@@ -799,7 +799,102 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 9,  icon: '🛑', title: 'Ampeln & Lichtzeichen',        subtitle: 'Lichtzeichenanlagen, Blinkzeichen',    available: false, lessons: [] },
+  {
+    id: 9,
+    icon: '🛣️',
+    title: 'Autobahn & Kraftfahrstraße',
+    subtitle: 'Einfahren, Rettungsgasse, Panne, Rechtsfahrgebot',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 9 – Autobahn & Kraftfahrstraße',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: richtig auf Autobahnen fahren · sicher einfädeln und ausfahren · Verhalten bei Stau und Pannen · wichtige Regeln verstehen' },
+
+          { type: 'heading', text: 'Einfahren auf die Autobahn' },
+          { type: 'list', items: [
+            'Beim Auffahren:',
+            '→ Beschleunigungsstreifen nutzen',
+            '→ Geschwindigkeit anpassen',
+            '→ Spiegel prüfen',
+            '→ Schulterblick machen',
+            '→ Blinken',
+            '→ Lücke finden',
+          ]},
+          { type: 'highlight', text: '⚠️ Der Verkehr auf der Autobahn hat Vorfahrt!' },
+
+          { type: 'heading', text: 'Rechtsfahrgebot' },
+          { type: 'list', items: [
+            'Grundsätzlich: möglichst rechts fahren',
+            'Linke Fahrstreifen: nur zum Überholen nutzen',
+          ]},
+          { type: 'note', text: '🚫 Die Mittelspur dauerhaft blockieren ist verboten!' },
+
+          { type: 'heading', text: 'Sicherheitsabstand' },
+          { type: 'highlight', text: '📏 Faustregel: Halber Tachowert. Beispiel: 100 km/h = mindestens 50 Meter Abstand.' },
+
+          { type: 'heading', text: 'Überholen auf der Autobahn' },
+          { type: 'list', items: [
+            'grundsätzlich links überholen',
+            'nach dem Überholen wieder rechts einordnen',
+            'niemanden behindern oder gefährden',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Rettungsgasse' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'note', text: '🚨 Bei Stau: Rettungsgasse sofort bilden!' },
+          { type: 'list', items: [
+            'Bei zwei Fahrstreifen:',
+            '→ zwischen links und rechts',
+          ]},
+          { type: 'list', items: [
+            'Bei drei oder mehr Fahrstreifen:',
+            '→ zwischen linkem und mittlerem Fahrstreifen',
+          ]},
+
+          { type: 'heading', text: 'Verhalten bei Panne' },
+          { type: 'list', items: [
+            '1. Warnblinkanlage einschalten',
+            '2. Warnweste anziehen',
+            '3. Warndreieck aufstellen',
+            '4. hinter die Leitplanke gehen',
+          ]},
+
+          { type: 'heading', text: 'Kraftfahrstraße' },
+          { type: 'list', items: [
+            'Ähnliche Regeln wie auf der Autobahn:',
+            '→ nur für Kraftfahrzeuge',
+            '→ keine Fußgänger oder Fahrräder erlaubt',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'zu langsam auffahren',
+            'Mittelspur dauerhaft blockieren',
+            'keinen Schulterblick machen',
+            'Rettungsgasse zu spät bilden',
+            'zu wenig Abstand halten',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Auf der Autobahn hat der fließende Verkehr Vorfahrt',
+            'Rechts fahren — links nur zum Überholen',
+            'Abstand = halber Tachowert',
+            'Rettungsgasse sofort bei Stau bilden',
+            'Bei Panne: Warnblinker → Weste → Dreieck → hinter Leitplanke',
+            'Kraftfahrstraße: keine Fußgänger, keine Fahrräder',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Rettungsgasse-Fragen kommen sehr oft vor. Bei 2 Spuren: links/rechts teilen. Bei 3+ Spuren: links bleibt links, alle anderen nach rechts.' },
+        ],
+      },
+    ],
+  },
   { id: 10, icon: '⛽', title: 'Fahrzeugtechnik',              subtitle: 'Bremsen, Reifen, Beleuchtung',         available: false, lessons: [] },
   { id: 11, icon: '🏥', title: 'Erste Hilfe & Unfall',         subtitle: 'Verhalten nach dem Unfall, Notruf',    available: false, lessons: [] },
   { id: 12, icon: '🌍', title: 'Umwelt & Energie',             subtitle: 'Kraftstoff sparen, Emissionen',        available: false, lessons: [] },
