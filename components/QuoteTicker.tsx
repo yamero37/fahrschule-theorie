@@ -84,6 +84,15 @@ export default function QuoteTicker() {
         pointerEvents: 'none',
       }}>
         <Ticker quotes={QUOTES_LEFT} duration={30} />
+        {/* Right border of left ticker */}
+        <div style={{
+          position: 'absolute',
+          right: 0,
+          top: '8%',
+          bottom: '8%',
+          width: '1px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.6) 20%, rgba(232,197,71,0.8) 50%, rgba(201,162,39,0.6) 80%, transparent 100%)',
+        }} />
       </div>
 
       {/* Right ticker */}
@@ -98,6 +107,15 @@ export default function QuoteTicker() {
         alignItems: 'stretch',
         pointerEvents: 'none',
       }}>
+        {/* Left border of right ticker */}
+        <div style={{
+          position: 'absolute',
+          left: 0,
+          top: '8%',
+          bottom: '8%',
+          width: '1px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.6) 20%, rgba(232,197,71,0.8) 50%, rgba(201,162,39,0.6) 80%, transparent 100%)',
+        }} />
         <Ticker quotes={QUOTES_RIGHT} duration={36} />
       </div>
     </>
