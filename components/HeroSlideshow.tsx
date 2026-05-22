@@ -91,7 +91,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
             backgroundSize: 'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center 30%',
-            opacity: i === current ? 1 : 0,
+            opacity: i === current ? 0.55 : 0,
             transition: 'opacity 2s ease',
             transform: i === current ? 'scale(1.03)' : 'scale(1)',
             transitionProperty: 'opacity, transform',
