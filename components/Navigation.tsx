@@ -4,47 +4,75 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const links = [
-  { href: '/', label: 'Start', icon: '⌂' },
-  { href: '/fragen', label: 'Lernen', icon: '◎' },
-  { href: '/quiz', label: 'Quiz', icon: '◆' },
+  { href: '/', label: 'Start' },
+  { href: '/fragen', label: 'Lernen' },
+  { href: '/quiz', label: 'Quiz' },
 ]
 
 export default function Navigation() {
   const pathname = usePathname()
 
   return (
-    <header style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+    <header
+      style={{
+        background: 'rgba(8,8,8,0.92)',
+        borderBottom: '1px solid rgba(201,162,39,0.2)',
+        backdropFilter: 'blur(12px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}
+    >
       <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Toldrive.jpeg"
+            alt="TolDrive"
+            style={{
+              width: '34px',
+              height: '34px',
+              objectFit: 'cover',
+              borderRadius: '7px',
+              border: '1px solid rgba(201,162,39,0.35)',
+            }}
+          />
           <span
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
-            style={{ background: 'linear-gradient(135deg, var(--green-dark), var(--green))', color: '#000' }}
+            className="font-black text-lg tracking-tight"
+            style={{
+              background: 'linear-gradient(90deg, var(--gold-dark), var(--gold-light))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
           >
-            T
-          </span>
-          <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text)' }}>
             TolDrive
           </span>
         </Link>
 
         {/* Nav */}
         <nav className="flex items-center gap-1">
-          {links.map(({ href, label, icon }) => {
+          {links.map(({ href, label }) => {
             const active = pathname === href
             return (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150"
+                className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150"
                 style={
                   active
-                    ? { background: 'var(--green-glow)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.25)' }
-                    : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                    ? {
+                        background: 'rgba(201,162,39,0.12)',
+                        color: 'var(--gold)',
+                        border: '1px solid rgba(201,162,39,0.3)',
+                      }
+                    : {
+                        color: 'var(--text-muted)',
+                        border: '1px solid transparent',
+                      }
                 }
               >
-                <span className="text-xs">{icon}</span>
                 {label}
               </Link>
             )

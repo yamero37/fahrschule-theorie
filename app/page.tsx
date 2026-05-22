@@ -14,19 +14,19 @@ export default function HomePage() {
       {/* ── Cinematic Hero ─────────────────────────────────────── */}
       <section
         style={{
-          minHeight: '92vh',
+          minHeight: '96vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          padding: '5rem 1.5rem 5rem',
+          padding: '5rem 1.5rem 4rem',
           position: 'relative',
           overflow: 'hidden',
           background: [
-            'radial-gradient(ellipse 160% 45% at 50% 108%, rgba(255,120,0,0.22) 0%, rgba(210,80,0,0.07) 38%, transparent 58%)',
-            'radial-gradient(ellipse 45% 55% at 6% 100%, rgba(34,197,94,0.18) 0%, transparent 45%)',
-            'radial-gradient(ellipse 35% 40% at 94% 96%, rgba(240,180,41,0.1) 0%, transparent 42%)',
-            'linear-gradient(180deg, #000000 0%, #010902 65%, #000000 100%)',
+            'radial-gradient(ellipse 55% 55% at 50% 38%, rgba(201,162,39,0.1) 0%, transparent 60%)',
+            'radial-gradient(ellipse 35% 30% at 50% 105%, rgba(201,162,39,0.07) 0%, transparent 55%)',
+            '#080808',
           ].join(', '),
         }}
       >
@@ -36,15 +36,15 @@ export default function HomePage() {
             position: 'absolute',
             inset: 0,
             backgroundImage: [
-              'linear-gradient(rgba(255,255,255,0.013) 1px, transparent 1px)',
-              'linear-gradient(90deg, rgba(255,255,255,0.013) 1px, transparent 1px)',
+              'linear-gradient(rgba(201,162,39,0.025) 1px, transparent 1px)',
+              'linear-gradient(90deg, rgba(201,162,39,0.025) 1px, transparent 1px)',
             ].join(', '),
-            backgroundSize: '90px 90px',
+            backgroundSize: '100px 100px',
             pointerEvents: 'none',
           }}
         />
 
-        {/* Horizon glow line */}
+        {/* Bottom horizon line */}
         <div
           style={{
             position: 'absolute',
@@ -52,122 +52,115 @@ export default function HomePage() {
             left: 0,
             right: 0,
             height: '1px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(34,197,94,0.35) 25%, rgba(255,160,40,0.5) 50%, rgba(34,197,94,0.35) 75%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 30%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 70%, transparent 100%)',
           }}
         />
 
-        <div style={{ position: 'relative', maxWidth: '720px', width: '100%' }}>
+        {/* Content */}
+        <div style={{ position: 'relative', maxWidth: '680px', width: '100%' }}>
+
+          {/* Logo */}
+          <div className="anim-1" style={{ marginBottom: '2rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/Toldrive.jpeg"
+              alt="TolDrive Logo"
+              className="hero-logo"
+              style={{
+                width: 'clamp(200px, 35vw, 300px)',
+                height: 'auto',
+                margin: '0 auto',
+                display: 'block',
+                borderRadius: '12px',
+              }}
+            />
+          </div>
+
+          {/* Gold divider */}
+          <div className="anim-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '1.75rem' }}>
+            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, transparent, var(--gold))' }} />
+            <span style={{ color: 'var(--gold)', fontSize: '0.6rem', letterSpacing: '0.15em' }}>◆</span>
+            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, var(--gold), transparent)' }} />
+          </div>
+
+          {/* Headline */}
+          <h1
+            className="anim-3 gold-shimmer"
+            style={{
+              fontSize: 'clamp(1.8rem, 5vw, 3rem)',
+              fontWeight: 900,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              marginBottom: '1rem',
+            }}
+          >
+            Bestehe deine Theorieprüfung beim ersten Versuch.
+          </h1>
+
+          {/* Tagline */}
           <p
+            className="anim-4"
             style={{
               fontSize: '0.68rem',
               fontWeight: 700,
-              letterSpacing: '0.22em',
+              letterSpacing: '0.28em',
               textTransform: 'uppercase',
               color: 'var(--gold)',
-              marginBottom: '1.75rem',
+              marginBottom: '0.75rem',
+              opacity: 0.85,
             }}
           >
-            Klasse B · Theorieprüfung · Deutschland
+            Sicher. Kompetent. Vertrauen.
           </p>
 
-          <h1
-            style={{
-              fontSize: 'clamp(2.1rem, 5.5vw, 3.6rem)',
-              fontWeight: 900,
-              lineHeight: 1.08,
-              color: '#edf7ee',
-              marginBottom: '1.5rem',
-              letterSpacing: '-0.025em',
-            }}
-          >
-            Bestehe deine Theorieprüfung{' '}
-            <span
-              style={{
-                background: 'linear-gradient(90deg, var(--green) 0%, var(--gold) 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              beim ersten Versuch.
-            </span>
-          </h1>
-
+          {/* Stats line */}
           <p
+            className="anim-5"
             style={{
-              fontSize: '0.95rem',
-              color: 'rgba(106,171,121,0.75)',
-              marginBottom: '2.75rem',
-              lineHeight: 1.6,
+              fontSize: '0.85rem',
+              color: 'var(--text-muted)',
+              marginBottom: '2.5rem',
             }}
           >
-            {totalQuestions} Lernfragen &middot; {topics.length} Themengebiete &middot; Keine Anmeldung nötig
+            {totalQuestions} Lernfragen &nbsp;·&nbsp; {topics.length} Themengebiete &nbsp;·&nbsp; Keine Anmeldung
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link
-              href="/fragen"
-              className="hero-btn-primary"
-              style={{
-                padding: '0.9rem 2.2rem',
-                borderRadius: '0.75rem',
-                fontWeight: 700,
-                fontSize: '0.92rem',
-                background: 'linear-gradient(135deg, #16a34a 0%, #0e6b30 100%)',
-                color: '#fff',
-                border: '1px solid rgba(34,197,94,0.55)',
-                boxShadow: '0 0 32px rgba(34,197,94,0.28), 0 4px 20px rgba(0,0,0,0.5)',
-                textDecoration: 'none',
-                display: 'inline-block',
-              }}
-            >
+          {/* CTA Buttons */}
+          <div
+            className="anim-6"
+            style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
+          >
+            <Link href="/fragen" className="btn-gold">
               Jetzt lernen →
             </Link>
-            <Link
-              href="/quiz"
-              style={{
-                padding: '0.9rem 2.2rem',
-                borderRadius: '0.75rem',
-                fontWeight: 700,
-                fontSize: '0.92rem',
-                background: 'rgba(255,255,255,0.04)',
-                color: '#ddeedd',
-                border: '1px solid rgba(232,245,233,0.18)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
-                textDecoration: 'none',
-                display: 'inline-block',
-                backdropFilter: 'blur(4px)',
-              }}
-            >
+            <Link href="/quiz" className="btn-ghost">
               Kostenlos starten
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Stats + Topics + Info ──────────────────────────────── */}
+      {/* ── Below-fold ─────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 py-16 space-y-16">
 
         {/* Stats */}
         <section>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { value: String(totalQuestions), label: 'Lernfragen', accent: 'green' },
-              { value: String(topics.length), label: 'Themengebiete', accent: 'gold' },
-              { value: '10', label: 'Max. Fehlerpunkte', accent: 'green' },
-              { value: '30', label: 'Fragen im Test', accent: 'gold' },
-            ].map(({ value, label, accent }) => (
+              { value: String(totalQuestions), label: 'Lernfragen' },
+              { value: String(topics.length),  label: 'Themengebiete' },
+              { value: '10',                   label: 'Max. Fehlerpunkte' },
+              { value: '30',                   label: 'Fragen im Test' },
+            ].map(({ value, label }) => (
               <div
                 key={label}
                 className="rounded-xl p-5 flex flex-col items-center text-center"
                 style={{
                   background: 'var(--surface)',
-                  border: `1px solid ${accent === 'gold' ? 'rgba(240,180,41,0.15)' : 'rgba(34,197,94,0.15)'}`,
+                  border: '1px solid var(--border-light)',
                 }}
               >
-                <span
-                  className="text-3xl font-extrabold mb-1"
-                  style={{ color: accent === 'gold' ? 'var(--gold)' : 'var(--green)' }}
-                >
+                <span className="text-3xl font-extrabold mb-1" style={{ color: 'var(--gold)' }}>
                   {value}
                 </span>
                 <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{label}</span>
@@ -182,7 +175,7 @@ export default function HomePage() {
             <h2 className="text-sm font-bold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
               Themengebiete
             </h2>
-            <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+            <div className="flex-1 h-px" style={{ background: 'var(--border-light)' }} />
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -198,7 +191,7 @@ export default function HomePage() {
                   style={{
                     background: 'var(--gold-glow)',
                     color: 'var(--gold)',
-                    border: '1px solid rgba(240,180,41,0.2)',
+                    border: '1px solid rgba(201,162,39,0.25)',
                   }}
                 >
                   {count}
@@ -212,26 +205,22 @@ export default function HomePage() {
         <section>
           <div
             className="rounded-xl p-6 grid sm:grid-cols-2 gap-6"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            style={{ background: 'var(--surface)', border: '1px solid var(--border-light)' }}
           >
             <div>
-              <h3 className="font-bold mb-3 text-sm" style={{ color: 'var(--gold)' }}>
-                ✦ Prüfungsformat
-              </h3>
+              <h3 className="font-bold mb-3 text-sm" style={{ color: 'var(--gold)' }}>◆ Prüfungsformat</h3>
               <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> 30 Fragen pro Prüfung</li>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> Maximal 10 Fehlerpunkte erlaubt</li>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> Fragen haben 2–5 Fehlerpunkte</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> 30 Fragen pro Prüfung</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> Maximal 10 Fehlerpunkte erlaubt</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> Fragen haben 2–5 Fehlerpunkte</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold mb-3 text-sm" style={{ color: 'var(--gold)' }}>
-                ✦ So lernst du am besten
-              </h3>
+              <h3 className="font-bold mb-3 text-sm" style={{ color: 'var(--gold)' }}>◆ So lernst du am besten</h3>
               <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> Gehe alle Themen systematisch durch</li>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> Markiere gelernte Fragen als erledigt</li>
-                <li className="flex items-start gap-2"><span style={{ color: 'var(--green)' }}>·</span> Teste dich täglich im Quiz-Modus</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> Gehe alle Themen systematisch durch</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> Markiere gelernte Fragen als erledigt</li>
+                <li className="flex items-start gap-2"><span style={{ color: 'var(--gold)' }}>·</span> Teste dich täglich im Quiz-Modus</li>
               </ul>
             </div>
           </div>
