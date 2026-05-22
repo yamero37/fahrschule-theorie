@@ -74,13 +74,28 @@ export default function RegisterForm() {
         boxShadow: '0 0 60px rgba(201,162,39,0.07), 0 20px 60px rgba(0,0,0,0.6)',
       }}>
 
-        {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        {/* Avatar + Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/avatar.jpeg"
+            alt="Fahrlehrer"
+            style={{
+              width: '72px',
+              height: '72px',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              borderRadius: '50%',
+              border: '2px solid rgba(201,162,39,0.6)',
+              boxShadow: '0 0 16px rgba(201,162,39,0.2)',
+              background: '#fff',
+            }}
+          />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/Toldrive.jpeg"
             alt="TolDrive"
-            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', margin: '0 auto', display: 'block' }}
+            style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(201,162,39,0.3)' }}
           />
         </div>
 

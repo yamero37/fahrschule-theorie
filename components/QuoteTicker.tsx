@@ -38,28 +38,27 @@ function Ticker({ quotes, duration }: { quotes: string[]; duration: number }) {
   const doubled = [...quotes, ...quotes]
 
   return (
-    <div style={{ overflow: 'hidden', height: '100%', maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)' }}>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.6rem',
-          animation: `tickerDown ${duration}s linear infinite`,
-        }}
-      >
+    <div style={{
+      overflow: 'hidden',
+      height: '100%',
+      padding: '0 14px',
+      maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
+    }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.8rem',
+        animation: `tickerDown ${duration}s linear infinite`,
+      }}>
         {doubled.map((quote, i) => (
-          <div
-            key={i}
-            style={{
-              fontSize: '0.7rem',
-              fontWeight: 600,
-              color: 'rgba(201,162,39,0.45)',
-              letterSpacing: '0.04em',
-              lineHeight: 1.4,
-              whiteSpace: 'nowrap',
-              writingMode: 'horizontal-tb',
-            }}
-          >
+          <div key={i} style={{
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            color: 'rgba(232,197,71,0.6)',
+            letterSpacing: '0.03em',
+            lineHeight: 1.5,
+            whiteSpace: 'nowrap',
+          }}>
             {quote}
           </div>
         ))}
@@ -68,54 +67,54 @@ function Ticker({ quotes, duration }: { quotes: string[]; duration: number }) {
   )
 }
 
-export default function QuoteTicker() {
+export default function QuoteTicker({ width = 160 }: { width?: number }) {
   return (
     <>
       {/* Left ticker */}
       <div style={{
         position: 'absolute',
-        left: '1.5rem',
+        left: 0,
         top: 0,
         bottom: 0,
-        width: '140px',
+        width: `${width}px`,
         zIndex: 6,
-        display: 'flex',
-        alignItems: 'stretch',
         pointerEvents: 'none',
       }}>
         <Ticker quotes={QUOTES_LEFT} duration={30} />
-        {/* Right border of left ticker */}
+
+        {/* Gold border — inner right edge with gap */}
         <div style={{
           position: 'absolute',
           right: 0,
-          top: '8%',
-          bottom: '8%',
-          width: '1px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.6) 20%, rgba(232,197,71,0.8) 50%, rgba(201,162,39,0.6) 80%, transparent 100%)',
+          top: '6%',
+          bottom: '6%',
+          width: '2px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
+          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
         }} />
       </div>
 
       {/* Right ticker */}
       <div style={{
         position: 'absolute',
-        right: '1.5rem',
+        right: 0,
         top: 0,
         bottom: 0,
-        width: '140px',
+        width: `${width}px`,
         zIndex: 6,
-        display: 'flex',
-        alignItems: 'stretch',
         pointerEvents: 'none',
       }}>
-        {/* Left border of right ticker */}
+        {/* Gold border — inner left edge with gap */}
         <div style={{
           position: 'absolute',
           left: 0,
-          top: '8%',
-          bottom: '8%',
-          width: '1px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.6) 20%, rgba(232,197,71,0.8) 50%, rgba(201,162,39,0.6) 80%, transparent 100%)',
+          top: '6%',
+          bottom: '6%',
+          width: '2px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
+          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
         }} />
+
         <Ticker quotes={QUOTES_RIGHT} duration={36} />
       </div>
     </>
