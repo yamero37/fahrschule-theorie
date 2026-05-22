@@ -18,15 +18,12 @@ export default function Navigation() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="TolDrive Logo"
-            width={36}
-            height={36}
-            className="rounded-full"
-            style={{ border: '2px solid var(--green-dark)' }}
-          />
+          <span
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-black"
+            style={{ background: 'linear-gradient(135deg, var(--green-dark), var(--green))', color: '#000' }}
+          >
+            T
+          </span>
           <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text)' }}>
             TolDrive
           </span>
