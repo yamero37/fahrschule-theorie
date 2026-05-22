@@ -984,6 +984,101 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 11, icon: '🏥', title: 'Erste Hilfe & Unfall',         subtitle: 'Verhalten nach dem Unfall, Notruf',    available: false, lessons: [] },
+  {
+    id: 11,
+    icon: '🚑',
+    title: 'Verhalten bei Unfällen & Notfällen',
+    subtitle: 'Unfallstelle absichern, Erste Hilfe, Notruf',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 11 – Verhalten bei Unfällen & Notfällen',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: richtig bei Unfällen handeln · Unfallstelle absichern · Erste Hilfe Grundlagen · Notruf richtig absetzen' },
+
+          { type: 'heading', text: 'Verhalten nach einem Unfall' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'list', items: [
+            '1. Ruhe bewahren',
+            '2. Unfallstelle absichern',
+            '3. Verletzten helfen',
+            '4. Notruf wählen',
+          ]},
+
+          { type: 'heading', text: 'Unfallstelle absichern' },
+          { type: 'list', items: [
+            '1. Warnblinkanlage einschalten',
+            '2. Warnweste anziehen',
+            '3. Warndreieck aufstellen',
+          ]},
+          { type: 'highlight', text: '🦺 So schützt du dich selbst und andere Verkehrsteilnehmer.' },
+
+          { type: 'heading', text: 'Erste Hilfe' },
+          { type: 'note', text: '⚠️ Du musst helfen, wenn es möglich ist — Unterlassene Hilfeleistung ist strafbar!' },
+          { type: 'list', items: [
+            'Verletzte beruhigen',
+            'Atmung prüfen',
+            'Notruf absetzen',
+            'bei Bewusstlosigkeit: stabile Seitenlage',
+          ]},
+
+          { type: 'heading', text: 'Notruf – Die 5 W' },
+          { type: 'question', text: 'Was musst du dem Notruf mitteilen?' },
+          { type: 'answer', items: [
+            'WO ist der Unfall?',
+            'WAS ist passiert?',
+            'WIE VIELE Verletzte?',
+            'WELCHE Verletzungen?',
+            'WARTEN auf Rückfragen — nicht sofort auflegen!',
+          ]},
+
+          { type: 'heading', text: 'Rettungsgasse' },
+          { type: 'list', items: [
+            'Bei Stau: sofort Rettungsgasse bilden',
+            'Damit Rettungskräfte schneller helfen können',
+          ]},
+
+          { type: 'heading', text: 'Verhalten bei Pannen' },
+          { type: 'list', items: [
+            '1. Warnblinkanlage einschalten',
+            '2. Fahrzeug möglichst sicher abstellen',
+            '3. Warnweste tragen',
+            '4. hinter die Leitplanke gehen',
+          ]},
+
+          { type: 'heading', text: 'Unerlaubtes Entfernen' },
+          { type: 'note', text: '🚫 Nach einem Unfall darfst du nicht einfach wegfahren — auch nicht bei kleinen Schäden!' },
+          { type: 'list', items: [
+            'warten',
+            'Daten austauschen',
+            'Polizei informieren wenn nötig',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'Unfallstelle nicht absichern',
+            'keine Rettungsgasse bilden',
+            'Panik bekommen',
+            'Unfallort verlassen (Fahrerflucht)',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Reihenfolge: Absichern → Helfen → Notruf',
+            'Warnblinkanlage + Weste + Warndreieck',
+            'Erste Hilfe ist Pflicht — Unterlassung ist strafbar',
+            'Notruf: 5 W beantworten, nicht auflegen',
+            'Fahrerflucht ist eine Straftat',
+            'Rettungsgasse sofort bei Stau bilden',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Unfallfragen ist die Reihenfolge entscheidend — erst absichern, dann helfen, dann Notruf. Und: Unfallort nie verlassen!' },
+        ],
+      },
+    ],
+  },
   { id: 12, icon: '🌍', title: 'Umwelt & Energie',             subtitle: 'Kraftstoff sparen, Emissionen',        available: false, lessons: [] },
 ]
