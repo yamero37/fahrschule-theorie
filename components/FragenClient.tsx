@@ -26,11 +26,8 @@ export default function FragenClient({ questions }: Props) {
   const toggleLearned = (id: string) => {
     setLearnedIds((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       localStorage.setItem('learnedIds', JSON.stringify([...next]))
       return next
     })
@@ -44,43 +41,66 @@ export default function FragenClient({ questions }: Props) {
   })
 
   const topicCounts: Record<string, number> = {}
-  for (const q of questions) {
-    topicCounts[q.topic] = (topicCounts[q.topic] ?? 0) + 1
-  }
+  for (const q of questions) topicCounts[q.topic] = (topicCounts[q.topic] ?? 0) + 1
+
+  const learnedPercent = Math.round((learnedIds.size / questions.length) * 100)
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Sidebar */}
-      <aside className="lg:w-56 shrink-0">
-        <div className="bg-white rounded-xl shadow p-4 sticky top-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase mb-3">Themen</p>
-          <ul className="space-y-1">
-            <li>
-              <button
-                onClick={() => setSelectedTopic('Alle')}
-                className={`w-full text-left px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                  selectedTopic === 'Alle' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
-                }`}
-              >
-                Alle ({questions.length})
-              </button>
-            </li>
-            {TOPICS.map((t) => (
-              <li key={t}>
-                <button
-                  onClick={() => setSelectedTopic(t)}
-                  className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
-                    selectedTopic === t ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
-                  }`}
-                >
-                  {t} ({topicCounts[t] ?? 0})
-                </button>
-              </li>
-            ))}
+      <aside className="lg:w-60 shrink-0">
+        <div
+          className="rounded-xl p-4 sticky top-4"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-3"
+            style={{ color: 'var(--gold)' }}
+          >
+            Themen
+          </p>
+          <ul className="space-y-0.5">
+            {(['Alle', ...TOPICS] as const).map((t) => {
+              const active = selectedTopic === t
+              const cnt = t === 'Alle' ? questions.length : (topicCounts[t] ?? 0)
+              return (
+                <li key={t}>
+                  <button
+                    onClick={() => setSelectedTopic(t)}
+                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-150 flex items-center justify-between"
+                    style={
+                      active
+                        ? {
+                            background: 'linear-gradient(90deg, var(--green-dark) 0%, #0a4020 100%)',
+                            color: '#fff',
+                            border: '1px solid var(--green)',
+                            boxShadow: '0 0 10px var(--green-glow)',
+                          }
+                        : {
+                            color: 'var(--text-muted)',
+                            border: '1px solid transparent',
+                          }
+                    }
+                  >
+                    <span>{t}</span>
+                    <span
+                      className="text-xs ml-2 font-bold"
+                      style={{ color: active ? '#86efac' : 'var(--text-dim)' }}
+                    >
+                      {cnt}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
 
-          <div className="mt-4 border-t pt-4">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
+          {/* Progress */}
+          <div
+            className="mt-4 pt-4"
+            style={{ borderTop: '1px solid var(--border)' }}
+          >
+            <label className="flex items-center gap-2 text-sm cursor-pointer mb-3" style={{ color: 'var(--text-muted)' }}>
               <input
                 type="checkbox"
                 checked={showOnlyUnlearned}
@@ -89,13 +109,20 @@ export default function FragenClient({ questions }: Props) {
               />
               Nur ungelernte
             </label>
-            <p className="text-xs text-gray-400 mt-2">
-              {learnedIds.size} / {questions.length} gelernt
-            </p>
-            <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="flex justify-between text-xs mb-1.5" style={{ color: 'var(--text-dim)' }}>
+              <span>{learnedIds.size} gelernt</span>
+              <span style={{ color: 'var(--gold)' }}>{learnedPercent}%</span>
+            </div>
+            <div
+              className="h-1.5 rounded-full overflow-hidden"
+              style={{ background: 'var(--border)' }}
+            >
               <div
-                className="h-full bg-green-500 rounded-full transition-all"
-                style={{ width: `${(learnedIds.size / questions.length) * 100}%` }}
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${learnedPercent}%`,
+                  background: 'linear-gradient(90deg, var(--green-dark), var(--gold))',
+                }}
               />
             </div>
           </div>
@@ -110,12 +137,27 @@ export default function FragenClient({ questions }: Props) {
             placeholder="Frage suchen…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2.5 text-sm rounded-xl focus:outline-none transition-all"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              color: 'var(--text)',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--green-dark)'
+              e.currentTarget.style.boxShadow = '0 0 12px var(--green-glow)'
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
           />
         </div>
-        <p className="text-sm text-gray-500 mb-4">{filtered.length} Fragen</p>
+        <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
+          {filtered.length} Fragen
+        </p>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filtered.map((q) => (
             <QuestionCard
               key={q.id}
@@ -125,7 +167,9 @@ export default function FragenClient({ questions }: Props) {
             />
           ))}
           {filtered.length === 0 && (
-            <p className="text-gray-400 text-center py-12">Keine Fragen gefunden.</p>
+            <p className="text-center py-16" style={{ color: 'var(--text-dim)' }}>
+              Keine Fragen gefunden.
+            </p>
           )}
         </div>
       </div>
@@ -144,19 +188,24 @@ function QuestionCard({
 }) {
   const [open, setOpen] = useState(false)
 
-  const pointColor =
+  const pointStyle =
     q.points >= 5
-      ? 'bg-red-100 text-red-700'
+      ? { bg: 'rgba(239,68,68,0.1)', color: '#f87171', border: 'rgba(239,68,68,0.3)' }
       : q.points === 4
-      ? 'bg-orange-100 text-orange-700'
-      : 'bg-yellow-100 text-yellow-700'
+      ? { bg: 'rgba(251,146,60,0.1)', color: '#fb923c', border: 'rgba(251,146,60,0.3)' }
+      : { bg: 'var(--gold-glow)', color: 'var(--gold)', border: 'rgba(240,180,41,0.3)' }
 
   return (
     <div
-      className={`bg-white rounded-xl shadow transition-all border-l-4 ${
-        learned ? 'border-green-400 opacity-70' : 'border-blue-400'
-      }`}
+      className="rounded-xl overflow-hidden transition-all duration-200"
+      style={{
+        background: 'var(--surface)',
+        border: `1px solid ${learned ? 'rgba(34,197,94,0.3)' : 'var(--border)'}`,
+        opacity: learned ? 0.75 : 1,
+        boxShadow: open ? '0 0 20px var(--green-glow)' : 'none',
+      }}
     >
+      {/* Header */}
       <div
         className="p-4 cursor-pointer select-none"
         onClick={() => setOpen((v) => !v)}
@@ -164,57 +213,95 @@ function QuestionCard({
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex flex-wrap gap-2 mb-2">
-              <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium">
+              <span
+                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: 'var(--green-glow)',
+                  color: 'var(--green)',
+                  border: '1px solid rgba(34,197,94,0.2)',
+                }}
+              >
                 {q.topic}
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded font-medium ${pointColor}`}>
+              <span
+                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: pointStyle.bg,
+                  color: pointStyle.color,
+                  border: `1px solid ${pointStyle.border}`,
+                }}
+              >
                 {q.points} Fehlerpunkte
               </span>
-              <span className="text-xs text-gray-400">{q.id}</span>
+              <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
+                {q.id}
+              </span>
             </div>
-            <p className="font-medium text-gray-800 text-sm leading-relaxed">{q.question}</p>
+            <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--text)' }}>
+              {q.question}
+            </p>
           </div>
+
           <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onToggleLearned()
-              }}
+              onClick={(e) => { e.stopPropagation(); onToggleLearned() }}
               title={learned ? 'Als ungelernt markieren' : 'Als gelernt markieren'}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors ${
+              className="w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all"
+              style={
                 learned
-                  ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                  : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-              }`}
+                  ? { background: 'rgba(34,197,94,0.15)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.4)' }
+                  : { background: 'var(--surface-2)', color: 'var(--text-dim)', border: '1px solid var(--border)' }
+              }
             >
               {learned ? '✓' : '○'}
             </button>
-            <span className="text-gray-400 text-sm">{open ? '▲' : '▼'}</span>
+            <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
+              {open ? '▲' : '▼'}
+            </span>
           </div>
         </div>
       </div>
 
+      {/* Answers */}
       {open && (
-        <div className="border-t px-4 pb-4 pt-3 space-y-2">
+        <div
+          className="px-4 pb-4 pt-0 space-y-2"
+          style={{ borderTop: '1px solid var(--border)' }}
+        >
+          <div className="pt-3" />
           {q.answers.map((a) => (
             <div
               key={a.id}
-              className={`flex items-start gap-3 p-3 rounded-lg text-sm ${
+              className="flex items-start gap-3 p-3 rounded-lg text-sm"
+              style={
                 a.correct
-                  ? 'bg-green-50 border border-green-200 text-green-800'
-                  : 'bg-gray-50 text-gray-600'
-              }`}
+                  ? {
+                      background: 'rgba(34,197,94,0.08)',
+                      border: '1px solid rgba(34,197,94,0.3)',
+                      color: '#86efac',
+                    }
+                  : {
+                      background: 'var(--surface-2)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-muted)',
+                    }
+              }
             >
               <span
-                className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                  a.correct ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
-                }`}
+                className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                style={
+                  a.correct
+                    ? { background: 'var(--green)', color: '#000' }
+                    : { background: 'var(--border)', color: 'var(--text-dim)' }
+                }
               >
                 {a.id.toUpperCase()}
               </span>
-              <span>{a.text}</span>
+              <span className="flex-1">{a.text}</span>
               {a.correct && (
-                <span className="ml-auto text-green-600 font-semibold shrink-0">✓ Richtig</span>
+                <span className="font-bold shrink-0" style={{ color: 'var(--green)' }}>
+                  ✓
+                </span>
               )}
             </div>
           ))}
