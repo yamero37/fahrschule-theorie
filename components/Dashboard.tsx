@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
+import TutorialModal from './TutorialModal'
 
 /* ── Rank System ───────────────────────────────────────── */
 
@@ -67,7 +68,9 @@ const FEATURES = [
 export default function Dashboard() {
   const router = useRouter()
   const [username, setUsername] = useState('')
+  const [userId, setUserId] = useState('')
   const [points, setPoints] = useState(0)
+  const [showTutorial, setShowTutorial] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -76,14 +79,20 @@ export default function Dashboard() {
       if (!session) { router.replace('/login'); return }
 
       setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
+      setUserId(session.user.id)
 
       const { data: stats } = await supabase
         .from('user_stats')
-        .select('points')
+        .select('points, tutorial_done')
         .eq('user_id', session.user.id)
         .single()
 
-      if (stats) setPoints(stats.points)
+      if (stats) {
+        setPoints(stats.points)
+        if (!stats.tutorial_done) setShowTutorial(true)
+      } else {
+        setShowTutorial(true)
+      }
       setLoading(false)
     }
     load()
@@ -108,6 +117,16 @@ export default function Dashboard() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1rem 4rem' }}>
+      {showTutorial && (
+        <TutorialModal
+          username={username}
+          userId={userId}
+          onComplete={(pts) => {
+            setPoints(pts)
+            setShowTutorial(false)
+          }}
+        />
+      )}
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
