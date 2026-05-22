@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { questions, getTopicStats } from '@/data/questions'
+import HeroSlideshow from '@/components/HeroSlideshow'
 
 export const metadata = { title: 'TolDrive – Führerschein Theorie' }
 
@@ -11,134 +12,98 @@ export default function HomePage() {
   return (
     <div>
 
-      {/* ── Cinematic Hero ─────────────────────────────────────── */}
-      <section
-        style={{
-          minHeight: '96vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          padding: '5rem 1.5rem 4rem',
-          position: 'relative',
-          overflow: 'hidden',
-          background: [
-            'radial-gradient(ellipse 55% 55% at 50% 38%, rgba(201,162,39,0.1) 0%, transparent 60%)',
-            'radial-gradient(ellipse 35% 30% at 50% 105%, rgba(201,162,39,0.07) 0%, transparent 55%)',
-            '#080808',
-          ].join(', '),
-        }}
-      >
-        {/* Subtle grid texture */}
+      {/* ── Cinematic Hero with car slideshow ──────────────────── */}
+      <HeroSlideshow>
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: [
-              'linear-gradient(rgba(201,162,39,0.025) 1px, transparent 1px)',
-              'linear-gradient(90deg, rgba(201,162,39,0.025) 1px, transparent 1px)',
-            ].join(', '),
-            backgroundSize: '100px 100px',
-            pointerEvents: 'none',
+            minHeight: '96vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '5rem 1.5rem 5rem',
           }}
-        />
+        >
+          <div style={{ maxWidth: '680px', width: '100%' }}>
 
-        {/* Bottom horizon line */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 30%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 70%, transparent 100%)',
-          }}
-        />
+            {/* Logo */}
+            <div className="anim-1" style={{ marginBottom: '2rem' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/Toldrive.jpeg"
+                alt="TolDrive Logo"
+                className="hero-logo"
+                style={{
+                  width: 'clamp(190px, 32vw, 280px)',
+                  height: 'auto',
+                  margin: '0 auto',
+                  display: 'block',
+                  borderRadius: '12px',
+                }}
+              />
+            </div>
 
-        {/* Content */}
-        <div style={{ position: 'relative', maxWidth: '680px', width: '100%' }}>
+            {/* Gold divider */}
+            <div
+              className="anim-2"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '1.75rem' }}
+            >
+              <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, transparent, var(--gold))' }} />
+              <span style={{ color: 'var(--gold)', fontSize: '0.6rem' }}>◆</span>
+              <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, var(--gold), transparent)' }} />
+            </div>
 
-          {/* Logo */}
-          <div className="anim-1" style={{ marginBottom: '2rem' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/Toldrive.jpeg"
-              alt="TolDrive Logo"
-              className="hero-logo"
+            {/* Headline */}
+            <h1
+              className="anim-3 gold-shimmer"
               style={{
-                width: 'clamp(200px, 35vw, 300px)',
-                height: 'auto',
-                margin: '0 auto',
-                display: 'block',
-                borderRadius: '12px',
+                fontSize: 'clamp(1.8rem, 5vw, 3rem)',
+                fontWeight: 900,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                marginBottom: '1rem',
               }}
-            />
-          </div>
+            >
+              Bestehe deine Theorieprüfung beim ersten Versuch.
+            </h1>
 
-          {/* Gold divider */}
-          <div className="anim-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '1.75rem' }}>
-            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, transparent, var(--gold))' }} />
-            <span style={{ color: 'var(--gold)', fontSize: '0.6rem', letterSpacing: '0.15em' }}>◆</span>
-            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(90deg, var(--gold), transparent)' }} />
-          </div>
+            {/* Tagline */}
+            <p
+              className="anim-4"
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                color: 'var(--gold)',
+                marginBottom: '0.75rem',
+                opacity: 0.85,
+              }}
+            >
+              Sicher. Kompetent. Vertrauen.
+            </p>
 
-          {/* Headline */}
-          <h1
-            className="anim-3 gold-shimmer"
-            style={{
-              fontSize: 'clamp(1.8rem, 5vw, 3rem)',
-              fontWeight: 900,
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-              marginBottom: '1rem',
-            }}
-          >
-            Bestehe deine Theorieprüfung beim ersten Versuch.
-          </h1>
+            {/* Stats line */}
+            <p
+              className="anim-5"
+              style={{ fontSize: '0.85rem', color: 'rgba(245,234,208,0.6)', marginBottom: '2.5rem' }}
+            >
+              {totalQuestions} Lernfragen &nbsp;·&nbsp; {topics.length} Themengebiete &nbsp;·&nbsp; Keine Anmeldung
+            </p>
 
-          {/* Tagline */}
-          <p
-            className="anim-4"
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: 'var(--gold)',
-              marginBottom: '0.75rem',
-              opacity: 0.85,
-            }}
-          >
-            Sicher. Kompetent. Vertrauen.
-          </p>
+            {/* CTA */}
+            <div
+              className="anim-6"
+              style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
+            >
+              <Link href="/fragen" className="btn-gold">Jetzt lernen →</Link>
+              <Link href="/quiz" className="btn-ghost">Kostenlos starten</Link>
+            </div>
 
-          {/* Stats line */}
-          <p
-            className="anim-5"
-            style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-muted)',
-              marginBottom: '2.5rem',
-            }}
-          >
-            {totalQuestions} Lernfragen &nbsp;·&nbsp; {topics.length} Themengebiete &nbsp;·&nbsp; Keine Anmeldung
-          </p>
-
-          {/* CTA Buttons */}
-          <div
-            className="anim-6"
-            style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
-          >
-            <Link href="/fragen" className="btn-gold">
-              Jetzt lernen →
-            </Link>
-            <Link href="/quiz" className="btn-ghost">
-              Kostenlos starten
-            </Link>
           </div>
         </div>
-      </section>
+      </HeroSlideshow>
 
       {/* ── Below-fold ─────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 py-16 space-y-16">
@@ -155,14 +120,9 @@ export default function HomePage() {
               <div
                 key={label}
                 className="rounded-xl p-5 flex flex-col items-center text-center"
-                style={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border-light)',
-                }}
+                style={{ background: 'var(--surface)', border: '1px solid var(--border-light)' }}
               >
-                <span className="text-3xl font-extrabold mb-1" style={{ color: 'var(--gold)' }}>
-                  {value}
-                </span>
+                <span className="text-3xl font-extrabold mb-1" style={{ color: 'var(--gold)' }}>{value}</span>
                 <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{label}</span>
               </div>
             ))}
@@ -177,7 +137,6 @@ export default function HomePage() {
             </h2>
             <div className="flex-1 h-px" style={{ background: 'var(--border-light)' }} />
           </div>
-
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {topics.map(([topic, count]) => (
               <Link
@@ -188,11 +147,7 @@ export default function HomePage() {
                 <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{topic}</span>
                 <span
                   className="text-xs font-bold px-2.5 py-1 rounded-full ml-3 shrink-0"
-                  style={{
-                    background: 'var(--gold-glow)',
-                    color: 'var(--gold)',
-                    border: '1px solid rgba(201,162,39,0.25)',
-                  }}
+                  style={{ background: 'var(--gold-glow)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.25)' }}
                 >
                   {count}
                 </span>
