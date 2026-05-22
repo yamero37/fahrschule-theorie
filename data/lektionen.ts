@@ -701,7 +701,104 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 8,  icon: '🚨', title: 'Verkehrszeichen',              subtitle: 'Gebots-, Verbots- und Gefahrenzeichen', available: false, lessons: [] },
+  {
+    id: 8,
+    icon: '🅿️',
+    title: 'Halten & Parken',
+    subtitle: 'Halteverbot, Parkverbot, sicheres Aussteigen',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 8 – Halten & Parken',
+        blocks: [
+          { type: 'highlight', text: 'Das lernst du: Unterschied zwischen Halten und Parken · wo Halten und Parken verboten ist · sicheres Ein- und Aussteigen · typische Prüfungsfallen' },
+
+          { type: 'heading', text: 'Halten' },
+          { type: 'list', items: [
+            'Halten bedeutet:',
+            '→ freiwillige Fahrtunterbrechung bis 3 Minuten',
+            '→ oder zum Ein- und Aussteigen',
+          ]},
+
+          { type: 'heading', text: 'Parken' },
+          { type: 'list', items: [
+            'Parken bedeutet:',
+            '→ länger als 3 Minuten stehen',
+            '→ oder Fahrzeug verlassen',
+          ]},
+
+          { type: 'highlight', text: '📌 Merke: Halten ≤ 3 Min. / Parken > 3 Min. oder Fahrzeug verlassen.' },
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Halteverbot' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+          { type: 'note', text: '🚫 Du darfst nicht halten:' },
+          { type: 'list', items: [
+            'an engen Stellen',
+            'auf Schutzstreifen',
+            'auf Bahnübergängen',
+            'auf Busspuren',
+            'in Feuerwehrzufahrten',
+          ]},
+
+          { type: 'heading', text: 'Parkverbot' },
+          { type: 'note', text: '🚫 Du darfst nicht parken:' },
+          { type: 'list', items: [
+            'vor Einfahrten',
+            'vor abgesenkten Bordsteinen',
+            'nahe Kreuzungen und Einmündungen',
+            'auf Gehwegen ohne Erlaubnis',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Sicheres Aussteigen' },
+          { type: 'list', items: [
+            'Vor dem Öffnen der Tür:',
+            '→ Spiegel prüfen',
+            '→ Schulterblick machen',
+            '→ auf Fahrräder und Fahrzeuge achten',
+          ]},
+          { type: 'note', text: '⚠️ Dooring-Gefahr: Unachtsamkeit beim Türöffnen ist eine häufige Unfallursache!' },
+
+          { type: 'heading', text: 'Parken bei Dunkelheit' },
+          { type: 'list', items: [
+            'Außerorts:',
+            '→ möglichst Parkplätze nutzen',
+            '→ Beleuchtung beachten',
+          ]},
+
+          { type: 'heading', text: 'Umweltbewusstes Verhalten' },
+          { type: 'list', items: [
+            'Motor nicht unnötig laufen lassen',
+            'platzsparend parken',
+            'andere nicht behindern',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'zu nah an Kreuzungen parken',
+            'Fahrradfahrer beim Aussteigen übersehen',
+            'Halten und Parken verwechseln',
+            'Einfahrten blockieren',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Halten = max. 3 Minuten / Parken = länger oder Fahrzeug verlassen',
+            'Halteverbot gilt auch fürs Parken',
+            'Parkverbot: vor Einfahrten, abgesenkten Bordsteinen, Kreuzungen',
+            'Vor dem Türöffnen: Spiegel + Schulterblick',
+            'Feuerwehrzufahrten immer freihalten',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Halten/Parken-Fragen immer prüfen — steht ein absolutes Halteverbot? Dann gilt es für beides. Steht nur ein Parkverbot? Dann darf man kurz halten.' },
+        ],
+      },
+    ],
+  },
   { id: 9,  icon: '🛑', title: 'Ampeln & Lichtzeichen',        subtitle: 'Lichtzeichenanlagen, Blinkzeichen',    available: false, lessons: [] },
   { id: 10, icon: '⛽', title: 'Fahrzeugtechnik',              subtitle: 'Bremsen, Reifen, Beleuchtung',         available: false, lessons: [] },
   { id: 11, icon: '🏥', title: 'Erste Hilfe & Unfall',         subtitle: 'Verhalten nach dem Unfall, Notruf',    available: false, lessons: [] },
