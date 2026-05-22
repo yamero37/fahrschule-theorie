@@ -14,70 +14,69 @@ export default function Navigation() {
   const pathname = usePathname()
 
   return (
-    <header
-      style={{
-        background: 'rgba(8,8,8,0.92)',
-        borderBottom: '1px solid rgba(201,162,39,0.2)',
-        backdropFilter: 'blur(12px)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-      }}
-    >
-      <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
+    <header style={{
+      background: 'rgba(8,8,8,0.92)',
+      borderBottom: '1px solid rgba(201,162,39,0.2)',
+      backdropFilter: 'blur(12px)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
+    }}>
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '0 1rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '56px',
+      }}>
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/Toldrive.jpeg"
-            alt="TolDrive"
-            style={{
-              width: '34px',
-              height: '34px',
-              objectFit: 'cover',
-              borderRadius: '7px',
-              border: '1px solid rgba(201,162,39,0.35)',
-            }}
-          />
-          <span
-            className="font-black text-lg tracking-tight"
-            style={{
-              background: 'linear-gradient(90deg, var(--gold-dark), var(--gold-light))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <img src="/Toldrive.jpeg" alt="TolDrive" style={{
+            width: '30px', height: '30px',
+            objectFit: 'cover', borderRadius: '6px',
+            border: '1px solid rgba(201,162,39,0.35)',
+          }} />
+          <span className="nav-title" style={{
+            fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.01em',
+            background: 'linear-gradient(90deg, var(--gold-dark), var(--gold-light))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
             TolDrive
           </span>
         </Link>
 
-        {/* Right side: nav + demo countdown */}
-        <div className="flex items-center gap-3">
-
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <DemoCountdown />
 
-          <nav className="flex items-center gap-1">
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
             {links.map(({ href, label }) => {
               const active = pathname === href
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150"
-                  style={
-                    active
-                      ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
-                      : { color: 'var(--text-muted)', border: '1px solid transparent' }
-                  }
-                >
+                <Link key={href} href={href} style={{
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  transition: 'all 0.15s',
+                  ...(active
+                    ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
+                    : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                  ),
+                }}>
                   {label}
                 </Link>
               )
             })}
           </nav>
-
         </div>
+
       </div>
     </header>
   )
