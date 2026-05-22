@@ -7,6 +7,10 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 const SLIDES = [
   { url: 'https://images.pexels.com/photos/18433994/pexels-photo-18433994.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
   { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
+  { url: 'https://images.pexels.com/photos/4392657/pexels-photo-4392657.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Audi' },
+  { url: 'https://images.pexels.com/photos/18311087/pexels-photo-18311087.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'BMW' },
+  { url: 'https://images.pexels.com/photos/9060291/pexels-photo-9060291.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Mercedes-Benz' },
+  { url: 'https://images.pexels.com/photos/9139590/pexels-photo-9139590.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Lamborghini' },
 ]
 
 const TICKER_W = 180
