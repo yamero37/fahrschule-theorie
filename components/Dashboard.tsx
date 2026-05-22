@@ -7,6 +7,23 @@ import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
 
+const RANK_COLORS: Record<string, string> = {
+  D: '#6b7280', C: '#3b82f6', B: '#8b5cf6',
+  A: '#c9a227', S: '#f97316', SS: '#ef4444', Legende: '#ffd700',
+}
+
+function getRankId(points: number) {
+  if (points >= 2000) return 'Legende'
+  if (points >= 1500) return 'SS'
+  if (points >= 1000) return 'S'
+  if (points >= 600) return 'A'
+  if (points >= 300) return 'B'
+  if (points >= 100) return 'C'
+  return 'D'
+}
+
+type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
+
 /* ── Rank System ───────────────────────────────────────── */
 
 const RANKS = [
@@ -73,6 +90,7 @@ export default function Dashboard() {
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialDone, setTutorialDone] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [topEntries, setTopEntries] = useState<LeaderboardEntry[]>([])
 
   useEffect(() => {
     async function load() {
@@ -95,6 +113,11 @@ export default function Dashboard() {
       } else {
         setShowTutorial(true)
       }
+
+      const lbRes = await fetch('/api/leaderboard')
+      const lbData = await lbRes.json()
+      if (Array.isArray(lbData)) setTopEntries(lbData.slice(0, 3))
+
       setLoading(false)
     }
     load()
@@ -300,6 +323,71 @@ export default function Dashboard() {
             >
               Starten →
             </button>
+          )}
+        </div>
+
+        {/* Leaderboard Preview */}
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid rgba(201,162,39,0.18)',
+          borderRadius: '1.25rem',
+          padding: '1.5rem',
+          marginBottom: '2rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '1.25rem' }}>🏆</span>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)' }}>Online Rangliste</p>
+                <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Top Spieler dieser Woche</p>
+              </div>
+            </div>
+            <Link href="/rangliste" style={{
+              fontSize: '0.72rem', fontWeight: 700, color: 'var(--gold)',
+              textDecoration: 'none', padding: '5px 12px', borderRadius: '20px',
+              border: '1px solid rgba(201,162,39,0.3)', background: 'rgba(201,162,39,0.07)',
+            }}>
+              Alle →
+            </Link>
+          </div>
+
+          {topEntries.length === 0 ? (
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textAlign: 'center', padding: '1rem 0' }}>
+              Noch keine Einträge vorhanden.
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {topEntries.map((entry, i) => {
+                const rankId = getRankId(entry.points)
+                const rankColor = RANK_COLORS[rankId]
+                const isMe = entry.userId === userId
+                const medals = ['🥇', '🥈', '🥉']
+                return (
+                  <div key={entry.userId} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '0.7rem 0.85rem', borderRadius: '0.75rem',
+                    background: isMe ? 'rgba(201,162,39,0.08)' : 'rgba(255,255,255,0.025)',
+                    border: isMe ? '1px solid rgba(201,162,39,0.25)' : '1px solid transparent',
+                  }}>
+                    <span style={{ fontSize: '1.1rem', width: '24px', textAlign: 'center', flexShrink: 0 }}>{medals[i]}</span>
+                    <span style={{
+                      flex: 1, fontSize: '0.82rem', fontWeight: 700,
+                      color: isMe ? 'var(--gold)' : 'var(--text)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {entry.displayName} {isMe && <span style={{ fontSize: '0.65rem', color: 'var(--gold)' }}>(Du)</span>}
+                    </span>
+                    <span style={{
+                      padding: '2px 7px', borderRadius: '10px', fontSize: '0.58rem', fontWeight: 800, flexShrink: 0,
+                      border: `1px solid ${rankColor}60`, background: `${rankColor}15`, color: rankColor,
+                    }}>{rankId}</span>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0 }}>
+                      {entry.points} Pkt
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           )}
         </div>
 

@@ -9,6 +9,7 @@ const links = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/fragen', label: 'Lernen' },
   { href: '/quiz', label: 'Quiz' },
+  { href: '/rangliste', label: 'Rangliste' },
 ]
 
 export default function Navigation() {
