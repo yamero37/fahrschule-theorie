@@ -71,7 +71,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
       <div style={{ position: 'absolute', inset: 0 }}>
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to right, #080808 0%, #080808 32%, rgba(8,8,8,0.7) 48%, rgba(8,8,8,0.7) 52%, #080808 68%, #080808 100%)',
+          background: 'linear-gradient(to right, #080808 0%, #080808 14%, transparent 28%, transparent 72%, #080808 86%, #080808 100%)',
           zIndex: 2, pointerEvents: 'none',
         }} />
         <div style={{
@@ -85,12 +85,12 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
             position: 'absolute',
             top: 0,
             left: `${TICKER_W + 8}px`,
-            right: `${RIGHT_PANEL_W + 8}px`,
+            right: `${RIGHT_PANEL_W}px`,
             height: '100%',
             backgroundImage: `url(${slide.url})`,
-            backgroundSize: 'contain',
+            backgroundSize: 'cover',
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: '75% center',
+            backgroundPosition: 'center 30%',
             opacity: i === current ? 1 : 0,
             transition: 'opacity 2s ease',
             transform: i === current ? 'scale(1.03)' : 'scale(1)',
