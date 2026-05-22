@@ -7,6 +7,12 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 const SLIDES = [
   { url: 'https://images.pexels.com/photos/18433994/pexels-photo-18433994.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
   { url: 'https://images.pexels.com/photos/11876181/pexels-photo-11876181.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Ferrari' },
+  { url: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Lamborghini' },
+  { url: 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Lamborghini' },
+  { url: 'https://images.pexels.com/photos/1719648/pexels-photo-1719648.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'McLaren' },
+  { url: 'https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Porsche' },
+  { url: 'https://images.pexels.com/photos/244206/pexels-photo-244206.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'BMW' },
+  { url: 'https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=1600', brand: 'Sportwagen' },
 ]
 
 const TICKER_W = 180
