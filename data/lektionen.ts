@@ -431,7 +431,80 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
-  { id: 5,  icon: '🚗', title: 'Überholen & Spurwechsel',     subtitle: 'Überholverbote, Fahrspurregeln',        available: false, lessons: [] },
+  {
+    id: 5,
+    icon: '⬆️',
+    title: 'Vorfahrt & Vorrang',
+    subtitle: 'Rechts-vor-Links, Vorfahrtsschilder, Kreisverkehr',
+    available: true,
+    lessons: [
+      {
+        id: 1,
+        title: 'Lektion 5 – Vorfahrt & Vorrang (Kurzfassung)',
+        blocks: [
+          { type: 'heading', text: 'Rechts-vor-Links' },
+          { type: 'highlight', text: '📌 Gilt immer ohne Schilder: Wer von rechts kommt, fährt zuerst.' },
+
+          { type: 'heading', text: 'Vorfahrtsschilder' },
+          { type: 'list', items: [
+            'Vorfahrt gewähren → Andere zuerst fahren lassen',
+            'Stoppschild → Immer vollständig anhalten',
+            'Einmalige Vorfahrt → Vorfahrt nur an der nächsten Kreuzung',
+            'Vorfahrtsstraße → Vorfahrt auf mehreren Kreuzungen',
+          ]},
+
+          { type: 'heading', text: 'Abknickende Vorfahrtstraße' },
+          { type: 'list', items: [
+            'Verlauf der Straße beachten',
+            'richtig blinken',
+            'Gegenverkehr beachten',
+          ]},
+
+          { type: 'heading', text: 'Kreisverkehr' },
+          { type: 'list', items: [
+            'Mit Schild:',
+            '→ Fahrzeuge im Kreis haben Vorfahrt',
+            '→ beim Einfahren nicht blinken',
+            '→ beim Ausfahren rechts blinken',
+          ]},
+          { type: 'list', items: [
+            'Ohne Schild:',
+            '→ oft Rechts-vor-Links',
+          ]},
+
+          { type: 'divider' },
+          { type: 'badge', text: '⚡ Sehr oft abgefragt' },
+
+          { type: 'heading', text: 'Wichtig' },
+          { type: 'list', items: [
+            'defensiv fahren',
+            'auf Fußgänger und Fahrräder achten',
+            'Kreuzungen langsam anfahren',
+          ]},
+
+          { type: 'heading', text: 'Häufige Fehler' },
+          { type: 'note', text: '⚠️ Diese Fehler kommen oft in Prüfungsfragen vor:' },
+          { type: 'list', items: [
+            'Stoppschild nur rollen (nicht vollständig anhalten)',
+            'Rechts-vor-Links vergessen',
+            'Kreisverkehr falsch blinken',
+            'Vorfahrtsstraße verwechseln',
+          ]},
+
+          { type: 'divider' },
+          { type: 'heading', text: '📌 Merksätze für die Prüfung' },
+          { type: 'list', items: [
+            'Rechts vor Links gilt ohne Schild',
+            'Stoppschild = vollständig anhalten, nicht rollen',
+            'Kreisverkehr mit Schild → Kreis hat Vorrang',
+            'Kreisverkehr ausfahren → rechts blinken',
+            'Vorfahrtsstraße gilt über mehrere Kreuzungen',
+          ]},
+          { type: 'note', text: '💡 Prüfungs-Tipp: Bei Vorfahrt-Fragen immer zuerst prüfen — gibt es ein Schild? Wenn nein → Rechts-vor-Links.' },
+        ],
+      },
+    ],
+  },
   { id: 6,  icon: '🅿️', title: 'Parken & Halten',             subtitle: 'Halte- und Parkverbote',               available: false, lessons: [] },
   { id: 7,  icon: '🌧️', title: 'Fahren bei schlechtem Wetter',subtitle: 'Regen, Schnee, Nebel, Eis',             available: false, lessons: [] },
   { id: 8,  icon: '🚨', title: 'Verkehrszeichen',              subtitle: 'Gebots-, Verbots- und Gefahrenzeichen', available: false, lessons: [] },
