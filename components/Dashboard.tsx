@@ -47,7 +47,7 @@ const FEATURES = [
 ]
 
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
-type Appointment = { id: string; student_name: string; date: string; start_time: string; duration_min: number; status: string; note?: string; created_at: string }
+type Appointment = { id: string; student_name: string; full_name?: string; date: string; start_time: string; duration_min: number; status: string; note?: string; created_at: string; appointment_type?: string }
 
 function padZ(n: number) { return n.toString().padStart(2, '0') }
 function slotEnd(startTime: string, dur: number) {
@@ -362,6 +362,7 @@ export default function Dashboard() {
               onUpdate={updateAppt}
             />
             <AdminFahrstundler token={adminToken} />
+            <AdminBlockedDays token={adminToken} />
             <AdminSettings token={adminToken} />
           </>
         )}
@@ -793,8 +794,14 @@ function AdminTermine({
               }}>
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: '180px' }}>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)' }}>
-                    👤 {a.student_name}
+                  <p style={{ margin: '0 0 2px', fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    👤 {a.full_name ?? a.student_name}
+                    {a.full_name && a.full_name !== a.student_name && (
+                      <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', fontWeight: 500 }}>(@{a.student_name})</span>
+                    )}
+                    {a.appointment_type === 'regeltermin' && (
+                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: '100px', background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.25)', color: 'var(--gold)' }}>🔁 Regeltermin</span>
+                    )}
                   </p>
                   <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                     {dateStr} · {timeStr} · {a.duration_min} Min.
@@ -854,6 +861,151 @@ function AdminTermine({
             )
           })}
         </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Admin Blocked Days ──────────────────────────────────── */
+
+function AdminBlockedDays({ token }: { token: string }) {
+  const [blocked, setBlocked] = useState<{ date: string; reason: string | null }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [open, setOpen] = useState(true)
+  const [newDate, setNewDate] = useState('')
+  const [newReason, setNewReason] = useState('')
+  const [acting, setActing] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/blocked-days')
+      .then(r => r.json())
+      .then((d: { date: string; reason: string | null }[]) => {
+        if (Array.isArray(d)) setBlocked(d.sort((a, b) => a.date.localeCompare(b.date)))
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  async function addBlock() {
+    if (!newDate || acting) return
+    setActing(true)
+    await fetch('/api/admin/blocked-days', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ date: newDate, reason: newReason.trim() || null }),
+    })
+    const entry = { date: newDate, reason: newReason.trim() || null }
+    setBlocked(prev => [...prev, entry].sort((a, b) => a.date.localeCompare(b.date)))
+    setNewDate('')
+    setNewReason('')
+    setActing(false)
+  }
+
+  async function removeBlock(date: string) {
+    setActing(true)
+    await fetch('/api/admin/blocked-days', {
+      method: 'DELETE',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ date }),
+    })
+    setBlocked(prev => prev.filter(b => b.date !== date))
+    setActing(false)
+  }
+
+  const fmtDate = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(239,68,68,0.03) 0%, rgba(14,12,8,0.95) 100%)',
+      border: '1px solid rgba(239,68,68,0.15)',
+      borderRadius: '1.75rem',
+      padding: '1.5rem 2rem',
+      marginBottom: '1.25rem',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #ef4444, rgba(239,68,68,0.3))' }} />
+          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
+            🚫 Tage sperren
+          </p>
+          {blocked.length > 0 && (
+            <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: '0.65rem', fontWeight: 800 }}>
+              {blocked.length} gesperrt
+            </span>
+          )}
+        </div>
+        <button onClick={() => setOpen(v => !v)} style={{
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
+        }}>
+          {open ? '▲ Einklappen' : '▼ Anzeigen'}
+        </button>
+      </div>
+
+      {open && (
+        <>
+          {/* Add blocked day */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+            <input
+              type="date"
+              value={newDate}
+              onChange={e => setNewDate(e.target.value)}
+              min="2026-01-01"
+              max="2026-12-31"
+              style={{
+                padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark',
+              }}
+            />
+            <input
+              value={newReason}
+              onChange={e => setNewReason(e.target.value)}
+              placeholder="Grund (z.B. Urlaub, Krank)"
+              style={{
+                flex: 1, minWidth: '140px', padding: '0.5rem 0.75rem',
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem', fontFamily: 'inherit', outline: 'none',
+              }}
+            />
+            <button onClick={addBlock} disabled={!newDate || acting} style={{
+              padding: '0.5rem 1.1rem', borderRadius: '9px', fontSize: '0.75rem', fontWeight: 700,
+              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+              color: '#f87171', cursor: (!newDate || acting) ? 'default' : 'pointer',
+              opacity: (!newDate || acting) ? 0.5 : 1, whiteSpace: 'nowrap',
+            }}>
+              🚫 Sperren
+            </button>
+          </div>
+
+          {/* Blocked list */}
+          {loading ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '0.5rem 0' }}>Lädt…</p>
+          ) : blocked.length === 0 ? (
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem' }}>Keine gesperrten Tage.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {blocked.map(b => (
+                <div key={b.date} style={{
+                  display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap',
+                  padding: '0.6rem 0.85rem', borderRadius: '9px',
+                  background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.12)',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 700, color: 'var(--text)' }}>{fmtDate(b.date)}</p>
+                    {b.reason && <p style={{ margin: 0, fontSize: '0.65rem', color: '#f87171' }}>{b.reason}</p>}
+                  </div>
+                  <button onClick={() => removeBlock(b.date)} disabled={acting} style={{
+                    padding: '4px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
+                    background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
+                    color: '#22c55e', cursor: acting ? 'default' : 'pointer', opacity: acting ? 0.5 : 1,
+                  }}>
+                    ✓ Freigeben
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )
