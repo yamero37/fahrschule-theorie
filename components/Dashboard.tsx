@@ -362,6 +362,7 @@ export default function Dashboard() {
               onUpdate={updateAppt}
             />
             <AdminFahrstundler token={adminToken} />
+            <AdminSettings token={adminToken} />
           </>
         )}
 
@@ -852,6 +853,129 @@ function AdminTermine({
               </div>
             )
           })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Admin Settings ─────────────────────────────────────── */
+
+function SettingRow({ label, desc, enabled, saving, onToggle }: {
+  label: string; desc: string; enabled: boolean; saving: boolean; onToggle: () => void
+}) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
+      padding: '0.75rem 1rem', borderRadius: '10px',
+      background: enabled ? 'rgba(139,92,246,0.05)' : 'rgba(255,255,255,0.025)',
+      border: enabled ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(255,255,255,0.06)',
+    }}>
+      <div style={{ flex: 1, minWidth: '180px' }}>
+        <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>{label}</p>
+        <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{desc}</p>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        <span style={{
+          fontSize: '0.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: '100px',
+          background: enabled ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.08)',
+          color: enabled ? '#22c55e' : '#f87171',
+          border: `1px solid ${enabled ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.2)'}`,
+        }}>
+          {enabled ? 'AN' : 'AUS'}
+        </span>
+        <button
+          onClick={onToggle}
+          disabled={saving}
+          style={{
+            padding: '5px 16px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 700,
+            background: enabled ? 'rgba(239,68,68,0.08)' : 'rgba(139,92,246,0.12)',
+            border: enabled ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(139,92,246,0.3)',
+            color: enabled ? '#f87171' : '#a78bfa',
+            cursor: saving ? 'default' : 'pointer',
+            opacity: saving ? 0.5 : 1,
+            transition: 'all 0.15s',
+          }}
+        >
+          {saving ? '…' : enabled ? 'Sperren' : 'Freigeben'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function AdminSettings({ token }: { token: string }) {
+  const [satEnabled, setSatEnabled] = useState<boolean | null>(null)
+  const [multiEnabled, setMultiEnabled] = useState<boolean | null>(null)
+  const [saving, setSaving] = useState<string | null>(null)
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then((d: Record<string, string>) => {
+        setSatEnabled(d.saturday_enabled === 'true')
+        setMultiEnabled(d.multi_booking_enabled === 'true')
+      })
+      .catch(() => {})
+  }, [])
+
+  async function toggle(key: string, current: boolean, setter: (v: boolean) => void) {
+    setSaving(key)
+    await fetch('/api/admin/settings', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ key, value: String(!current) }),
+    })
+    setter(!current)
+    setSaving(null)
+  }
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(139,92,246,0.04) 0%, rgba(14,12,8,0.95) 100%)',
+      border: '1px solid rgba(139,92,246,0.2)',
+      borderRadius: '1.75rem',
+      padding: '1.5rem 2rem',
+      marginBottom: '1.25rem',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #8b5cf6, rgba(139,92,246,0.3))' }} />
+          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
+            ⚙️ Kalender-Einstellungen
+          </p>
+        </div>
+        <button onClick={() => setOpen(v => !v)} style={{
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
+        }}>
+          {open ? '▲ Einklappen' : '▼ Anzeigen'}
+        </button>
+      </div>
+
+      {open && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {satEnabled === null ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.75rem', padding: '0.75rem 0' }}>Lädt…</p>
+          ) : (
+            <>
+              <SettingRow
+                label="Samstag freigeben"
+                desc="Fahrschüler können Sa buchen · 12–15 Uhr & 19–23 Uhr"
+                enabled={satEnabled}
+                saving={saving === 'saturday_enabled'}
+                onToggle={() => toggle('saturday_enabled', satEnabled, setSatEnabled)}
+              />
+              <SettingRow
+                label="Mehrfachtermine erlauben"
+                desc="Mehr als 1 Termin pro Woche buchbar"
+                enabled={multiEnabled ?? false}
+                saving={saving === 'multi_booking_enabled'}
+                onToggle={() => multiEnabled !== null && toggle('multi_booking_enabled', multiEnabled, setMultiEnabled)}
+              />
+            </>
+          )}
         </div>
       )}
     </div>
