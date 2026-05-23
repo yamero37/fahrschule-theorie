@@ -88,30 +88,42 @@ export default function Dashboard() {
         let localDone = false
         try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
 
-        try {
-          const { data: stats } = await supabase
-            .from('user_stats')
-            .select('points, tutorial_done')
-            .eq('user_id', session.user.id)
-            .single()
-
-          if (stats) {
-            setPoints(stats.points ?? 0)
-            const done = !!stats.tutorial_done || localDone
-            setTutorialDone(done)
-            if (!done) setShowTutorial(true)
-          } else {
+        // Run stats + leaderboard in parallel, max 5s total
+        const statsP = (async () => {
+          try {
+            const { data: stats } = await supabase
+              .from('user_stats')
+              .select('points, tutorial_done')
+              .eq('user_id', session.user.id)
+              .single()
+            if (stats) {
+              setPoints(stats.points ?? 0)
+              const done = !!stats.tutorial_done || localDone
+              setTutorialDone(done)
+              if (!done) setShowTutorial(true)
+            } else {
+              if (localDone) { setTutorialDone(true) } else { setShowTutorial(true) }
+            }
+          } catch {
             if (localDone) { setTutorialDone(true) } else { setShowTutorial(true) }
           }
-        } catch {
-          if (localDone) { setTutorialDone(true) } else { setShowTutorial(true) }
-        }
+        })()
 
-        try {
-          const res = await fetch('/api/leaderboard')
-          const data = await res.json()
-          if (Array.isArray(data)) setTopEntries(data.slice(0, 3))
-        } catch {}
+        const leaderP = (async () => {
+          try {
+            const ctrl = new AbortController()
+            const timer = setTimeout(() => ctrl.abort(), 4000)
+            const res = await fetch('/api/leaderboard', { signal: ctrl.signal })
+            clearTimeout(timer)
+            const data = await res.json()
+            if (Array.isArray(data)) setTopEntries(data.slice(0, 3))
+          } catch {}
+        })()
+
+        await Promise.race([
+          Promise.allSettled([statsP, leaderP]),
+          new Promise<void>(res => setTimeout(res, 5000)),
+        ])
 
       } finally {
         setLoading(false)
