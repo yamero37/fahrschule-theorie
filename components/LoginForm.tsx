@@ -365,12 +365,20 @@ export default function LoginForm() {
             </p>
           </div>
 
-          <p style={{
-            margin: 0, fontSize: '0.73rem', color: 'var(--text-muted)',
-            textAlign: 'center', lineHeight: 1.65,
-          }}>
-            Leidenschaftlicher Fahrlehrer aus München. Ich begleite dich sicher durch deine Fahrausbildung.
-          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              Hey, ich bin Tolga, 28 Jahre alt und seit über 6 Jahren leidenschaftlicher Fahrlehrer.
+            </p>
+            <p style={{ margin: 0, fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              Mit dieser Seite möchte ich Menschen wie dir helfen, motivieren und auf dem Weg zum Führerschein unterstützen.
+            </p>
+            <p style={{ margin: 0, fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              Ich weiß aus eigener Erfahrung, dass die Theorie manchmal anstrengend wirken kann – genau deshalb habe ich diese Plattform erstellt.
+            </p>
+            <p style={{ margin: 0, fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              Egal ob Tipps oder Theoriefragen – hier findest du alles, was dir hilft. 🚗
+            </p>
+          </div>
 
           <div className="instructor-links" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
             <a
