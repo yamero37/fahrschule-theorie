@@ -279,15 +279,56 @@ body { overflow-x: hidden; }
   }
 }
 
-/* ── Login layout: instructor panel ────────────────────── */
+/* ── Login layout ───────────────────────────────────────── */
+
+@media (max-width: 819px) {
+  .login-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0 !important;
+    max-width: 440px !important;
+    width: 100% !important;
+  }
+  .instructor-links {
+    flex-direction: row !important;
+    justify-content: center !important;
+  }
+  .instructor-links a {
+    flex: 1;
+    justify-content: center !important;
+  }
+  .login-outer {
+    justify-content: flex-start !important;
+    padding-top: 2.5rem !important;
+  }
+}
+
+@media (min-width: 820px) {
+  .login-outer {
+    justify-content: center;
+  }
+}
 
 .login-instructor {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding-top: 2rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(201,162,39,0.12);
+  animation: fadeUp 0.6s ease 0.3s both;
 }
 
 @media (min-width: 820px) {
   .login-instructor {
-    display: flex;
+    width: auto;
+    min-width: 200px;
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+    animation: fadeUp 0.6s ease 0.25s both;
   }
 }
 

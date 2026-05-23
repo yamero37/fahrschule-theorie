@@ -45,16 +45,16 @@ export default function LoginForm() {
   }
 
   return (
-    <div style={{
+    <div className="login-outer" style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       background: '#080808',
-      padding: '2rem',
+      padding: '2.5rem 1.25rem 3rem',
       position: 'relative',
-      overflow: 'hidden',
+      overflowX: 'hidden',
     }}>
 
       <CarSlideshow />
@@ -327,13 +327,12 @@ export default function LoginForm() {
 
         </div>{/* end left column */}
 
-        {/* Right: Instructor panel */}
+        {/* Right/Below: Instructor panel */}
         <div className="login-instructor" style={{
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1.1rem',
+          gap: '1rem',
           minWidth: '200px',
-          animation: 'fadeUp 0.6s ease 0.25s both',
         }}>
           <span style={{
             fontSize: '0.55rem', fontWeight: 800,
@@ -373,7 +372,7 @@ export default function LoginForm() {
             Leidenschaftlicher Fahrlehrer aus München. Ich begleite dich sicher durch deine Fahrausbildung.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
+          <div className="instructor-links" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
             <a
               href="https://www.instagram.com/tolga_ar/"
               target="_blank"
