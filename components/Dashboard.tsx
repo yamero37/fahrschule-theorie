@@ -47,6 +47,14 @@ const FEATURES = [
 ]
 
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
+type Appointment = { id: string; student_name: string; date: string; start_time: string; duration_min: number; status: string; note?: string; created_at: string }
+
+function padZ(n: number) { return n.toString().padStart(2, '0') }
+function slotEnd(startTime: string, dur: number) {
+  const [h, m] = startTime.split(':').map(Number)
+  const end = h * 60 + m + dur
+  return `${padZ(Math.floor(end / 60))}:${padZ(end % 60)}`
+}
 
 /* ── Dashboard ──────────────────────────────────────────── */
 
@@ -64,6 +72,12 @@ export default function Dashboard() {
   const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteUserId = useRef('')
 
+  // Admin
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [apptFilter, setApptFilter] = useState<'pending' | 'accepted' | 'rejected' | 'all'>('pending')
+  const [actingAppt, setActingAppt] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
       try {
@@ -73,6 +87,15 @@ export default function Dashboard() {
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
         noteUserId.current = session.user.id
+
+        const admin = session.user.email === 'spieletolga@gmail.com'
+        setIsAdmin(admin)
+        if (admin) {
+          supabase.from('appointments').select('*')
+            .order('date', { ascending: true })
+            .order('start_time', { ascending: true })
+            .then(({ data }) => setAppointments(data ?? []))
+        }
 
         const uid = session.user.id
         ;(async () => {
@@ -147,6 +170,13 @@ export default function Dashboard() {
     setNoteSaved(false)
     if (noteSaveTimer.current) clearTimeout(noteSaveTimer.current)
     noteSaveTimer.current = setTimeout(() => saveNote(text, noteUserId.current), 1000)
+  }
+
+  async function updateAppt(id: string, status: 'accepted' | 'rejected' | 'pending') {
+    setActingAppt(id)
+    await supabase.from('appointments').update({ status }).eq('id', id)
+    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
+    setActingAppt(null)
   }
 
   const rank = getRank(points)
@@ -315,6 +345,17 @@ export default function Dashboard() {
               ⏳ In Bearbeitung
             </span>
           </div>
+        )}
+
+        {/* ── ADMIN: Fahrstunden-Anfragen ── */}
+        {isAdmin && (
+          <AdminTermine
+            appointments={appointments}
+            filter={apptFilter}
+            setFilter={setApptFilter}
+            acting={actingAppt}
+            onUpdate={updateAppt}
+          />
         )}
 
         {/* ── MAIN GRID ── */}
@@ -497,6 +538,154 @@ export default function Dashboard() {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
+}
+
+/* ── Admin Termine ──────────────────────────────────────── */
+
+function AdminTermine({
+  appointments, filter, setFilter, acting, onUpdate,
+}: {
+  appointments: Appointment[]
+  filter: 'pending' | 'accepted' | 'rejected' | 'all'
+  setFilter: (f: 'pending' | 'accepted' | 'rejected' | 'all') => void
+  acting: string | null
+  onUpdate: (id: string, status: 'accepted' | 'rejected' | 'pending') => void
+}) {
+  const pending = appointments.filter(a => a.status === 'pending')
+  const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter)
+
+  const filterLabels: Record<string, string> = {
+    pending: 'Offen', accepted: 'Bestätigt', rejected: 'Abgelehnt', all: 'Alle',
+  }
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(239,68,68,0.04) 0%, rgba(14,12,8,0.95) 100%)',
+      border: '1px solid rgba(239,68,68,0.2)',
+      borderRadius: '1.75rem',
+      padding: '1.5rem 2rem',
+      marginBottom: '1.25rem',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #ef4444, rgba(239,68,68,0.3))' }} />
+          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
+            🚗 Fahrstunden-Anfragen
+          </p>
+          {pending.length > 0 && (
+            <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: '0.68rem', fontWeight: 800 }}>
+              {pending.length} offen
+            </span>
+          )}
+        </div>
+        {/* Filter pills */}
+        <div style={{ display: 'flex', gap: '4px' }}>
+          {(['pending', 'accepted', 'rejected', 'all'] as const).map(f => {
+            const cnt = f === 'all' ? appointments.length : appointments.filter(a => a.status === f).length
+            return (
+              <button key={f} onClick={() => setFilter(f)} style={{
+                padding: '4px 12px', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 700,
+                border: filter === f ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(255,255,255,0.07)',
+                background: filter === f ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)',
+                color: filter === f ? '#f87171' : 'var(--text-dim)',
+                cursor: 'pointer',
+              }}>
+                {filterLabels[f]} ({cnt})
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* List */}
+      {filtered.length === 0 ? (
+        <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.78rem', padding: '1.25rem 0' }}>
+          Keine Anfragen in dieser Kategorie.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {filtered.map(a => {
+            const dateStr = new Date(a.date + 'T12:00:00').toLocaleDateString('de-DE', {
+              weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric',
+            })
+            const timeStr = `${a.start_time.slice(0, 5)} – ${slotEnd(a.start_time, a.duration_min)} Uhr`
+            const statusColors: Record<string, string> = { pending: '#c9a227', accepted: '#22c55e', rejected: '#f87171' }
+            const statusLabels: Record<string, string> = { pending: 'Ausstehend', accepted: 'Bestätigt', rejected: 'Abgelehnt' }
+
+            return (
+              <div key={a.id} style={{
+                display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
+                padding: '0.85rem 1.1rem', borderRadius: '12px',
+                background: a.status === 'pending' ? 'rgba(201,162,39,0.04)' : 'rgba(255,255,255,0.025)',
+                border: a.status === 'pending' ? '1px solid rgba(201,162,39,0.15)' : '1px solid rgba(255,255,255,0.06)',
+              }}>
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: '180px' }}>
+                  <p style={{ margin: '0 0 2px', fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)' }}>
+                    👤 {a.student_name}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {dateStr} · {timeStr} · {a.duration_min} Min.
+                  </p>
+                  {a.note && (
+                    <p style={{ margin: '2px 0 0', fontSize: '0.67rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                      „{a.note}"
+                    </p>
+                  )}
+                </div>
+
+                {/* Status + buttons */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                  <span style={{
+                    fontSize: '0.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: '100px',
+                    background: `${statusColors[a.status]}18`,
+                    color: statusColors[a.status] ?? 'var(--text-dim)',
+                    border: `1px solid ${statusColors[a.status]}30`,
+                  }}>
+                    {statusLabels[a.status] ?? a.status}
+                  </span>
+
+                  {a.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => onUpdate(a.id, 'accepted')}
+                        disabled={acting === a.id}
+                        style={{
+                          padding: '5px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
+                          background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
+                          color: '#22c55e', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
+                        }}
+                      >✓ OK</button>
+                      <button
+                        onClick={() => onUpdate(a.id, 'rejected')}
+                        disabled={acting === a.id}
+                        style={{
+                          padding: '5px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
+                          background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                          color: '#f87171', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
+                        }}
+                      >✕</button>
+                    </>
+                  )}
+                  {a.status !== 'pending' && (
+                    <button
+                      onClick={() => onUpdate(a.id, 'pending')}
+                      style={{
+                        padding: '4px 9px', borderRadius: '6px', fontSize: '0.6rem', fontWeight: 600,
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        color: 'var(--text-dim)', cursor: 'pointer',
+                      }}
+                    >↩</button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
