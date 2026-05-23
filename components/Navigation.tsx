@@ -1,28 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import DemoCountdown from './DemoCountdown'
+import FriendsPanel from './FriendsPanel'
 import { supabase } from '@/lib/supabase'
 import { getDemoExpiry } from '@/lib/auth'
-
-const GUEST_LINKS = [
-  { href: '/', label: 'Start' },
-]
-
-const AUTH_LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/unterricht', label: 'Unterricht' },
-  { href: '/fragen', label: 'Lernen' },
-  { href: '/quiz', label: 'Quiz' },
-  { href: '/rangliste', label: 'Rangliste' },
-]
 
 export default function Navigation() {
   const pathname = usePathname()
   const [loggedIn, setLoggedIn] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [userId, setUserId] = useState('')
+  const [friendsOpen, setFriendsOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   if (pathname === '/' || pathname === '/login') return null
 
@@ -31,17 +22,28 @@ export default function Navigation() {
       const isDemo = getDemoExpiry() !== null
       if (isDemo) { setLoggedIn(true); return }
       const { data } = await supabase.auth.getSession()
-      setLoggedIn(!!data.session?.user.app_metadata?.approved)
+      const approved = !!data.session?.user.app_metadata?.approved
+      setLoggedIn(approved)
+      if (approved) setUserId(data.session!.user.id)
     }
     check()
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => check())
     return () => subscription.unsubscribe()
   }, [])
 
-  // Close menu on route change
-  useEffect(() => { setMenuOpen(false) }, [pathname])
+  // Close panel when clicking outside
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setFriendsOpen(false)
+      }
+    }
+    if (friendsOpen) document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [friendsOpen])
 
-  const links = loggedIn ? AUTH_LINKS : [...GUEST_LINKS, ...AUTH_LINKS]
+  // Close on route change
+  useEffect(() => { setFriendsOpen(false) }, [pathname])
 
   return (
     <header style={{
@@ -60,6 +62,7 @@ export default function Navigation() {
         alignItems: 'center',
         justifyContent: 'space-between',
         height: '56px',
+        position: 'relative',
       }}>
 
         {/* Logo */}
@@ -80,84 +83,54 @@ export default function Navigation() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <DemoCountdown />
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-            {links.map(({ href, label }) => {
-              const active = pathname === href
-              return (
-                <Link key={href} href={href} style={{
-                  padding: '6px 10px',
-                  borderRadius: '8px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  transition: 'all 0.15s',
-                  ...(active
-                    ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
-                    : { color: 'var(--text-muted)', border: '1px solid transparent' }
-                  ),
-                }}>
-                  {label}
-                </Link>
-              )
-            })}
-          </nav>
-        </div>
-
-        {/* Hamburger button (mobile only) */}
-        <button
-          className="nav-hamburger"
-          onClick={() => setMenuOpen(o => !o)}
-          style={{
-            display: 'none',
-            background: menuOpen ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${menuOpen ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.1)'}`,
-            borderRadius: '8px',
-            color: menuOpen ? 'var(--gold)' : 'var(--text-muted)',
-            width: '38px', height: '38px',
-            cursor: 'pointer',
-            fontSize: '1.1rem',
-            alignItems: 'center', justifyContent: 'center',
+        {/* Centered Dashboard link */}
+        {loggedIn && (
+          <Link href="/dashboard" style={{
+            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+            padding: '6px 20px', borderRadius: '8px',
+            fontSize: '0.82rem', fontWeight: 700, textDecoration: 'none',
             transition: 'all 0.15s',
-          }}
-        >
-          {menuOpen ? '✕' : '☰'}
-        </button>
-      </div>
+            ...(pathname === '/dashboard'
+              ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
+              : { color: 'var(--text-muted)', border: '1px solid transparent' }
+            ),
+          }}>
+            Dashboard
+          </Link>
+        )}
 
-      {/* Mobile dropdown menu */}
-      {menuOpen && (
-        <div style={{
-          background: 'rgba(8,8,8,0.98)',
-          borderTop: '1px solid rgba(201,162,39,0.12)',
-          padding: '0.75rem 1rem 1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '4px',
-        }}>
-          {links.map(({ href, label }) => {
-            const active = pathname === href
-            return (
-              <Link key={href} href={href} style={{
-                padding: '12px 14px',
-                borderRadius: '10px',
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                textDecoration: 'none',
-                transition: 'all 0.15s',
-                ...(active
-                  ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.25)' }
-                  : { color: 'var(--text-muted)', border: '1px solid transparent' }
-                ),
-              }}>
-                {label}
-              </Link>
-            )
-          })}
+        {/* Right: demo countdown + friends icon */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <DemoCountdown />
+
+          {loggedIn && (
+            <div style={{ position: 'relative' }} ref={wrapperRef}>
+              <button
+                onClick={() => setFriendsOpen(v => !v)}
+                style={{
+                  width: '38px', height: '38px', borderRadius: '10px',
+                  background: friendsOpen ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${friendsOpen ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  color: friendsOpen ? 'var(--gold)' : 'var(--text-muted)',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s',
+                }}
+                title="Freunde & Community"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </button>
+
+              {friendsOpen && (
+                <FriendsPanel userId={userId} onClose={() => setFriendsOpen(false)} />
+              )}
+            </div>
+          )}
         </div>
-      )}
+
+      </div>
     </header>
   )
 }
