@@ -279,6 +279,18 @@ body { overflow-x: hidden; }
   }
 }
 
+/* ── Login layout: instructor panel ────────────────────── */
+
+.login-instructor {
+  display: none;
+}
+
+@media (min-width: 820px) {
+  .login-instructor {
+    display: flex;
+  }
+}
+
 /* ── Desktop optimizations ──────────────────────────────── */
 
 @media (min-width: 1024px) {
