@@ -6643,10 +6643,10 @@ export const questions: Question[] = [
     ],
   },
 
-  // ─── B1 Lektion 1: Technische Bedienung / umweltbewusster Umgang ───
+  // ─── B1: Technische Bedienung / umweltbewusster Umgang ───
   {
     id: 'B1L1_01',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was sollte regelmäßig kontrolliert werden?',
     answers: [
@@ -6657,7 +6657,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_02',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum ist die Kontrolle des Ölstands wichtig?',
     answers: [
@@ -6668,7 +6668,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_03',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was sollten Sie beim Tanken beachten?',
     answers: [
@@ -6679,7 +6679,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_04',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wer trägt Verantwortung für die Betriebssicherheit?',
     answers: [
@@ -6690,7 +6690,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_05',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was dient der Kontrolle der Bremsen?',
     answers: [
@@ -6701,7 +6701,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_06',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wie hoch ist die gesetzliche Mindestprofiltiefe?',
     answers: [
@@ -6712,7 +6712,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_07',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wann gilt Winterreifenpflicht?',
     answers: [
@@ -6723,7 +6723,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_08',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wie muss die Beleuchtungseinrichtung sein?',
     answers: [
@@ -6734,7 +6734,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_09',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wer ist für die Verkehrssicherheit mitverantwortlich?',
     answers: [
@@ -6745,7 +6745,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_10',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Woraus besteht die Kupplung?',
     answers: [
@@ -6756,7 +6756,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_11',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wann ist der Schleifpunkt erreicht?',
     answers: [
@@ -6767,7 +6767,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_12',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wofür benötigt man die Kupplung?',
     answers: [
@@ -6778,7 +6778,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_13',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Stellung bedeutet „Parken" bei Automatikfahrzeugen?',
     answers: [
@@ -6789,7 +6789,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_14',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Stellung bedeutet „Rückwärts"?',
     answers: [
@@ -6800,7 +6800,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_15',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Stellung bedeutet „Drive"?',
     answers: [
@@ -6811,7 +6811,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_16',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Stellung bedeutet Leerlauf bei Automatik?',
     answers: [
@@ -6822,7 +6822,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_17',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welcher Fuß wird bei Automatik normalerweise nicht benutzt?',
     answers: [
@@ -6833,7 +6833,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_18',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum sollte der linke Fuß bei Automatik weit links bleiben?',
     answers: [
@@ -6844,7 +6844,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_19',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was muss beim Starten eines Automatikfahrzeugs gedrückt werden?',
     answers: [
@@ -6855,7 +6855,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_20',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was muss beim Verstellen des Wahlhebels gedrückt werden?',
     answers: [
@@ -6866,7 +6866,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_21',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet ESP?',
     answers: [
@@ -6877,7 +6877,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_22',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet ABS bzw. ABV?',
     answers: [
@@ -6888,7 +6888,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_23',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet ASR?',
     answers: [
@@ -6899,7 +6899,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_24',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wozu dienen elektronische Helfer?',
     answers: [
@@ -6910,7 +6910,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_25',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Können elektronische Helfer Unfälle vollständig verhindern?',
     answers: [
@@ -6921,7 +6921,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_26',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was passiert bei doppelter Geschwindigkeit mit der Fliehkraft?',
     answers: [
@@ -6932,7 +6932,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_27',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Kraft wirkt der Fliehkraft entgegen?',
     answers: [
@@ -6943,7 +6943,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_28',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wann kann ein Fahrzeug leichter kippen?',
     answers: [
@@ -6954,7 +6954,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_29',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet Untersteuern?',
     answers: [
@@ -6965,7 +6965,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_30',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet Übersteuern?',
     answers: [
@@ -6976,7 +6976,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_31',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bedeutet degressives Bremsen?',
     answers: [
@@ -6987,7 +6987,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_32',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum ist degressives Bremsen sinnvoll?',
     answers: [
@@ -6998,7 +6998,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_33',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was verhindert ABS bei einer Vollbremsung?',
     answers: [
@@ -7009,7 +7009,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_34',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was bleibt dank ABS möglich?',
     answers: [
@@ -7020,7 +7020,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_35',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Worauf sollte man schon beim Fahrzeugkauf achten?',
     answers: [
@@ -7031,7 +7031,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_36',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welche Fahrten sollten vermieden werden?',
     answers: [
@@ -7042,7 +7042,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_37',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Sollte der Motor im Stand warmlaufen?',
     answers: [
@@ -7053,7 +7053,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_38',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wie fährt man umweltschonend?',
     answers: [
@@ -7064,7 +7064,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_39',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wie sollte man schalten?',
     answers: [
@@ -7075,7 +7075,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_40',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Welcher Drehzahlbereich spart Kraftstoff?',
     answers: [
@@ -7086,7 +7086,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_41',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was sollte aus dem Fahrzeug entfernt werden?',
     answers: [
@@ -7097,7 +7097,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_42',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum ist der richtige Reifenluftdruck wichtig?',
     answers: [
@@ -7108,7 +7108,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_43',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum sollte das Fahrzeug regelmäßig gewartet werden?',
     answers: [
@@ -7119,7 +7119,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_44',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum ist Betriebssicherheit wichtig?',
     answers: [
@@ -7130,7 +7130,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_45',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was beeinflusst die Fahrphysik besonders?',
     answers: [
@@ -7141,7 +7141,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_46',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum sind Winterreifen wichtig?',
     answers: [
@@ -7152,7 +7152,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_47',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was ist das Ziel elektronischer Assistenzsysteme?',
     answers: [
@@ -7163,7 +7163,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_48',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Warum sollte man vorausschauend fahren?',
     answers: [
@@ -7174,7 +7174,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_49',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Was ist das Ziel umweltschonender Fahrweise?',
     answers: [
@@ -7185,7 +7185,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B1L1_50',
-    topic: 'B1 Lektion 1',
+    topic: 'B1',
     points: 3,
     question: 'Wie verhalten Sie sich technisch und umweltbewusst richtig?',
     answers: [
@@ -7195,10 +7195,10 @@ export const questions: Question[] = [
     ],
   },
 
-  // ─── B2 Lektion 1: Fahren mit Solo-Kfz und Zügen, Personen- und Güterbeförderung ───
+  // ─── B2: Fahren mit Solo-Kfz und Zügen, Personen- und Güterbeförderung ───
   {
     id: 'B2L1_01',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was wird zum Ziehen eines Anhängers benötigt?',
     answers: [
@@ -7209,7 +7209,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_02',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was muss beim Fahren mit Anhänger beachtet werden?',
     answers: [
@@ -7220,7 +7220,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_03',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Welches zulässige Gesamtgewicht darf ein Zug mit Klasse B maximal haben?',
     answers: [
@@ -7231,7 +7231,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_04',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Welches zulässige Gesamtgewicht darf mit B96 gefahren werden?',
     answers: [
@@ -7242,7 +7242,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_05',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Welches zulässige Gesamtgewicht darf mit Klasse BE gefahren werden?',
     answers: [
@@ -7253,7 +7253,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_06',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wo findet man das zulässige Gesamtgewicht?',
     answers: [
@@ -7264,7 +7264,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_07',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was bedeutet „Zug" im Straßenverkehr?',
     answers: [
@@ -7275,7 +7275,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_08',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie hoch ist die zulässige Höchstgeschwindigkeit für PKW mit Anhänger?',
     answers: [
@@ -7286,7 +7286,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_09',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wann sind 100 km/h mit Anhänger erlaubt?',
     answers: [
@@ -7297,7 +7297,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_10',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was verändert sich beim Fahren mit Anhänger?',
     answers: [
@@ -7308,7 +7308,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_11',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was sollten Sie vor Steigungen wählen?',
     answers: [
@@ -7319,7 +7319,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_12',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was sollten Sie vor Gefällen beachten?',
     answers: [
@@ -7330,7 +7330,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_13',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie sollte mit Anhänger rückwärts gefahren werden?',
     answers: [
@@ -7341,7 +7341,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_14',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum ist ein Einweiser beim Rückwärtsfahren sinnvoll?',
     answers: [
@@ -7352,7 +7352,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_15',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie viele Personen dürfen mit Klasse B maximal befördert werden?',
     answers: [
@@ -7363,7 +7363,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_16',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie viele Personen dürfen transportiert werden?',
     answers: [
@@ -7374,7 +7374,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_17',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wann benötigen Kinder einen geeigneten Kindersitz?',
     answers: [
@@ -7385,7 +7385,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_18',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wo dürfen keine Personen befördert werden?',
     answers: [
@@ -7396,7 +7396,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_19',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie muss Ladung gesichert sein?',
     answers: [
@@ -7407,7 +7407,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_20',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was darf selbst bei einer Vollbremsung nicht passieren?',
     answers: [
@@ -7418,7 +7418,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_21',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Welche maximale Höhe darf ein Fahrzeug haben?',
     answers: [
@@ -7429,7 +7429,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_22',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie breit darf ein Fahrzeug maximal sein?',
     answers: [
@@ -7440,7 +7440,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_23',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie lang darf ein Einzelfahrzeug maximal sein?',
     answers: [
@@ -7451,7 +7451,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_24',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie lang darf ein Zug maximal sein?',
     answers: [
@@ -7462,7 +7462,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_25',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wie lang darf ein Zug mit überstehender Ladung maximal sein?',
     answers: [
@@ -7473,7 +7473,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_26',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum muss Ladung gesichert werden?',
     answers: [
@@ -7484,7 +7484,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_27',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was kann bei ungesicherter Ladung passieren?',
     answers: [
@@ -7495,7 +7495,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_28',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist beim Fahren mit Anhänger besonders wichtig?',
     answers: [
@@ -7506,7 +7506,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_29',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum verändert sich das Kurvenverhalten mit Anhänger?',
     answers: [
@@ -7517,7 +7517,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_30',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist bei Steigungen mit Anhänger wichtig?',
     answers: [
@@ -7528,7 +7528,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_31',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum ist Rückwärtsfahren mit Anhänger schwierig?',
     answers: [
@@ -7539,7 +7539,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_32',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was gilt für Kinder im Fahrzeug?',
     answers: [
@@ -7550,7 +7550,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_33',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum dürfen Personen nicht auf Ladeflächen transportiert werden?',
     answers: [
@@ -7561,7 +7561,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_34',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was gehört zur sicheren Güterbeförderung?',
     answers: [
@@ -7572,7 +7572,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_35',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was beeinflusst ein Anhänger beim Fahren?',
     answers: [
@@ -7583,7 +7583,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_36',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum sollte man mit Anhänger vorsichtiger fahren?',
     answers: [
@@ -7594,7 +7594,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_37',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was gilt für die Geschwindigkeit mit Anhänger?',
     answers: [
@@ -7605,7 +7605,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_38',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Welche Führerscheinklasse erweitert Klasse B für schwerere Anhänger?',
     answers: [
@@ -7616,7 +7616,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_39',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist bei einem Gespann besonders wichtig?',
     answers: [
@@ -7627,7 +7627,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_40',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum ist Ladungssicherung gesetzlich vorgeschrieben?',
     answers: [
@@ -7638,7 +7638,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_41',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was sollten Fahrer von Gespannen beachten?',
     answers: [
@@ -7649,7 +7649,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_42',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Wann gelten Sozialvorschriften?',
     answers: [
@@ -7660,7 +7660,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_43',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum ist der richtige Gang bei Gefällen wichtig?',
     answers: [
@@ -7671,7 +7671,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_44',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist das Ziel der Ladungssicherung?',
     answers: [
@@ -7682,7 +7682,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_45',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was gilt für Anhänger ohne passende Fahrerlaubnis?',
     answers: [
@@ -7693,7 +7693,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_46',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was sollten Sie vor Fahrtbeginn mit Anhänger prüfen?',
     answers: [
@@ -7704,7 +7704,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_47',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum benötigt ein Gespann mehr Platz?',
     answers: [
@@ -7715,7 +7715,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_48',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist bei Personenbeförderung besonders wichtig?',
     answers: [
@@ -7726,7 +7726,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_49',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Warum sollte mit Anhänger defensiv gefahren werden?',
     answers: [
@@ -7737,7 +7737,7 @@ export const questions: Question[] = [
   },
   {
     id: 'B2L1_50',
-    topic: 'B2 Lektion 1',
+    topic: 'B2',
     points: 3,
     question: 'Was ist das Ziel sicherer Personen- und Güterbeförderung?',
     answers: [
