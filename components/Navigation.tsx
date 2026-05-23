@@ -24,6 +24,8 @@ export default function Navigation() {
   const [loggedIn, setLoggedIn] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
+  if (pathname === '/' || pathname === '/login') return null
+
   useEffect(() => {
     async function check() {
       const isDemo = getDemoExpiry() !== null
