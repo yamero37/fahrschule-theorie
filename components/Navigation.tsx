@@ -15,8 +15,7 @@ export default function Navigation() {
   const [friendsOpen, setFriendsOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  if (pathname === '/' || pathname === '/login') return null
-
+  // ALL hooks must be called unconditionally — early return only after this block
   useEffect(() => {
     async function check() {
       const isDemo = getDemoExpiry() !== null
@@ -31,7 +30,6 @@ export default function Navigation() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Close panel when clicking outside
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
@@ -42,8 +40,10 @@ export default function Navigation() {
     return () => document.removeEventListener('mousedown', handler)
   }, [friendsOpen])
 
-  // Close on route change
   useEffect(() => { setFriendsOpen(false) }, [pathname])
+
+  // Early return AFTER all hooks
+  if (pathname === '/' || pathname === '/login') return null
 
   return (
     <header style={{
