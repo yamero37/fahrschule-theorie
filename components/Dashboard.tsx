@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -56,6 +56,10 @@ export default function Dashboard() {
   const [tutorialDone, setTutorialDone] = useState(false)
   const [loading, setLoading] = useState(true)
   const [topEntries, setTopEntries] = useState<LeaderboardEntry[]>([])
+  const [noteText, setNoteText] = useState('')
+  const [noteSaved, setNoteSaved] = useState(false)
+  const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const noteUserId = useRef('')
 
   useEffect(() => {
     async function load() {
@@ -65,6 +69,27 @@ export default function Dashboard() {
 
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
+        noteUserId.current = session.user.id
+
+        // Load note — try Supabase first, fall back to localStorage
+        try {
+          const { data: noteData } = await supabase
+            .from('user_notes')
+            .select('content')
+            .eq('user_id', session.user.id)
+            .single()
+          if (noteData?.content != null) {
+            setNoteText(noteData.content)
+          } else {
+            const local = localStorage.getItem(`note_${session.user.id}`)
+            if (local) setNoteText(local)
+          }
+        } catch {
+          try {
+            const local = localStorage.getItem(`note_${session.user.id}`)
+            if (local) setNoteText(local)
+          } catch {}
+        }
 
         let localDone = false
         try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
@@ -101,6 +126,22 @@ export default function Dashboard() {
     load()
   }, [router])
 
+  const saveNote = useCallback(async (text: string, uid: string) => {
+    try { localStorage.setItem(`note_${uid}`, text) } catch {}
+    try {
+      await supabase.from('user_notes').upsert({ user_id: uid, content: text, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+    } catch {}
+    setNoteSaved(true)
+    setTimeout(() => setNoteSaved(false), 2000)
+  }, [])
+
+  function handleNoteChange(text: string) {
+    setNoteText(text)
+    setNoteSaved(false)
+    if (noteSaveTimer.current) clearTimeout(noteSaveTimer.current)
+    noteSaveTimer.current = setTimeout(() => saveNote(text, noteUserId.current), 1000)
+  }
+
   const rank = getRank(points)
   const progress = getProgress(points, rank)
   const nextRank = RANKS[RANKS.indexOf(rank) + 1]
@@ -125,6 +166,24 @@ export default function Dashboard() {
       )}
 
       <div style={{ maxWidth: '940px', margin: '0 auto' }}>
+
+        {/* ── LOGO BAR ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/Toldrive.jpeg" alt="TolDrive" style={{
+            width: '42px', height: '42px', objectFit: 'cover',
+            borderRadius: '10px', border: '1.5px solid rgba(201,162,39,0.4)',
+            boxShadow: '0 0 16px rgba(201,162,39,0.2)',
+          }} />
+          <div>
+            <p style={{
+              margin: 0, fontSize: '1.05rem', fontWeight: 900, letterSpacing: '-0.01em',
+              background: 'linear-gradient(90deg, var(--gold-dark), var(--gold-light))',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            }}>TolDrive</p>
+            <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--text-dim)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Führerschein Theorie</p>
+          </div>
+        </div>
 
         {/* ── HERO HEADER ── */}
         <div style={{
@@ -249,6 +308,43 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            {/* Notepad */}
+            <div style={{
+              background: 'var(--surface)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: '1.25rem',
+              padding: '1.25rem',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <p style={{ margin: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📝 Privater Notizblock
+                </p>
+                <span style={{
+                  fontSize: '0.6rem', fontWeight: 600,
+                  color: noteSaved ? '#22c55e' : 'var(--text-dim)',
+                  transition: 'color 0.3s',
+                }}>
+                  {noteSaved ? '✓ Gespeichert' : 'Auto-Save'}
+                </span>
+              </div>
+              <textarea
+                value={noteText}
+                onChange={e => handleNoteChange(e.target.value)}
+                placeholder="Notizen, Merkhilfen, wichtige Punkte…"
+                rows={6}
+                style={{
+                  width: '100%', resize: 'vertical', minHeight: '120px',
+                  padding: '0.75rem', borderRadius: '0.6rem', fontSize: '0.8rem',
+                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: 'var(--text)', outline: 'none', lineHeight: 1.6,
+                  fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.15s',
+                }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,162,39,0.35)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+              />
+            </div>
+
           </div>
 
           {/* Right column */}
