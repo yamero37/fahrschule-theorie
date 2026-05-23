@@ -26,7 +26,8 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const data = await loginUser(form.email.trim(), form.password)
-      if (data.session?.user.app_metadata?.approved === true) {
+      const isAdmin = data.session?.user.email === 'spieletolga@gmail.com'
+      if (isAdmin || data.session?.user.app_metadata?.approved === true) {
         router.replace('/dashboard')
       } else {
         router.replace('/warten')

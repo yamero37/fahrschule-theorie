@@ -82,8 +82,11 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) { router.replace('/login'); return }
+        const timeout = new Promise<{ data: { session: null } }>(res =>
+          setTimeout(() => res({ data: { session: null } }), 8000)
+        )
+        const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
+        if (!session) { router.replace('/'); return }
 
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
@@ -92,8 +95,7 @@ export default function Dashboard() {
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
         if (admin) {
-          const { data: tokenData } = await supabase.auth.getSession()
-          const tok = tokenData.session?.access_token ?? ''
+          const tok = session.access_token ?? ''
           setAdminToken(tok)
           supabase.from('appointments').select('*')
             .order('date', { ascending: true })
