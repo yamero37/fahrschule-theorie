@@ -28,14 +28,22 @@ export default function Leaderboard() {
 
   useEffect(() => {
     async function load() {
-      const [res, sessionRes] = await Promise.all([
-        fetch('/api/leaderboard'),
-        supabase.auth.getSession(),
-      ])
-      const data = await res.json()
-      setEntries(Array.isArray(data) ? data : [])
-      setCurrentUserId(sessionRes.data.session?.user.id ?? null)
-      setLoading(false)
+      try {
+        const ctrl = new AbortController()
+        const timer = setTimeout(() => ctrl.abort(), 5000)
+        const [res, sessionRes] = await Promise.all([
+          fetch('/api/leaderboard', { signal: ctrl.signal }),
+          supabase.auth.getSession(),
+        ])
+        clearTimeout(timer)
+        const data = await res.json()
+        setEntries(Array.isArray(data) ? data : [])
+        setCurrentUserId(sessionRes.data.session?.user.id ?? null)
+      } catch {
+        // timeout oder Fehler — leere Liste zeigen
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])

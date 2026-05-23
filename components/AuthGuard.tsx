@@ -9,10 +9,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    const timeout = setTimeout(() => setReady(true), 5000) // fallback: show content after 5s
     isAuthorized().then(ok => {
+      clearTimeout(timeout)
       if (!ok) router.replace('/')
       else setReady(true)
-    })
+    }).catch(() => { clearTimeout(timeout); setReady(true) })
+    return () => clearTimeout(timeout)
   }, [router])
 
   // Check demo expiry every 15s
