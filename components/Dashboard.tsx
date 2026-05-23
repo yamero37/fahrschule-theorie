@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
+import CarSlideshow from './CarSlideshow'
 
 /* ── Ranks ─────────────────────────────────────────────── */
 
@@ -162,14 +163,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1.5rem 3rem' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1.5rem 3rem', position: 'relative', overflow: 'hidden' }}>
+      <CarSlideshow />
       {showTutorial && (
-        <TutorialModal username={username} userId={userId}
-          onComplete={(pts) => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }}
-        />
+        <div style={{ position: 'relative', zIndex: 100 }}>
+          <TutorialModal username={username} userId={userId}
+            onComplete={(pts) => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }}
+          />
+        </div>
       )}
 
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* ── HERO CARD ── */}
         <div style={{

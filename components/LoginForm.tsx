@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { loginUser } from '@/lib/auth'
+import CarSlideshow from './CarSlideshow'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -55,20 +56,13 @@ export default function LoginForm() {
       overflow: 'hidden',
     }}>
 
-      {/* ── Background atmosphere ── */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `
-          radial-gradient(ellipse 90% 55% at 50% 0%, rgba(201,162,39,0.08) 0%, transparent 65%),
-          radial-gradient(ellipse 60% 45% at 0% 100%, rgba(239,68,68,0.05) 0%, transparent 55%),
-          radial-gradient(ellipse 50% 40% at 100% 60%, rgba(201,162,39,0.05) 0%, transparent 55%)
-        `,
-      }} />
+      {/* ── Car slideshow background ── */}
+      <CarSlideshow />
 
-      {/* ── Subtle grid overlay ── */}
+      {/* ── Subtle gold grid overlay ── */}
       <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025,
-        backgroundImage: 'linear-gradient(rgba(201,162,39,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,162,39,0.5) 1px, transparent 1px)',
+        position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.018, zIndex: 1,
+        backgroundImage: 'linear-gradient(rgba(201,162,39,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(201,162,39,0.6) 1px, transparent 1px)',
         backgroundSize: '60px 60px',
       }} />
 
