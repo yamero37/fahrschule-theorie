@@ -273,3 +273,17 @@ body { overflow-x: hidden; }
     display: flex;
   }
 }
+
+/* ── Desktop optimizations ──────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .dash-feat-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .dash-main-grid {
+    gap: 2.5rem !important;
+  }
+}

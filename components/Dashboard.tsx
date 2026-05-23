@@ -164,14 +164,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '1.5rem 1rem 5rem' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1.5rem 3rem' }}>
       {showTutorial && (
         <TutorialModal username={username} userId={userId}
           onComplete={(pts) => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }}
         />
       )}
 
-      <div style={{ maxWidth: '940px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         {/* ── LOGO BAR ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
@@ -285,7 +285,7 @@ export default function Dashboard() {
         )}
 
         {/* ── MAIN GRID ── */}
-        <div className="dash-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="dash-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
 
           {/* Left column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -451,13 +451,7 @@ export default function Dashboard() {
 
       </div>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 700px) {
-          .dash-grid { grid-template-columns: 1fr !important; }
-          .feat-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }
