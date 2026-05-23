@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
-import AIChatWidget from '@/components/AIChatWidget'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
@@ -17,7 +16,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
         <Navigation />
         <main className="min-h-screen">{children}</main>
-        <AIChatWidget />
       </body>
     </html>
   )
