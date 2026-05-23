@@ -25,6 +25,18 @@ export type Topic =
   | 'Lektion 10'
   | 'Lektion 11'
   | 'Lektion 12'
+  | 'B1 Lektion 1'
+  | 'B1 Lektion 2'
+  | 'B1 Lektion 3'
+  | 'B1 Lektion 4'
+  | 'B1 Lektion 5'
+  | 'B1 Lektion 6'
+  | 'B1 Lektion 7'
+  | 'B1 Lektion 8'
+  | 'B1 Lektion 9'
+  | 'B1 Lektion 10'
+  | 'B1 Lektion 11'
+  | 'B1 Lektion 12'
 
 export const TOPICS: Topic[] = [
   'Lektion 1',
@@ -39,6 +51,18 @@ export const TOPICS: Topic[] = [
   'Lektion 10',
   'Lektion 11',
   'Lektion 12',
+  'B1 Lektion 1',
+  'B1 Lektion 2',
+  'B1 Lektion 3',
+  'B1 Lektion 4',
+  'B1 Lektion 5',
+  'B1 Lektion 6',
+  'B1 Lektion 7',
+  'B1 Lektion 8',
+  'B1 Lektion 9',
+  'B1 Lektion 10',
+  'B1 Lektion 11',
+  'B1 Lektion 12',
 ]
 
 export interface QuizState {
