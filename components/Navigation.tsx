@@ -22,6 +22,7 @@ const AUTH_LINKS = [
 export default function Navigation() {
   const pathname = usePathname()
   const [loggedIn, setLoggedIn] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     async function check() {
@@ -31,16 +32,18 @@ export default function Navigation() {
       setLoggedIn(!!data.session?.user.app_metadata?.approved)
     }
     check()
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => check())
     return () => subscription.unsubscribe()
   }, [])
+
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false) }, [pathname])
 
   const links = loggedIn ? AUTH_LINKS : [...GUEST_LINKS, ...AUTH_LINKS]
 
   return (
     <header style={{
-      background: 'rgba(8,8,8,0.92)',
+      background: 'rgba(8,8,8,0.95)',
       borderBottom: '1px solid rgba(201,162,39,0.2)',
       backdropFilter: 'blur(12px)',
       position: 'sticky',
@@ -75,10 +78,9 @@ export default function Navigation() {
           </span>
         </Link>
 
-        {/* Right side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Desktop nav */}
+        <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <DemoCountdown />
-
           <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
             {links.map(({ href, label }) => {
               const active = pathname === href
@@ -102,7 +104,58 @@ export default function Navigation() {
           </nav>
         </div>
 
+        {/* Hamburger button (mobile only) */}
+        <button
+          className="nav-hamburger"
+          onClick={() => setMenuOpen(o => !o)}
+          style={{
+            display: 'none',
+            background: menuOpen ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${menuOpen ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.1)'}`,
+            borderRadius: '8px',
+            color: menuOpen ? 'var(--gold)' : 'var(--text-muted)',
+            width: '38px', height: '38px',
+            cursor: 'pointer',
+            fontSize: '1.1rem',
+            alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.15s',
+          }}
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
       </div>
+
+      {/* Mobile dropdown menu */}
+      {menuOpen && (
+        <div style={{
+          background: 'rgba(8,8,8,0.98)',
+          borderTop: '1px solid rgba(201,162,39,0.12)',
+          padding: '0.75rem 1rem 1rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+        }}>
+          {links.map(({ href, label }) => {
+            const active = pathname === href
+            return (
+              <Link key={href} href={href} style={{
+                padding: '12px 14px',
+                borderRadius: '10px',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                transition: 'all 0.15s',
+                ...(active
+                  ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.25)' }
+                  : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                ),
+              }}>
+                {label}
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </header>
   )
 }
