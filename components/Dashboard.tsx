@@ -43,6 +43,7 @@ const FEATURES = [
   { icon: '🎬', title: 'Lernvideos',    desc: 'Erklärvideos ansehen',         href: '/videos',     soon: true,  color: '#22c55e', badge: 'Bald'           },
   { icon: '⚔️', title: 'Battle',       desc: 'Gegen Freunde antreten',       href: '/battle',     soon: true,  color: '#ef4444', badge: 'Bald'           },
   { icon: '🏆', title: 'Rangliste',     desc: 'Globales Online-Ranking',      href: '/rangliste',  soon: false, color: '#ffd700', badge: 'Live'           },
+  { icon: '📅', title: 'Termin wählen', desc: 'Fahrstunde buchen · Mo–Sa',    href: '/termin',     soon: false, color: '#22c55e', badge: 'Fahrstunde'     },
 ]
 
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
