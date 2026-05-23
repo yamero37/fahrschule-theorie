@@ -71,25 +71,19 @@ export default function Dashboard() {
         setUserId(session.user.id)
         noteUserId.current = session.user.id
 
-        // Load note — try Supabase first, fall back to localStorage
-        try {
-          const { data: noteData } = await supabase
-            .from('user_notes')
-            .select('content')
-            .eq('user_id', session.user.id)
-            .single()
-          if (noteData?.content != null) {
-            setNoteText(noteData.content)
-          } else {
-            const local = localStorage.getItem(`note_${session.user.id}`)
-            if (local) setNoteText(local)
-          }
-        } catch {
+        // Load note in background — does NOT block the main load
+        const uid = session.user.id
+        ;(async () => {
           try {
-            const local = localStorage.getItem(`note_${session.user.id}`)
+            const local = localStorage.getItem(`note_${uid}`)
             if (local) setNoteText(local)
           } catch {}
-        }
+          try {
+            const { data: noteData } = await supabase
+              .from('user_notes').select('content').eq('user_id', uid).single()
+            if (noteData?.content != null) setNoteText(noteData.content)
+          } catch {}
+        })()
 
         let localDone = false
         try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
