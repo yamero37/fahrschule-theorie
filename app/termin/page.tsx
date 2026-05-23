@@ -10,11 +10,16 @@ export default function TerminPage() {
   const [userId, setUserId] = useState('')
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
+  const [notAllowed, setNotAllowed] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session?.user.app_metadata?.approved) { router.replace('/'); return }
-      setUserId(session.user.id)
+      const uid = session.user.id
+      // Check Fahrstündler-Freigabe
+      const { data } = await supabase.from('fahrstundler_approvals').select('user_id').eq('user_id', uid).single()
+      if (!data) { setNotAllowed(true); setLoading(false); return }
+      setUserId(uid)
       setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
       setLoading(false)
     })
@@ -23,6 +28,26 @@ export default function TerminPage() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
       <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(201,162,39,0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
+
+  if (notAllowed) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '400px' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+        <h2 style={{ margin: '0 0 0.75rem', color: 'var(--text)', fontWeight: 900 }}>Kein Zugang</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+          Du bist noch nicht als Fahrschüler freigeschaltet. Dein Fahrlehrer Tolga wird dich bald freischalten.
+        </p>
+        <a href="/dashboard" style={{
+          display: 'inline-block', padding: '0.75rem 2rem', borderRadius: '10px',
+          background: 'rgba(201,162,39,0.12)', border: '1px solid rgba(201,162,39,0.3)',
+          color: 'var(--gold)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none',
+        }}>
+          Zurück zum Dashboard
+        </a>
+      </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )

@@ -74,6 +74,7 @@ export default function Dashboard() {
 
   // Admin
   const [isAdmin, setIsAdmin] = useState(false)
+  const [adminToken, setAdminToken] = useState('')
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [apptFilter, setApptFilter] = useState<'pending' | 'accepted' | 'rejected' | 'all'>('pending')
   const [actingAppt, setActingAppt] = useState<string | null>(null)
@@ -91,6 +92,9 @@ export default function Dashboard() {
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
         if (admin) {
+          const { data: tokenData } = await supabase.auth.getSession()
+          const tok = tokenData.session?.access_token ?? ''
+          setAdminToken(tok)
           supabase.from('appointments').select('*')
             .order('date', { ascending: true })
             .order('start_time', { ascending: true })
@@ -347,15 +351,18 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── ADMIN: Fahrstunden-Anfragen ── */}
+        {/* ── ADMIN BEREICH ── */}
         {isAdmin && (
-          <AdminTermine
-            appointments={appointments}
-            filter={apptFilter}
-            setFilter={setApptFilter}
-            acting={actingAppt}
-            onUpdate={updateAppt}
-          />
+          <>
+            <AdminTermine
+              appointments={appointments}
+              filter={apptFilter}
+              setFilter={setApptFilter}
+              acting={actingAppt}
+              onUpdate={updateAppt}
+            />
+            <AdminFahrstundler token={adminToken} />
+          </>
         )}
 
         {/* ── MAIN GRID ── */}
@@ -538,6 +545,167 @@ export default function Dashboard() {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
+}
+
+/* ── Admin Fahrstündler ─────────────────────────────────── */
+
+type UserRow = {
+  userId: string
+  email: string
+  username: string
+  appApproved: boolean
+  fahrstundler: boolean
+  createdAt: string
+}
+
+function AdminFahrstundler({ token }: { token: string }) {
+  const [users, setUsers] = useState<UserRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [acting, setActing] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
+    if (!token) return
+    fetch('/api/admin/fahrstundler', { headers: { authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setUsers(d) })
+      .finally(() => setLoading(false))
+  }, [token])
+
+  async function toggleFahrstundler(userId: string, current: boolean) {
+    setActing(userId)
+    await fetch('/api/admin/fahrstundler', {
+      method: current ? 'DELETE' : 'POST',
+      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    })
+    setUsers(prev => prev.map(u => u.userId === userId ? { ...u, fahrstundler: !current } : u))
+    setActing(null)
+  }
+
+  const filtered = users.filter(u =>
+    u.username.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase())
+  )
+  const fahrstundlerCount = users.filter(u => u.fahrstundler).length
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(34,197,94,0.04) 0%, rgba(14,12,8,0.95) 100%)',
+      border: '1px solid rgba(34,197,94,0.2)',
+      borderRadius: '1.75rem',
+      padding: '1.5rem 2rem',
+      marginBottom: '1.25rem',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #22c55e, rgba(34,197,94,0.3))' }} />
+          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
+            👤 Fahrschüler verwalten
+          </p>
+          <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22c55e', fontSize: '0.65rem', fontWeight: 800 }}>
+            {fahrstundlerCount} freigegeben
+          </span>
+        </div>
+        <button onClick={() => setOpen(v => !v)} style={{
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
+        }}>
+          {open ? '▲ Einklappen' : '▼ Anzeigen'}
+        </button>
+      </div>
+
+      {open && (
+        <>
+          {/* Search */}
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Name oder E-Mail suchen…"
+            style={{
+              width: '100%', boxSizing: 'border-box', padding: '0.55rem 0.85rem',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+              borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem',
+              fontFamily: 'inherit', outline: 'none', marginBottom: '0.85rem',
+            }}
+          />
+
+          {loading ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '1rem 0' }}>Lädt…</p>
+          ) : filtered.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '1rem 0' }}>Keine Nutzer gefunden.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {filtered.map(u => (
+                <div key={u.userId} style={{
+                  display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap',
+                  padding: '0.7rem 1rem', borderRadius: '10px',
+                  background: u.fahrstundler ? 'rgba(34,197,94,0.05)' : 'rgba(255,255,255,0.025)',
+                  border: u.fahrstundler ? '1px solid rgba(34,197,94,0.18)' : '1px solid rgba(255,255,255,0.06)',
+                }}>
+                  {/* Avatar initial */}
+                  <div style={{
+                    width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+                    background: u.fahrstundler ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                    border: `1.5px solid ${u.fahrstundler ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.78rem', fontWeight: 800,
+                    color: u.fahrstundler ? '#22c55e' : 'var(--text-dim)',
+                  }}>
+                    {u.username[0]?.toUpperCase()}
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1, minWidth: '140px' }}>
+                    <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>{u.username}</p>
+                    <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{u.email}</p>
+                  </div>
+
+                  {/* Badges */}
+                  <div style={{ display: 'flex', gap: '5px', alignItems: 'center', flexShrink: 0 }}>
+                    {u.appApproved ? (
+                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.25)', color: 'var(--gold)' }}>
+                        App ✓
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
+                        App ✗
+                      </span>
+                    )}
+                    {u.fahrstundler && (
+                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22c55e' }}>
+                        Fahrschüler ✓
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Toggle button */}
+                  <button
+                    onClick={() => toggleFahrstundler(u.userId, u.fahrstundler)}
+                    disabled={acting === u.userId}
+                    style={{
+                      padding: '5px 14px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 700,
+                      background: u.fahrstundler ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.1)',
+                      border: u.fahrstundler ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(34,197,94,0.3)',
+                      color: u.fahrstundler ? '#f87171' : '#22c55e',
+                      cursor: acting === u.userId ? 'default' : 'pointer',
+                      opacity: acting === u.userId ? 0.5 : 1,
+                      flexShrink: 0, whiteSpace: 'nowrap',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {acting === u.userId ? '…' : u.fahrstundler ? '✕ Entziehen' : '✓ Freigeben'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
