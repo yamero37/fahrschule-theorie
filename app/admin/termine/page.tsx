@@ -63,7 +63,7 @@ export default function AdminTerminePage() {
     setLoading(false)
   }
 
-  async function updateStatus(id: string, status: 'accepted' | 'rejected') {
+  async function updateStatus(id: string, status: 'accepted' | 'rejected' | 'pending') {
     setActing(id)
     await supabase.from('appointments').update({ status }).eq('id', id)
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
