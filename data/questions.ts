@@ -1,884 +1,567 @@
 import type { Question } from '@/types'
 
 export const questions: Question[] = [
-  // ─── Vorfahrt ──────────────────────────────────────────────────────────────
+
+  // ─── Lektion 1: Der Mensch als Risikofaktor ──────────────────────────────
+
   {
-    id: 'V01',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'Wer hat Vorfahrt an einer Kreuzung ohne Zeichen?',
-    answers: [
-      { id: 'a', text: 'Der von rechts kommende Verkehr', correct: true },
-      { id: 'b', text: 'Der von links kommende Verkehr', correct: false },
-      { id: 'c', text: 'Der geradeaus fahrende Verkehr', correct: false },
-    ],
-  },
-  {
-    id: 'V02',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'Was bedeutet das Zeichen „Vorfahrt gewähren" (Dreieck mit Spitze nach unten)?',
-    answers: [
-      { id: 'a', text: 'Ich muss dem kreuzenden Verkehr Vorfahrt gewähren', correct: true },
-      { id: 'b', text: 'Ich habe Vorfahrt vor dem kreuzenden Verkehr', correct: false },
-      { id: 'c', text: 'Ich muss anhalten, bis die Straße frei ist', correct: false },
-    ],
-  },
-  {
-    id: 'V03',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'Das Zeichen „Stoppschild" (rotes Achteck mit STOP) verpflichtet mich zu…',
-    answers: [
-      { id: 'a', text: 'Anhalten und Vorfahrt gewähren', correct: true },
-      { id: 'b', text: 'Langsam fahren und Vorfahrt gewähren', correct: false },
-      { id: 'c', text: 'Einfahrt verboten', correct: false },
-    ],
-  },
-  {
-    id: 'V04',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'Gilt die Regel „rechts vor links" auch für Fahrzeuge auf Radwegen?',
-    answers: [
-      { id: 'a', text: 'Ja, auch Radfahrer auf dem Radweg haben Vorfahrt von rechts', correct: true },
-      { id: 'b', text: 'Nein, Radfahrer haben grundsätzlich keine Vorfahrt', correct: false },
-      { id: 'c', text: 'Nur wenn der Radweg mit einem Zeichen ausgewiesen ist', correct: false },
-    ],
-  },
-  {
-    id: 'V05',
-    topic: 'Vorfahrt',
+    id: 'L1_01',
+    topic: 'Lektion 1',
     points: 3,
-    question: 'Was müssen Sie tun, wenn Sie an einer Einmündung einbiegen wollen und das Schild „Vorfahrtstraße" auf der Hauptstraße steht?',
+    question: 'Welche Aussage über die menschliche Wahrnehmung im Straßenverkehr ist richtig?',
     answers: [
-      { id: 'a', text: 'Dem Verkehr auf der Vorfahrtstraße Vorfahrt gewähren', correct: true },
-      { id: 'b', text: 'Ich habe Vorfahrt, weil ich von rechts komme', correct: false },
-      { id: 'c', text: 'Ich darf nur fahren, wenn die Straße frei ist', correct: false },
+      { id: 'a', text: 'Menschen nehmen immer alle relevanten Verkehrssituationen vollständig und korrekt wahr', correct: false },
+      { id: 'b', text: 'Die Wahrnehmung kann durch Ablenkung, Stress oder Müdigkeit erheblich beeinträchtigt werden', correct: true },
+      { id: 'c', text: 'Erfahrene Fahrer nehmen Gefahren immer rechtzeitig und vollständig wahr', correct: false },
     ],
   },
   {
-    id: 'V06',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'An einer Kreuzung mit Ampel: Die Ampel zeigt grün, aber ein Einsatzfahrzeug mit Blaulicht nähert sich. Was tun Sie?',
+    id: 'L1_02',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter dem "toten Winkel" bei Fahrzeugen?',
     answers: [
-      { id: 'a', text: 'Sofort freie Bahn für das Einsatzfahrzeug schaffen, auch bei grün', correct: true },
-      { id: 'b', text: 'Weiterfahren, da ich grün habe', correct: false },
-      { id: 'c', text: 'Anhalten und warten, bis das Einsatzfahrzeug vorbei ist, dann weiterfahren', correct: false },
+      { id: 'a', text: 'Bereiche um das Fahrzeug, die vom Fahrer weder direkt noch über Spiegel eingesehen werden können', correct: true },
+      { id: 'b', text: 'Den Bereich direkt vor dem Fahrzeug, der bei hoher Geschwindigkeit nicht eingesehen werden kann', correct: false },
+      { id: 'c', text: 'Den Bereich hinter dem Fahrzeug, der nur bei Dunkelheit nicht sichtbar ist', correct: false },
+    ],
+  },
+  {
+    id: 'L1_03',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie beeinflusst Müdigkeit die Fahrtüchtigkeit?',
+    answers: [
+      { id: 'a', text: 'Müdigkeit verlängert die Reaktionszeit und kann zu Sekundenschlaf führen, was das Unfallrisiko erheblich erhöht', correct: true },
+      { id: 'b', text: 'Müdigkeit beeinträchtigt nur die Sehschärfe, nicht aber die Reaktionsfähigkeit', correct: false },
+      { id: 'c', text: 'Durch Koffein kann die Wirkung von Müdigkeit vollständig aufgehoben werden', correct: false },
+    ],
+  },
+  {
+    id: 'L1_04',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Ab welchem Blutalkoholgehalt gilt man in Deutschland generell als fahruntüchtig (absolute Fahruntüchtigkeit)?',
+    answers: [
+      { id: 'a', text: 'Ab 1,1 Promille', correct: true },
+      { id: 'b', text: 'Ab 0,5 Promille', correct: false },
+      { id: 'c', text: 'Ab 0,8 Promille', correct: false },
+    ],
+  },
+  {
+    id: 'L1_05',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was gilt für Fahranfänger in der Probezeit bezüglich Alkohol am Steuer?',
+    answers: [
+      { id: 'a', text: 'Es gilt ein absolutes Alkoholverbot (0,0 Promille)', correct: true },
+      { id: 'b', text: 'Es gilt die gleiche 0,5-Promille-Grenze wie für alle anderen Fahrer', correct: false },
+      { id: 'c', text: 'Es gilt eine verschärfte Grenze von 0,3 Promille', correct: false },
+    ],
+  },
+  {
+    id: 'L1_06',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Aussage über Alkohol und Fahrtüchtigkeit ist korrekt?',
+    answers: [
+      { id: 'a', text: 'Alkohol beeinträchtigt Reaktionsvermögen, Koordination und Urteilsvermögen – gleichzeitig steigt das Selbstüberschätzungsrisiko', correct: true },
+      { id: 'b', text: 'Kleine Mengen Alkohol verbessern die Konzentration und Reaktionsfähigkeit', correct: false },
+      { id: 'c', text: 'Die Wirkung von Alkohol kann durch ausreichend Wasser und Essen vollständig ausgeglichen werden', correct: false },
+    ],
+  },
+  {
+    id: 'L1_07',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Ab welchem Blutalkoholgehalt liegt eine Ordnungswidrigkeit vor (ohne Ausfallerscheinungen)?',
+    answers: [
+      { id: 'a', text: 'Ab 0,5 Promille', correct: true },
+      { id: 'b', text: 'Ab 0,3 Promille', correct: false },
+      { id: 'c', text: 'Ab 0,8 Promille', correct: false },
+    ],
+  },
+  {
+    id: 'L1_08',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wann kann bereits ab 0,3 Promille eine Straftat vorliegen?',
+    answers: [
+      { id: 'a', text: 'Wenn alkoholbedingte Ausfallerscheinungen wie Schlangenlinien fahren oder Unfallbeteiligung vorliegen', correct: true },
+      { id: 'b', text: 'Nur wenn zusätzlich Drogen konsumiert wurden', correct: false },
+      { id: 'c', text: 'Wenn der Fahrer unter 21 Jahre alt ist', correct: false },
+    ],
+  },
+  {
+    id: 'L1_09',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist "Sekundenschlaf" und welche Gefahr geht davon aus?',
+    answers: [
+      { id: 'a', text: 'Ein kurzzeitiges, unkontrollierbares Einschlafen am Steuer, das selbst bei niedrigen Geschwindigkeiten zu schweren Unfällen führen kann', correct: true },
+      { id: 'b', text: 'Ein kurzes Dösen, das nur bei Geschwindigkeiten über 100 km/h gefährlich ist', correct: false },
+      { id: 'c', text: 'Ein medizinischer Zustand, der nur nachts auftritt und leicht erkennbar ist', correct: false },
+    ],
+  },
+  {
+    id: 'L1_10',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was sollte man bei starker Müdigkeit während der Fahrt tun?',
+    answers: [
+      { id: 'a', text: 'Sofort an einem sicheren Ort anhalten und eine Pause einlegen oder schlafen', correct: true },
+      { id: 'b', text: 'Das Fenster öffnen und Musik lauter stellen, um wach zu bleiben', correct: false },
+      { id: 'c', text: 'Die Geschwindigkeit erhöhen, um schneller ans Ziel zu kommen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_11',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Auswirkungen haben illegale Drogen auf die Fahrtüchtigkeit?',
+    answers: [
+      { id: 'a', text: 'Illegale Drogen können Wahrnehmung, Reaktionsvermögen und Urteilsfähigkeit stark beeinträchtigen – teils für viele Stunden bis Tage nach dem Konsum', correct: true },
+      { id: 'b', text: 'Die Wirkung illegaler Drogen auf die Fahrtüchtigkeit ist von Person zu Person so unterschiedlich, dass keine allgemeinen Aussagen möglich sind', correct: false },
+      { id: 'c', text: 'Nur Cannabis beeinträchtigt die Fahrtüchtigkeit; andere illegale Drogen haben kaum Einfluss', correct: false },
+    ],
+  },
+  {
+    id: 'L1_12',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Darf man nach dem Konsum von Cannabis Auto fahren?',
+    answers: [
+      { id: 'a', text: 'Nein, Cannabis kann die Fahrtüchtigkeit erheblich beeinträchtigen; das Fahren unter dem Einfluss ist verboten und gefährlich', correct: true },
+      { id: 'b', text: 'Ja, wenn man sich fit fühlt und nur eine geringe Menge konsumiert hat', correct: false },
+      { id: 'c', text: 'Ja, aber nur auf bekannten Strecken und bei guten Wetterbedingungen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_13',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie können Medikamente die Fahrtüchtigkeit beeinflussen?',
+    answers: [
+      { id: 'a', text: 'Manche Medikamente können Schläfrigkeit, Konzentrationsprobleme oder verlängerte Reaktionszeiten verursachen und damit die Fahrtüchtigkeit einschränken', correct: true },
+      { id: 'b', text: 'Rezeptpflichtige Medikamente haben keine Auswirkungen auf die Fahrtüchtigkeit, da sie medizinisch kontrolliert sind', correct: false },
+      { id: 'c', text: 'Nur Schlafmittel beeinflussen die Fahrtüchtigkeit; andere Medikamente sind unbedenklich', correct: false },
+    ],
+  },
+  {
+    id: 'L1_14',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was sollte man tun, wenn man Medikamente einnehmen muss und Auto fahren möchte?',
+    answers: [
+      { id: 'a', text: 'Den Beipackzettel lesen und ggf. den Arzt oder Apotheker fragen, ob das Medikament die Fahrtüchtigkeit beeinträchtigt', correct: true },
+      { id: 'b', text: 'Immer auf das Autofahren verzichten, solange man Medikamente nimmt', correct: false },
+      { id: 'c', text: 'Die Dosierung des Medikaments halbieren, um negative Auswirkungen zu vermeiden', correct: false },
+    ],
+  },
+  {
+    id: 'L1_15',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "selektivem Sehen" im Straßenverkehr?',
+    answers: [
+      { id: 'a', text: 'Die Tendenz des Gehirns, nur bestimmte Reize bewusst wahrzunehmen und andere auszublenden, was zu übersehenen Gefahren führen kann', correct: true },
+      { id: 'b', text: 'Die Fähigkeit, bei schlechten Sichtverhältnissen besonders gut zu sehen', correct: false },
+      { id: 'c', text: 'Eine spezielle Fahrtechnik für komplexe Verkehrssituationen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_16',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie wirkt sich Stress auf das Fahrverhalten aus?',
+    answers: [
+      { id: 'a', text: 'Stress kann zu Konzentrationsmängeln, erhöhter Risikobereitschaft und schlechteren Reaktionen führen', correct: true },
+      { id: 'b', text: 'Stress erhöht die Aufmerksamkeit und macht Fahrer sicherer', correct: false },
+      { id: 'c', text: 'Stress hat keinen nachweisbaren Einfluss auf das Fahrverhalten', correct: false },
+    ],
+  },
+  {
+    id: 'L1_17',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "Risikobereitschaft" im Straßenverkehr?',
+    answers: [
+      { id: 'a', text: 'Die Bereitschaft, bewusst oder unbewusst gefährliche Situationen in Kauf zu nehmen, z.B. durch Überholen bei schlechter Sicht', correct: true },
+      { id: 'b', text: 'Die Fähigkeit, Risiken im Straßenverkehr zuverlässig einzuschätzen und zu vermeiden', correct: false },
+      { id: 'c', text: 'Ein positives Merkmal erfahrener Fahrer, das ihre Fahrzeugkontrolle verbessert', correct: false },
+    ],
+  },
+  {
+    id: 'L1_18',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist "Fahrtüchtigkeit" und welche Faktoren können sie beeinflussen?',
+    answers: [
+      { id: 'a', text: 'Die körperliche und geistige Eignung zum sicheren Führen eines Fahrzeugs – sie wird durch Alkohol, Drogen, Medikamente, Müdigkeit und Stress beeinflusst', correct: true },
+      { id: 'b', text: 'Ausschließlich die technischen Kenntnisse eines Fahrers über das Fahrzeug', correct: false },
+      { id: 'c', text: 'Nur die Sehfähigkeit und motorische Geschicklichkeit des Fahrers', correct: false },
+    ],
+  },
+  {
+    id: 'L1_19',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was sind typische Anzeichen für Übermüdung beim Fahren?',
+    answers: [
+      { id: 'a', text: 'Häufiges Blinzeln, schwere Augen, Konzentrationsprobleme und das Abkommen von der Fahrspur', correct: true },
+      { id: 'b', text: 'Erhöhte Herzfrequenz und Schwitzen', correct: false },
+      { id: 'c', text: 'Hunger und Durst', correct: false },
+    ],
+  },
+  {
+    id: 'L1_20',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Warum ist Telefonieren ohne Freisprecheinrichtung während der Fahrt verboten?',
+    answers: [
+      { id: 'a', text: 'Weil es die Aufmerksamkeit erheblich ablenkt, die Reaktionszeit verlängert und das Unfallrisiko deutlich erhöht', correct: true },
+      { id: 'b', text: 'Ausschließlich wegen möglicher Strahlenbelastung durch das Mobiltelefon', correct: false },
+      { id: 'c', text: 'Nur weil es die Sicht einschränkt, wenn das Telefon ans Ohr gehalten wird', correct: false },
+    ],
+  },
+  {
+    id: 'L1_21',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie beeinflusst emotionaler Stress (z.B. Streit, Sorgen) die Fahrtüchtigkeit?',
+    answers: [
+      { id: 'a', text: 'Emotionaler Stress kann die Konzentration erheblich verringern und zu aggressiverem oder unvorsichtigerem Fahrverhalten führen', correct: true },
+      { id: 'b', text: 'Emotionaler Stress hat keinen Einfluss auf die Fahrtüchtigkeit, solange man körperlich fit ist', correct: false },
+      { id: 'c', text: 'Emotionaler Stress macht Fahrer aufmerksamer und vorsichtiger', correct: false },
+    ],
+  },
+  {
+    id: 'L1_22',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter dem Begriff "Gefahrenwahrnehmung"?',
+    answers: [
+      { id: 'a', text: 'Die Fähigkeit, potenzielle Gefahrensituationen im Straßenverkehr frühzeitig zu erkennen und entsprechend zu reagieren', correct: true },
+      { id: 'b', text: 'Das automatische Bremsen des Fahrzeugs bei erkannten Gefahren', correct: false },
+      { id: 'c', text: 'Die rechtliche Pflicht, Unfälle der Polizei zu melden', correct: false },
+    ],
+  },
+  {
+    id: 'L1_23',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Faktoren können die Reaktionszeit eines Fahrers verlängern?',
+    answers: [
+      { id: 'a', text: 'Alkohol, Drogen, Medikamente, Müdigkeit, Ablenkung und Stress', correct: true },
+      { id: 'b', text: 'Nur Alkohol und illegale Drogen; legale Substanzen haben keinen Einfluss', correct: false },
+      { id: 'c', text: 'Ausschließlich körperliche Erkrankungen wie Sehprobleme oder Gehörschäden', correct: false },
+    ],
+  },
+  {
+    id: 'L1_24',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie sollte man sich verhalten, wenn man merkt, dass man nicht mehr fahrtüchtig ist?',
+    answers: [
+      { id: 'a', text: 'Sofort an einem sicheren Ort anhalten, nicht weiterfahren und ggf. Hilfe organisieren', correct: true },
+      { id: 'b', text: 'Langsamer fahren und versuchen, das Ziel noch zu erreichen', correct: false },
+      { id: 'c', text: 'Kurz pausieren und dann bei reduzierter Geschwindigkeit weiterfahren', correct: false },
+    ],
+  },
+  {
+    id: 'L1_25',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist unter dem Begriff "Ablenkung" im Straßenverkehr zu verstehen?',
+    answers: [
+      { id: 'a', text: 'Jede Aktivität, die die Aufmerksamkeit des Fahrers vom Verkehrsgeschehen ablenkt, wie Essen, Bedienen des Navigationssystems oder Gespräche', correct: true },
+      { id: 'b', text: 'Ausschließlich das Benutzen von Mobiltelefonen während der Fahrt', correct: false },
+      { id: 'c', text: 'Das Betrachten von Werbetafeln am Straßenrand', correct: false },
+    ],
+  },
+  {
+    id: 'L1_26',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Aussage über Drogen im Straßenverkehr ist richtig?',
+    answers: [
+      { id: 'a', text: 'Das Führen eines Fahrzeugs unter dem Einfluss von Drogen ist strafbar, unabhängig von der konsumierten Menge', correct: true },
+      { id: 'b', text: 'Drogen sind nur dann illegal beim Fahren, wenn sie die Fahrtüchtigkeit nachweislich beeinträchtigen', correct: false },
+      { id: 'c', text: 'Bei medizinisch verschriebenen Betäubungsmitteln ist Fahren immer erlaubt', correct: false },
+    ],
+  },
+  {
+    id: 'L1_27',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie lange nach dem Konsum von Cannabis kann die Fahrtüchtigkeit noch beeinträchtigt sein?',
+    answers: [
+      { id: 'a', text: 'Bis zu 24 Stunden oder länger, abhängig von Menge, Häufigkeit des Konsums und individueller Verarbeitung', correct: true },
+      { id: 'b', text: 'Maximal 2 Stunden nach dem letzten Konsum', correct: false },
+      { id: 'c', text: 'Nur solange die akute Rauschwirkung anhält, danach ist Fahren sicher', correct: false },
+    ],
+  },
+  {
+    id: 'L1_28',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "Tunnelblick" beim Autofahren?',
+    answers: [
+      { id: 'a', text: 'Eine Einengung des Blickfeldes, bei der der Fahrer nur noch geradeaus schaut und seitliche Gefahren übersieht', correct: true },
+      { id: 'b', text: 'Das Fahren durch einen Tunnel ohne ausreichende Beleuchtung', correct: false },
+      { id: 'c', text: 'Eine spezielle Fahrtechnik bei Nebel für bessere Sicht', correct: false },
+    ],
+  },
+  {
+    id: 'L1_29',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie beeinflusst mangelnde Erfahrung die Fahrsicherheit?',
+    answers: [
+      { id: 'a', text: 'Unerfahrene Fahrer haben häufig Schwierigkeiten, Gefahren rechtzeitig zu erkennen und richtig zu reagieren, da ihnen die nötige Routine fehlt', correct: true },
+      { id: 'b', text: 'Unerfahrene Fahrer sind vorsichtiger und daher sicherer als erfahrene Fahrer', correct: false },
+      { id: 'c', text: 'Erfahrung ist beim Autofahren weniger wichtig als technisches Wissen über das Fahrzeug', correct: false },
+    ],
+  },
+  {
+    id: 'L1_30',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist unter "Fahren auf Sicht" zu verstehen?',
+    answers: [
+      { id: 'a', text: 'Die Pflicht, die Geschwindigkeit so anzupassen, dass man innerhalb der überschaubaren Strecke anhalten kann', correct: true },
+      { id: 'b', text: 'Das Fahren ohne Navigationsgerät, nur anhand der Straßenschilder', correct: false },
+      { id: 'c', text: 'Das Fahren bei klarer Sicht ohne Nebel oder Regen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_31',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Auswirkungen hat Alkohol auf das Sehvermögen?',
+    answers: [
+      { id: 'a', text: 'Alkohol beeinträchtigt die Sehschärfe, verengt das Gesichtsfeld und verschlechtert die Tiefenwahrnehmung', correct: true },
+      { id: 'b', text: 'Alkohol schärft die Sinne und verbessert das Nachtsehen', correct: false },
+      { id: 'c', text: 'Alkohol hat keine nachweisbaren Auswirkungen auf das Sehvermögen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_32',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist die Hauptursache für schwere Verkehrsunfälle?',
+    answers: [
+      { id: 'a', text: 'Menschliches Versagen, z.B. durch Ablenkung, Unachtsamkeit, überhöhte Geschwindigkeit oder Alkohol', correct: true },
+      { id: 'b', text: 'Technische Defekte an Fahrzeugen', correct: false },
+      { id: 'c', text: 'Schlechte Straßenverhältnisse und Witterungsbedingungen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_33',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Aussage über die Auswirkungen von Alkohol auf die Psyche ist richtig?',
+    answers: [
+      { id: 'a', text: 'Alkohol senkt Hemmungen, führt zu Selbstüberschätzung und verringert die Fähigkeit, Risiken richtig einzuschätzen', correct: true },
+      { id: 'b', text: 'Alkohol steigert die Konzentration und macht Fahrer wachsamer', correct: false },
+      { id: 'c', text: 'Die psychischen Auswirkungen von Alkohol treten erst bei sehr hohen Promillewerten auf', correct: false },
+    ],
+  },
+  {
+    id: 'L1_34',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Warum sind junge Fahrer besonders häufig in Unfälle verwickelt?',
+    answers: [
+      { id: 'a', text: 'Mangelnde Fahrpraxis, Risikobereitschaft, Selbstüberschätzung und oft auch Alkohol- oder Drogeneinfluss spielen eine große Rolle', correct: true },
+      { id: 'b', text: 'Weil sie in schlecht gewarteten Fahrzeugen fahren', correct: false },
+      { id: 'c', text: 'Weil sie häufiger auf gefährlichen Straßen fahren als ältere Fahrer', correct: false },
+    ],
+  },
+  {
+    id: 'L1_35',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "kognitiver Ablenkung" beim Fahren?',
+    answers: [
+      { id: 'a', text: 'Wenn die Gedanken des Fahrers beim Fahren abschweifen und er sich mental nicht auf das Verkehrsgeschehen konzentriert', correct: true },
+      { id: 'b', text: 'Das Bedienen des Radios oder anderer technischer Geräte während der Fahrt', correct: false },
+      { id: 'c', text: 'Ablenkung durch andere Personen im Fahrzeug', correct: false },
+    ],
+  },
+  {
+    id: 'L1_36',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie wirkt sich Hunger oder ein niedriger Blutzucker auf das Fahrverhalten aus?',
+    answers: [
+      { id: 'a', text: 'Niedriger Blutzucker kann zu Konzentrationsproblemen, Schwindel und verlangsamter Reaktion führen und damit die Fahrtüchtigkeit beeinträchtigen', correct: true },
+      { id: 'b', text: 'Hunger hat keinen nennenswerten Einfluss auf die Fahrtüchtigkeit', correct: false },
+      { id: 'c', text: 'Niedriger Blutzucker erhöht die Aufmerksamkeit und Reaktionsfähigkeit', correct: false },
+    ],
+  },
+  {
+    id: 'L1_37',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Maßnahmen helfen, das Risiko von Verkehrsunfällen durch menschliche Fehler zu reduzieren?',
+    answers: [
+      { id: 'a', text: 'Vorausschauendes Fahren, regelmäßige Pausen, Verzicht auf Alkohol und Drogen sowie Minimierung von Ablenkungen', correct: true },
+      { id: 'b', text: 'Ausschließlich technische Hilfssysteme wie Spurhalteassistent und Notbremsassistent', correct: false },
+      { id: 'c', text: 'Ausschließlich eine bessere Fahrausbildung für Anfänger', correct: false },
+    ],
+  },
+  {
+    id: 'L1_38',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was ist der Unterschied zwischen relativer und absoluter Fahruntüchtigkeit bei Alkohol?',
+    answers: [
+      { id: 'a', text: 'Ab 0,3‰ mit Ausfallerscheinungen gilt relative Fahruntüchtigkeit (Straftat möglich), ab 1,1‰ absolute Fahruntüchtigkeit (immer Straftat)', correct: true },
+      { id: 'b', text: 'Relative Fahruntüchtigkeit beginnt ab 0,5‰, absolute ab 0,8‰', correct: false },
+      { id: 'c', text: 'Der Unterschied besteht nur im Strafmaß, nicht in der Promillegrenze', correct: false },
+    ],
+  },
+  {
+    id: 'L1_39',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche rechtlichen Konsequenzen drohen beim Fahren unter Alkoholeinfluss ab 0,5 Promille?',
+    answers: [
+      { id: 'a', text: 'Geldbuße, Punkte in Flensburg und ein temporäres Fahrverbot (Ordnungswidrigkeit)', correct: true },
+      { id: 'b', text: 'Sofortiger Führerscheinentzug und Freiheitsstrafe', correct: false },
+      { id: 'c', text: 'Nur eine mündliche Verwarnung durch die Polizei', correct: false },
+    ],
+  },
+  {
+    id: 'L1_40',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie kann man vor einer langen Fahrt sicherstellen, ausreichend fit zu sein?',
+    answers: [
+      { id: 'a', text: 'Ausreichend schlafen, keine berauschenden Mittel einnehmen, regelmäßige Pausen einplanen und bei Bedarf Fahrten verschieben', correct: true },
+      { id: 'b', text: 'Energydrinks und starken Kaffee trinken, um wach zu bleiben', correct: false },
+      { id: 'c', text: 'Sich auf das Ziel konzentrieren und die Fahrt möglichst schnell hinter sich bringen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_41',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "Risikowahrnehmung" im Straßenverkehr?',
+    answers: [
+      { id: 'a', text: 'Die Fähigkeit, gefährliche Situationen frühzeitig zu erkennen und die eigene Gefährdung realistisch einzuschätzen', correct: true },
+      { id: 'b', text: 'Die automatische Erkennung von Gefahren durch moderne Fahrerassistenzsysteme', correct: false },
+      { id: 'c', text: 'Das bewusste Eingehen von Risiken, um schneller ans Ziel zu kommen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_42',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Personengruppen unterliegen im Straßenverkehr einem besonderen Alkoholverbot?',
+    answers: [
+      { id: 'a', text: 'Fahranfänger in der Probezeit und Fahrer unter 21 Jahren (0,0-Promille-Grenze)', correct: true },
+      { id: 'b', text: 'Nur Berufskraftfahrer wie LKW- und Busfahrer', correct: false },
+      { id: 'c', text: 'Alle Fahrer nach 22 Uhr auf der Autobahn', correct: false },
+    ],
+  },
+  {
+    id: 'L1_43',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Wie beeinflusst Lärm im Fahrzeug die Aufmerksamkeit des Fahrers?',
+    answers: [
+      { id: 'a', text: 'Sehr laute Musik oder starker Lärm kann die Konzentration beeinträchtigen und wichtige Geräusche wie Hupen oder Sirenen überdecken', correct: true },
+      { id: 'b', text: 'Musik im Auto hat keine nachweisbaren Auswirkungen auf die Aufmerksamkeit', correct: false },
+      { id: 'c', text: 'Laute Musik erhöht die Wachheit und verbessert die Reaktionsfähigkeit', correct: false },
+    ],
+  },
+  {
+    id: 'L1_44',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "proaktiver Fahrweise"?',
+    answers: [
+      { id: 'a', text: 'Vorausschauendes Fahren, bei dem der Fahrer potenzielle Gefahren frühzeitig erkennt und entsprechend handelt, bevor es zu kritischen Situationen kommt', correct: true },
+      { id: 'b', text: 'Defensives Fahren, bei dem man immer hinter anderen Fahrzeugen bleibt', correct: false },
+      { id: 'c', text: 'Aggressives Fahren, um schnell im Verkehr voranzukommen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_45',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Warum ist Müdigkeit am Steuer so gefährlich?',
+    answers: [
+      { id: 'a', text: 'Weil Müdigkeit zu Sekundenschlaf führen kann, wobei selbst bei 100 km/h in einer Sekunde fast 28 Meter zurückgelegt werden – ohne Kontrolle über das Fahrzeug', correct: true },
+      { id: 'b', text: 'Weil müde Fahrer grundsätzlich zu langsam fahren und den Verkehr behindern', correct: false },
+      { id: 'c', text: 'Weil Müdigkeit ausschließlich nachts ein Problem darstellt', correct: false },
+    ],
+  },
+  {
+    id: 'L1_46',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was sind Anzeichen dafür, dass man eine Pause beim Fahren einlegen sollte?',
+    answers: [
+      { id: 'a', text: 'Schwere Augen, häufiges Gähnen, Konzentrationsprobleme, Abkommen von der Spur oder das Verpassen von Ausfahrten', correct: true },
+      { id: 'b', text: 'Hunger und Durst, da diese die einzigen zuverlässigen Anzeichen für Müdigkeit sind', correct: false },
+      { id: 'c', text: 'Nur starkes Zittern der Hände, da dies auf Kreislaufprobleme hindeutet', correct: false },
+    ],
+  },
+  {
+    id: 'L1_47',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Aussage über die Kombination von Alkohol und Medikamenten gilt?',
+    answers: [
+      { id: 'a', text: 'Alkohol kann die Wirkung bestimmter Medikamente verstärken und zu gefährlichen Wechselwirkungen führen, die die Fahrtüchtigkeit stark beeinträchtigen', correct: true },
+      { id: 'b', text: 'Medikamente neutralisieren die Wirkung von Alkohol und machen das Fahren sicherer', correct: false },
+      { id: 'c', text: 'Die Kombination aus Alkohol und Medikamenten ist nur bei verschreibungspflichtigen Mitteln problematisch', correct: false },
+    ],
+  },
+  {
+    id: 'L1_48',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was versteht man unter "Fahren unter dem Einfluss von Betäubungsmitteln"?',
+    answers: [
+      { id: 'a', text: 'Das Führen eines Kraftfahrzeugs, nachdem illegale Drogen oder bestimmte Medikamente eingenommen wurden, die die Fahrtüchtigkeit beeinträchtigen', correct: true },
+      { id: 'b', text: 'Ausschließlich das Fahren unter dem Einfluss von Alkohol', correct: false },
+      { id: 'c', text: 'Nur das Fahren nach dem Konsum von Cannabis oder Heroin', correct: false },
+    ],
+  },
+  {
+    id: 'L1_49',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Welche Faktoren erhöhen das Unfallrisiko besonders bei Nachtfahrten?',
+    answers: [
+      { id: 'a', text: 'Eingeschränkte Sicht, Blendung durch Gegenverkehr, erhöhte Müdigkeit und häufigerer Alkohol- oder Drogenkonsum am Abend', correct: true },
+      { id: 'b', text: 'Ausschließlich schlechtere Straßenverhältnisse und mangelnde Beleuchtung', correct: false },
+      { id: 'c', text: 'Nächtliche Temperaturschwankungen, die die Fahrbahn gefährlicher machen', correct: false },
+    ],
+  },
+  {
+    id: 'L1_50',
+    topic: 'Lektion 1',
+    points: 3,
+    question: 'Was sollte man tun, wenn man sich unsicher ist, ob man nach dem Alkohol- oder Drogenkonsum noch fahrtüchtig ist?',
+    answers: [
+      { id: 'a', text: 'Im Zweifel auf das Fahren verzichten – ein Taxi, öffentliche Verkehrsmittel oder ein nüchterner Fahrgemeinschaftspartner sind sichere Alternativen', correct: true },
+      { id: 'b', text: 'Einen kurzen Test machen, indem man geradeaus läuft, um die eigene Fahrtüchtigkeit einzuschätzen', correct: false },
+      { id: 'c', text: 'Einfach vorsichtig und langsam fahren, um das Risiko zu minimieren', correct: false },
     ],
   },
 
-  // ─── Verkehrszeichen ────────────────────────────────────────────────────────
-  {
-    id: 'Z01',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Was bedeutet ein rundes Zeichen mit rotem Rand und weißem Querbalken?',
-    answers: [
-      { id: 'a', text: 'Einfahrt verboten (Durchfahrt nicht gestattet)', correct: true },
-      { id: 'b', text: 'Halten verboten', correct: false },
-      { id: 'c', text: 'Überholverbot', correct: false },
-    ],
-  },
-  {
-    id: 'Z02',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Welche Farbe haben Gefahrzeichen (Warnschilder)?',
-    answers: [
-      { id: 'a', text: 'Gelbes Dreieck mit rotem Rand', correct: true },
-      { id: 'b', text: 'Rotes Dreieck mit weißem Hintergrund', correct: false },
-      { id: 'c', text: 'Blaues Dreieck', correct: false },
-    ],
-  },
-  {
-    id: 'Z03',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Was bedeutet ein blaues rundes Schild mit weißem Pfeil?',
-    answers: [
-      { id: 'a', text: 'Fahrtrichtung in die gezeigte Richtung vorgeschrieben', correct: true },
-      { id: 'b', text: 'Empfohlene Fahrtrichtung', correct: false },
-      { id: 'c', text: 'Einbahnstraße', correct: false },
-    ],
-  },
-  {
-    id: 'Z04',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Was bedeutet das Zeichen „Tempo 30-Zone"?',
-    answers: [
-      { id: 'a', text: 'Innerhalb der Zone gilt Tempo 30, Vorfahrt gilt rechts vor links', correct: true },
-      { id: 'b', text: 'Empfehlung, nicht schneller als 30 km/h zu fahren', correct: false },
-      { id: 'c', text: 'Höchstgeschwindigkeit 30 km/h nur für LKW', correct: false },
-    ],
-  },
-  {
-    id: 'Z05',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Ein Schild zeigt eine rote Kreuzung auf gelbem Hintergrund mit roten Balken. Was bedeutet es?',
-    answers: [
-      { id: 'a', text: 'Bahnübergang ohne Schranken – besondere Vorsicht geboten', correct: true },
-      { id: 'b', text: 'Kreuzung mit Vorfahrtstraße', correct: false },
-      { id: 'c', text: 'Autobahn-Einfahrt', correct: false },
-    ],
-  },
-  {
-    id: 'Z06',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Was zeigt ein blaues Rechteck mit weißem „P"?',
-    answers: [
-      { id: 'a', text: 'Parkplatz', correct: true },
-      { id: 'b', text: 'Polizei-Station', correct: false },
-      { id: 'c', text: 'Halteplatz für Busse', correct: false },
-    ],
-  },
-  {
-    id: 'Z07',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Das gelbe Schild mit schwarzem Diamant (Raute) bedeutet:',
-    answers: [
-      { id: 'a', text: 'Ich befinde mich auf einer Vorfahrtstraße', correct: true },
-      { id: 'b', text: 'Ich muss Vorfahrt gewähren', correct: false },
-      { id: 'c', text: 'Kreuzung ohne Vorfahrtsregelung voraus', correct: false },
-    ],
-  },
-
-  // ─── Geschwindigkeit ────────────────────────────────────────────────────────
-  {
-    id: 'G01',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Welche Höchstgeschwindigkeit gilt innerorts, wenn kein Zeichen aufgestellt ist?',
-    answers: [
-      { id: 'a', text: '50 km/h', correct: true },
-      { id: 'b', text: '60 km/h', correct: false },
-      { id: 'c', text: '30 km/h', correct: false },
-    ],
-  },
-  {
-    id: 'G02',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Welche Höchstgeschwindigkeit gilt außerorts (Landstraße) für PKW?',
-    answers: [
-      { id: 'a', text: '100 km/h', correct: true },
-      { id: 'b', text: '80 km/h', correct: false },
-      { id: 'c', text: '120 km/h', correct: false },
-    ],
-  },
-  {
-    id: 'G03',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Auf der Autobahn gilt für PKW ohne besondere Beschilderung…',
-    answers: [
-      { id: 'a', text: 'Keine allgemeine Höchstgeschwindigkeit, Richtgeschwindigkeit 130 km/h', correct: true },
-      { id: 'b', text: 'Maximal 130 km/h', correct: false },
-      { id: 'c', text: 'Maximal 150 km/h', correct: false },
-    ],
-  },
-  {
-    id: 'G04',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Sie fahren in einer geschlossenen Ortschaft. Wann müssen Sie Ihre Geschwindigkeit verringern?',
-    answers: [
-      { id: 'a', text: 'Wenn die Sicht durch Nebel, Regen oder Dunkelheit eingeschränkt ist', correct: true },
-      { id: 'b', text: 'Nur wenn ein Tempo-30-Schild aufgestellt ist', correct: false },
-      { id: 'c', text: 'Niemals, 50 km/h darf immer gefahren werden', correct: false },
-    ],
-  },
-  {
-    id: 'G05',
-    topic: 'Geschwindigkeit',
-    points: 3,
-    question: 'Mit welcher Höchstgeschwindigkeit darf ein PKW mit Anhänger auf der Autobahn fahren?',
-    answers: [
-      { id: 'a', text: '80 km/h', correct: true },
-      { id: 'b', text: '100 km/h', correct: false },
-      { id: 'c', text: '120 km/h', correct: false },
-    ],
-  },
-  {
-    id: 'G06',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Was verstehen Sie unter „angepasster Geschwindigkeit"?',
-    answers: [
-      { id: 'a', text: 'Geschwindigkeit, die der Straßen-, Verkehrs-, Sicht- und Wetterlage entspricht', correct: true },
-      { id: 'b', text: 'Die erlaubte Höchstgeschwindigkeit immer ausfahren', correct: false },
-      { id: 'c', text: 'Geschwindigkeit, die dem Verkehrsfluss entspricht', correct: false },
-    ],
-  },
-
-  // ─── Abstand ────────────────────────────────────────────────────────────────
-  {
-    id: 'A01',
-    topic: 'Abstand',
-    points: 4,
-    question: 'Welcher Mindestabstand zum vorausfahrenden Fahrzeug ist bei 100 km/h einzuhalten?',
-    answers: [
-      { id: 'a', text: 'Mindestens 50 m (halber Tacho in Metern)', correct: true },
-      { id: 'b', text: 'Mindestens 100 m', correct: false },
-      { id: 'c', text: 'Mindestens 30 m', correct: false },
-    ],
-  },
-  {
-    id: 'A02',
-    topic: 'Abstand',
-    points: 4,
-    question: 'Was ist die Faustregel für den Sicherheitsabstand?',
-    answers: [
-      { id: 'a', text: 'Halber Tachowert in Metern (bei 60 km/h → 30 m)', correct: true },
-      { id: 'b', text: 'Ganzer Tachowert in Metern', correct: false },
-      { id: 'c', text: 'Mindestens 2 Sekunden Zeitabstand', correct: false },
-    ],
-  },
-  {
-    id: 'A03',
-    topic: 'Abstand',
-    points: 3,
-    question: 'Warum müssen Sie beim Fahren hinter einem LKW einen größeren Abstand einhalten?',
-    answers: [
-      { id: 'a', text: 'Weil die Sicht durch den LKW stark eingeschränkt ist', correct: true },
-      { id: 'b', text: 'Weil LKW schneller bremsen als PKW', correct: false },
-      { id: 'c', text: 'Weil LKW beim Bremsen ausscheren können', correct: false },
-    ],
-  },
-  {
-    id: 'A04',
-    topic: 'Abstand',
-    points: 4,
-    question: 'Bei einer Geschwindigkeit von 80 km/h und trockenem Asphalt beträgt der Anhalteweg etwa…',
-    answers: [
-      { id: 'a', text: 'Ca. 65 m (Bremsweg ca. 40 m + Reaktionsweg ca. 25 m)', correct: true },
-      { id: 'b', text: 'Ca. 30 m', correct: false },
-      { id: 'c', text: 'Ca. 120 m', correct: false },
-    ],
-  },
-
-  // ─── Überholen ──────────────────────────────────────────────────────────────
-  {
-    id: 'UE01',
-    topic: 'Überholen',
-    points: 4,
-    question: 'Wann ist Überholen verboten?',
-    answers: [
-      { id: 'a', text: 'Wenn es durch Zeichen verboten ist oder die Übersicht fehlt', correct: true },
-      { id: 'b', text: 'Grundsätzlich immer auf Landstraßen', correct: false },
-      { id: 'c', text: 'Nur innerorts', correct: false },
-    ],
-  },
-  {
-    id: 'UE02',
-    topic: 'Überholen',
-    points: 4,
-    question: 'Auf welcher Seite darf man in Deutschland überholen?',
-    answers: [
-      { id: 'a', text: 'Links, außer wenn das vorausfahrende Fahrzeug links abbiegen will', correct: true },
-      { id: 'b', text: 'Rechts ist immer erlaubt', correct: false },
-      { id: 'c', text: 'Auf Autobahnen immer rechts', correct: false },
-    ],
-  },
-  {
-    id: 'UE03',
-    topic: 'Überholen',
-    points: 4,
-    question: 'Welchen Seitenabstand müssen Sie beim Überholen von Radfahrern mindestens einhalten?',
-    answers: [
-      { id: 'a', text: 'Innerorts mindestens 1,5 m, außerorts mindestens 2 m', correct: true },
-      { id: 'b', text: 'Mindestens 0,5 m', correct: false },
-      { id: 'c', text: 'Mindestens 1 m', correct: false },
-    ],
-  },
-  {
-    id: 'UE04',
-    topic: 'Überholen',
-    points: 3,
-    question: 'Was müssen Sie tun, bevor Sie überholen?',
-    answers: [
-      { id: 'a', text: 'Prüfen, ob Überholen erlaubt, gefahrlos und ohne Behinderung anderer möglich ist', correct: true },
-      { id: 'b', text: 'Den Blinker setzen und sofort überholen', correct: false },
-      { id: 'c', text: 'Hupen, um den Vorausfahrenden zu warnen', correct: false },
-    ],
-  },
-
-  // ─── Alkohol & Drogen ────────────────────────────────────────────────────────
-  {
-    id: 'AD01',
-    topic: 'Alkohol & Drogen',
-    points: 5,
-    question: 'Wie hoch ist die allgemeine Promillegrenze in Deutschland für PKW-Fahrer?',
-    answers: [
-      { id: 'a', text: '0,5 ‰ (0,3 ‰ bei Ausfallerscheinungen)', correct: true },
-      { id: 'b', text: '0,8 ‰', correct: false },
-      { id: 'c', text: '1,0 ‰', correct: false },
-    ],
-  },
-  {
-    id: 'AD02',
-    topic: 'Alkohol & Drogen',
-    points: 5,
-    question: 'Welche Promillegrenze gilt für Fahranfänger in der Probezeit (und unter 21 Jahren)?',
-    answers: [
-      { id: 'a', text: '0,0 ‰ – absolutes Alkoholverbot', correct: true },
-      { id: 'b', text: '0,3 ‰', correct: false },
-      { id: 'c', text: '0,5 ‰', correct: false },
-    ],
-  },
-  {
-    id: 'AD03',
-    topic: 'Alkohol & Drogen',
-    points: 5,
-    question: 'Wie wirkt Alkohol auf die Fahrtüchtigkeit?',
-    answers: [
-      { id: 'a', text: 'Er verlangsamt die Reaktion, beeinträchtigt das Sehen und erhöht die Risikobereitschaft', correct: true },
-      { id: 'b', text: 'Er entspannt und verbessert die Konzentration', correct: false },
-      { id: 'c', text: 'Er erhöht die Reaktionsgeschwindigkeit leicht', correct: false },
-    ],
-  },
-  {
-    id: 'AD04',
-    topic: 'Alkohol & Drogen',
-    points: 5,
-    question: 'Ab wann gilt eine absolute Fahruntüchtigkeit durch Alkohol?',
-    answers: [
-      { id: 'a', text: 'Ab 1,6 ‰ (absolute Fahruntüchtigkeit)', correct: true },
-      { id: 'b', text: 'Ab 1,0 ‰', correct: false },
-      { id: 'c', text: 'Ab 2,0 ‰', correct: false },
-    ],
-  },
-  {
-    id: 'AD05',
-    topic: 'Alkohol & Drogen',
-    points: 5,
-    question: 'Dürfen Sie nach dem Genuss von Drogen (z.B. Cannabis) Auto fahren?',
-    answers: [
-      { id: 'a', text: 'Nein, Drogen beeinträchtigen die Fahrtüchtigkeit und sind verboten', correct: true },
-      { id: 'b', text: 'Ja, wenn Sie sich fit fühlen', correct: false },
-      { id: 'c', text: 'Ja, solange die Wirkung nachgelassen hat', correct: false },
-    ],
-  },
-
-  // ─── Fahrzeugtechnik ─────────────────────────────────────────────────────────
-  {
-    id: 'FT01',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Wie erkennen Sie, dass die Bremsen Ihres Fahrzeugs nachlassen?',
-    answers: [
-      { id: 'a', text: 'Das Pedal lässt sich tief durchdrücken oder das Fahrzeug bremst einseitig', correct: true },
-      { id: 'b', text: 'Das Lenkrad vibriert beim Bremsen', correct: false },
-      { id: 'c', text: 'Der Motor wird lauter beim Bremsen', correct: false },
-    ],
-  },
-  {
-    id: 'FT02',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Welches Reifenprofil ist gesetzlich vorgeschrieben (Mindestprofiltiefe)?',
-    answers: [
-      { id: 'a', text: '1,6 mm über die gesamte Reifenbreite', correct: true },
-      { id: 'b', text: '2,0 mm', correct: false },
-      { id: 'c', text: '3,0 mm', correct: false },
-    ],
-  },
-  {
-    id: 'FT03',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Wann dürfen Sie mit abgefahrenen Reifen (unter Mindestprofiltiefe) fahren?',
-    answers: [
-      { id: 'a', text: 'Gar nicht – dies ist gesetzlich verboten und gefährlich', correct: true },
-      { id: 'b', text: 'Nur auf trockener Fahrbahn bei geringer Geschwindigkeit', correct: false },
-      { id: 'c', text: 'Nur auf der Autobahn, wo keine Kurven sind', correct: false },
-    ],
-  },
-  {
-    id: 'FT04',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Was ist ABS?',
-    answers: [
-      { id: 'a', text: 'Antiblockiersystem – verhindert das Blockieren der Räder beim Bremsen', correct: true },
-      { id: 'b', text: 'Automatisches Bremssystem – bremst selbstständig bei Hindernissen', correct: false },
-      { id: 'c', text: 'Antriebsblockier-Sperre – verhindert Schleudern beim Anfahren', correct: false },
-    ],
-  },
-  {
-    id: 'FT05',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Was bewirkt ESP (Elektronisches Stabilitätsprogramm)?',
-    answers: [
-      { id: 'a', text: 'Es stabilisiert das Fahrzeug in kritischen Fahrsituationen', correct: true },
-      { id: 'b', text: 'Es erhöht die Motorleistung bei Kurvenfahrten', correct: false },
-      { id: 'c', text: 'Es reguliert den Reifendruck automatisch', correct: false },
-    ],
-  },
-  {
-    id: 'FT06',
-    topic: 'Fahrzeugtechnik',
-    points: 2,
-    question: 'Wofür steht „HU" bei der Hauptuntersuchung?',
-    answers: [
-      { id: 'a', text: 'Hauptuntersuchung – regelmäßige technische Prüfung beim TÜV/DEKRA', correct: true },
-      { id: 'b', text: 'Halfyear-Update – halbjährliche Inspektion', correct: false },
-      { id: 'c', text: 'Hubraum-Überprüfung', correct: false },
-    ],
-  },
-  {
-    id: 'FT07',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Was müssen Sie tun, wenn während der Fahrt die Öldruckwarnleuchte aufleuchtet?',
-    answers: [
-      { id: 'a', text: 'Sofort anhalten und den Motor abstellen', correct: true },
-      { id: 'b', text: 'Fahrt fortsetzen und beim nächsten Werkstatttermin checken lassen', correct: false },
-      { id: 'c', text: 'Langsam weiterfahren und den Ölstand in der nächsten Pause prüfen', correct: false },
-    ],
-  },
-
-  // ─── Umweltschutz ───────────────────────────────────────────────────────────
-  {
-    id: 'UW01',
-    topic: 'Umweltschutz',
-    points: 2,
-    question: 'Welche Fahrweise hilft am meisten Kraftstoff zu sparen?',
-    answers: [
-      { id: 'a', text: 'Frühzeitig in einen hohen Gang schalten und vorausschauend fahren', correct: true },
-      { id: 'b', text: 'Motor immer im niedrigen Drehzahlbereich halten', correct: false },
-      { id: 'c', text: 'Klimaanlage immer auf volle Leistung stellen', correct: false },
-    ],
-  },
-  {
-    id: 'UW02',
-    topic: 'Umweltschutz',
-    points: 2,
-    question: 'Was verursacht hohe CO2-Emissionen beim Fahrzeug?',
-    answers: [
-      { id: 'a', text: 'Hoher Kraftstoffverbrauch durch schnelles und unsportliches Fahren', correct: true },
-      { id: 'b', text: 'Zu wenig Öl im Motor', correct: false },
-      { id: 'c', text: 'Zu niedriger Reifendruck allein', correct: false },
-    ],
-  },
-  {
-    id: 'UW03',
-    topic: 'Umweltschutz',
-    points: 2,
-    question: 'Warum sollten Sie den Motor nicht unnötig laufen lassen (z.B. im Stand)?',
-    answers: [
-      { id: 'a', text: 'Es verursacht unnötigen Kraftstoffverbrauch und Schadstoffausstoß', correct: true },
-      { id: 'b', text: 'Der Motor überhitzt bei Standgas', correct: false },
-      { id: 'c', text: 'Es schadet dem Getriebe', correct: false },
-    ],
-  },
-  {
-    id: 'UW04',
-    topic: 'Umweltschutz',
-    points: 2,
-    question: 'Wie wirkt sich zu niedriger Reifendruck auf den Verbrauch aus?',
-    answers: [
-      { id: 'a', text: 'Der Rollwiderstand steigt, der Verbrauch erhöht sich', correct: true },
-      { id: 'b', text: 'Der Verbrauch sinkt, weil weniger Reibung entsteht', correct: false },
-      { id: 'c', text: 'Reifendruck hat keinen Einfluss auf den Verbrauch', correct: false },
-    ],
-  },
-
-  // ─── Autobahn ────────────────────────────────────────────────────────────────
-  {
-    id: 'AB01',
-    topic: 'Autobahn',
-    points: 4,
-    question: 'Was müssen Sie beim Einfahren auf die Autobahn beachten?',
-    answers: [
-      { id: 'a', text: 'Auf der Auffahrt beschleunigen und dem Verkehr auf der Autobahn Vorfahrt lassen', correct: true },
-      { id: 'b', text: 'Der Einfahrende hat Vorfahrt', correct: false },
-      { id: 'c', text: 'Sie dürfen einfahren, wenn Sie blinken', correct: false },
-    ],
-  },
-  {
-    id: 'AB02',
-    topic: 'Autobahn',
-    points: 4,
-    question: 'Auf welcher Spur darf auf der Autobahn gefahren werden?',
-    answers: [
-      { id: 'a', text: 'Rechts fahren – die linken Spuren nur zum Überholen nutzen', correct: true },
-      { id: 'b', text: 'Auf jeder Spur beliebig', correct: false },
-      { id: 'c', text: 'Auf der mittleren Spur dauerhaft', correct: false },
-    ],
-  },
-  {
-    id: 'AB03',
-    topic: 'Autobahn',
-    points: 4,
-    question: 'Was müssen Sie bei einem Stau auf der Autobahn als erstes tun?',
-    answers: [
-      { id: 'a', text: 'Warnblinkanlage einschalten und eine Rettungsgasse bilden', correct: true },
-      { id: 'b', text: 'Sofort auf den Standstreifen fahren', correct: false },
-      { id: 'c', text: 'Nächste Ausfahrt nehmen', correct: false },
-    ],
-  },
-  {
-    id: 'AB04',
-    topic: 'Autobahn',
-    points: 3,
-    question: 'Was ist eine Rettungsgasse und wann muss sie gebildet werden?',
-    answers: [
-      { id: 'a', text: 'Freie Gasse für Einsatzfahrzeuge – bei Stau oder stockendem Verkehr zwischen der linken und der nächsten Spur', correct: true },
-      { id: 'b', text: 'Die rechte Spur freihalten, sobald ein Einsatzfahrzeug kommt', correct: false },
-      { id: 'c', text: 'Alle Fahrzeuge rechts ranfahren bei Blaulicht-Einsatz', correct: false },
-    ],
-  },
-  {
-    id: 'AB05',
-    topic: 'Autobahn',
-    points: 4,
-    question: 'Dürfen Fußgänger und Radfahrer die Autobahn benutzen?',
-    answers: [
-      { id: 'a', text: 'Nein, die Autobahn ist ausschließlich für Kraftfahrzeuge bestimmt', correct: true },
-      { id: 'b', text: 'Ja, auf dem Standstreifen', correct: false },
-      { id: 'c', text: 'Nur auf eigene Gefahr', correct: false },
-    ],
-  },
-  {
-    id: 'AB06',
-    topic: 'Autobahn',
-    points: 3,
-    question: 'Was müssen Sie tun, wenn Ihr Fahrzeug auf der Autobahn liegen bleibt?',
-    answers: [
-      { id: 'a', text: 'Fahrzeug auf dem Standstreifen abstellen, Warndreieck aufstellen, Warnweste anlegen', correct: true },
-      { id: 'b', text: 'Auf der Fahrbahn bleiben und Warnblinkanlage einschalten', correct: false },
-      { id: 'c', text: 'Fahrzeug auf der Fahrbahn lassen und sofort die Polizei rufen', correct: false },
-    ],
-  },
-
-  // ─── Gefahrenlehre ───────────────────────────────────────────────────────────
-  {
-    id: 'GL01',
-    topic: 'Gefahrenlehre',
-    points: 5,
-    question: 'Was ist beim Fahren bei Nebel (Sichtweite unter 50 m) vorgeschrieben?',
-    answers: [
-      { id: 'a', text: 'Nebelschlussleuchte einschalten, max. 50 km/h fahren', correct: true },
-      { id: 'b', text: 'Nur Abblendlicht einschalten', correct: false },
-      { id: 'c', text: 'Warnblinkanlage einschalten und normal weiterfahren', correct: false },
-    ],
-  },
-  {
-    id: 'GL02',
-    topic: 'Gefahrenlehre',
-    points: 5,
-    question: 'Was sollten Sie beim Fahren auf winterlicher, vereister Fahrbahn beachten?',
-    answers: [
-      { id: 'a', text: 'Sehr langsam fahren, größeren Abstand halten, sanft bremsen und lenken', correct: true },
-      { id: 'b', text: 'Mit Sommerreifen langsam fahren ist ausreichend', correct: false },
-      { id: 'c', text: 'Schneller fahren, damit das Fahrzeug stabiler wird', correct: false },
-    ],
-  },
-  {
-    id: 'GL03',
-    topic: 'Gefahrenlehre',
-    points: 5,
-    question: 'Ein Kind läuft plötzlich auf die Straße. Was müssen Sie tun?',
-    answers: [
-      { id: 'a', text: 'Vollbremsung einleiten – Fahrzeuge und nicht Menschen gefährden', correct: true },
-      { id: 'b', text: 'Ausweichen ohne zu bremsen', correct: false },
-      { id: 'c', text: 'Hupen und weiterfahren', correct: false },
-    ],
-  },
-  {
-    id: 'GL04',
-    topic: 'Gefahrenlehre',
-    points: 4,
-    question: 'Wodurch verlängert sich der Bremsweg?',
-    answers: [
-      { id: 'a', text: 'Nässe, Schnee, Eis, abgefahrene Reifen, erhöhte Geschwindigkeit', correct: true },
-      { id: 'b', text: 'Nur durch Nässe und Eis', correct: false },
-      { id: 'c', text: 'Nur durch erhöhte Geschwindigkeit', correct: false },
-    ],
-  },
-  {
-    id: 'GL05',
-    topic: 'Gefahrenlehre',
-    points: 4,
-    question: 'Was versteht man unter dem „toten Winkel" bei LKW?',
-    answers: [
-      { id: 'a', text: 'Bereiche neben und hinter dem LKW, die der Fahrer im Spiegel nicht sehen kann', correct: true },
-      { id: 'b', text: 'Die Windschutzscheibe des LKW', correct: false },
-      { id: 'c', text: 'Der Bereich direkt vor dem LKW', correct: false },
-    ],
-  },
-  {
-    id: 'GL06',
-    topic: 'Gefahrenlehre',
-    points: 4,
-    question: 'Welche Gefahr geht von Aquaplaning aus?',
-    answers: [
-      { id: 'a', text: 'Das Fahrzeug schwimmt auf einem Wasserfilm auf und verliert die Bodenhaftung', correct: true },
-      { id: 'b', text: 'Das Fahrzeug wird durch starke Gischt gebremst', correct: false },
-      { id: 'c', text: 'Die Windschutzscheibe beschlägt und die Sicht wird eingeschränkt', correct: false },
-    ],
-  },
-  {
-    id: 'GL07',
-    topic: 'Gefahrenlehre',
-    points: 3,
-    question: 'Warum ist Ablenkung durch das Smartphone besonders gefährlich?',
-    answers: [
-      { id: 'a', text: 'Bereits 1 Sekunde Ablenkung bei 50 km/h entspricht 14 m Blindflug', correct: true },
-      { id: 'b', text: 'Weil das Telefon die Elektronik des Autos stört', correct: false },
-      { id: 'c', text: 'Nur bei Dunkelheit wirklich gefährlich', correct: false },
-    ],
-  },
-  {
-    id: 'GL08',
-    topic: 'Gefahrenlehre',
-    points: 5,
-    question: 'Was bewirkt Müdigkeit am Steuer?',
-    answers: [
-      { id: 'a', text: 'Verlängerte Reaktionszeit, Sekundenschlaf und erhöhtes Unfallrisiko', correct: true },
-      { id: 'b', text: 'Nur leichte Ablenkung, die gut beherrschbar ist', correct: false },
-      { id: 'c', text: 'Keine nennenswerte Beeinträchtigung der Fahrtüchtigkeit', correct: false },
-    ],
-  },
-
-  // ─── Erste Hilfe ─────────────────────────────────────────────────────────────
-  {
-    id: 'EH01',
-    topic: 'Erste Hilfe',
-    points: 5,
-    question: 'Was müssen Sie als erster an einem Unfallort tun?',
-    answers: [
-      { id: 'a', text: 'Absichern – Warnen – Helfen (Warnblinkanlage, Warndreieck, 112 rufen)', correct: true },
-      { id: 'b', text: 'Verletzte sofort aus dem Fahrzeug ziehen', correct: false },
-      { id: 'c', text: 'Fotos machen und auf die Polizei warten', correct: false },
-    ],
-  },
-  {
-    id: 'EH02',
-    topic: 'Erste Hilfe',
-    points: 5,
-    question: 'Was ist die stabile Seitenlage und wann wird sie angewendet?',
-    answers: [
-      { id: 'a', text: 'Bewusstlose Person in Seitenlage bringen, damit die Atemwege frei bleiben', correct: true },
-      { id: 'b', text: 'Position für verletzte Personen, die nicht bewusstlos sind', correct: false },
-      { id: 'c', text: 'Für Personen mit Knochenbrüchen', correct: false },
-    ],
-  },
-  {
-    id: 'EH03',
-    topic: 'Erste Hilfe',
-    points: 5,
-    question: 'Wann wird eine Herzdruckmassage durchgeführt?',
-    answers: [
-      { id: 'a', text: 'Wenn die Person nicht atmet und kein Puls feststellbar ist', correct: true },
-      { id: 'b', text: 'Bei jeder bewusstlosen Person', correct: false },
-      { id: 'c', text: 'Nur wenn der Notarzt es telefonisch anordnet', correct: false },
-    ],
-  },
-  {
-    id: 'EH04',
-    topic: 'Erste Hilfe',
-    points: 5,
-    question: 'Wie lautet der Notruf in Deutschland?',
-    answers: [
-      { id: 'a', text: '112 (Feuerwehr/Rettungsdienst), 110 (Polizei)', correct: true },
-      { id: 'b', text: '110 (Feuerwehr), 112 (Polizei)', correct: false },
-      { id: 'c', text: '118 für alle Notfälle', correct: false },
-    ],
-  },
-  {
-    id: 'EH05',
-    topic: 'Erste Hilfe',
-    points: 4,
-    question: 'Darf eine verletzte Person aus einem Unfallfahrzeug gezogen werden?',
-    answers: [
-      { id: 'a', text: 'Nur wenn Lebensgefahr durch Feuer oder andere Gefahr besteht', correct: true },
-      { id: 'b', text: 'Immer, um Verletzungen besser zu versorgen', correct: false },
-      { id: 'c', text: 'Niemals, man muss immer auf den Rettungsdienst warten', correct: false },
-    ],
-  },
-
-  // ─── Ruhender Verkehr ─────────────────────────────────────────────────────────
-  {
-    id: 'RV01',
-    topic: 'Ruhender Verkehr',
-    points: 3,
-    question: 'Was ist der Unterschied zwischen Halten und Parken?',
-    answers: [
-      { id: 'a', text: 'Halten: kurzes Anhalten (≤3 min), Parken: längeres Abstellen oder Verlassen des Fahrzeugs', correct: true },
-      { id: 'b', text: 'Halten ist immer erlaubt, Parken benötigt ein Schild', correct: false },
-      { id: 'c', text: 'Kein Unterschied, beide Begriffe bedeuten dasselbe', correct: false },
-    ],
-  },
-  {
-    id: 'RV02',
-    topic: 'Ruhender Verkehr',
-    points: 3,
-    question: 'Wo ist das Parken generell verboten?',
-    answers: [
-      { id: 'a', text: 'An Kreuzungen, vor Einfahrten, auf Radwegen, in Kurven mit mangelnder Sicht', correct: true },
-      { id: 'b', text: 'Nur an Haltestellen', correct: false },
-      { id: 'c', text: 'Nur wo Parkverbotsschilder stehen', correct: false },
-    ],
-  },
-  {
-    id: 'RV03',
-    topic: 'Ruhender Verkehr',
-    points: 3,
-    question: 'Welchen Abstand müssen Sie beim Parken von einem Feuerwehrhydranten einhalten?',
-    answers: [
-      { id: 'a', text: 'Mindestens 5 m', correct: true },
-      { id: 'b', text: 'Mindestens 3 m', correct: false },
-      { id: 'c', text: 'Mindestens 10 m', correct: false },
-    ],
-  },
-  {
-    id: 'RV04',
-    topic: 'Ruhender Verkehr',
-    points: 3,
-    question: 'Was müssen Sie beim Verlassen des Fahrzeugs in der Dunkelheit beachten?',
-    answers: [
-      { id: 'a', text: 'Standlicht oder Parkleuchte einschalten, wenn das Fahrzeug den Verkehr behindern könnte', correct: true },
-      { id: 'b', text: 'Nichts besonderes, das Fahrzeug einfach verlassen', correct: false },
-      { id: 'c', text: 'Warnblinkanlage immer einschalten', correct: false },
-    ],
-  },
-  {
-    id: 'RV05',
-    topic: 'Ruhender Verkehr',
-    points: 2,
-    question: 'Darf auf dem Gehweg geparkt werden?',
-    answers: [
-      { id: 'a', text: 'Nur wenn ein Schild mit Gehwegparken-Zeichen aufgestellt ist', correct: true },
-      { id: 'b', text: 'Immer, wenn genug Platz für Fußgänger bleibt', correct: false },
-      { id: 'c', text: 'Grundsätzlich verboten, kein Schild ändert das', correct: false },
-    ],
-  },
-
-  // ─── Zusätzliche Fragen (Gemischt) ──────────────────────────────────────────
-  {
-    id: 'GE01',
-    topic: 'Gefahrenlehre',
-    points: 4,
-    question: 'Was ist beim Fahren durch Tunnels zu beachten?',
-    answers: [
-      { id: 'a', text: 'Licht einschalten, Abstand vergrößern, Geschwindigkeit anpassen', correct: true },
-      { id: 'b', text: 'Geschwindigkeit erhöhen, um den Tunnel schnell zu passieren', correct: false },
-      { id: 'c', text: 'Nichts besonderes – wie auf normaler Straße fahren', correct: false },
-    ],
-  },
-  {
-    id: 'GE02',
-    topic: 'Gefahrenlehre',
-    points: 4,
-    question: 'Was verursacht einen längeren Reaktionsweg?',
-    answers: [
-      { id: 'a', text: 'Ablenkung, Müdigkeit, Medikamente, Alkohol', correct: true },
-      { id: 'b', text: 'Nur hohe Geschwindigkeit', correct: false },
-      { id: 'c', text: 'Gutes Wetter und trockene Fahrbahn', correct: false },
-    ],
-  },
-  {
-    id: 'V07',
-    topic: 'Vorfahrt',
-    points: 4,
-    question: 'An einer geregelten Kreuzung (Ampel): Der Gegenverkehr kommt und biegt links ab. Sie fahren geradeaus. Wer hat Vorfahrt?',
-    answers: [
-      { id: 'a', text: 'Ich – Geradeausfahrer hat Vorfahrt vor Linksabbiegern', correct: true },
-      { id: 'b', text: 'Der Abbiegende, weil er schon die Kreuzung begonnen hat', correct: false },
-      { id: 'c', text: 'Keiner – beide müssen gleichzeitig abwarten', correct: false },
-    ],
-  },
-  {
-    id: 'G07',
-    topic: 'Geschwindigkeit',
-    points: 4,
-    question: 'Wie beeinflusst eine Verdopplung der Geschwindigkeit den Bremsweg?',
-    answers: [
-      { id: 'a', text: 'Er vervierfacht sich (quadratisches Verhältnis)', correct: true },
-      { id: 'b', text: 'Er verdoppelt sich', correct: false },
-      { id: 'c', text: 'Er verdreifacht sich', correct: false },
-    ],
-  },
-  {
-    id: 'FT08',
-    topic: 'Fahrzeugtechnik',
-    points: 3,
-    question: 'Was prüfen Sie regelmäßig vor einer längeren Fahrt?',
-    answers: [
-      { id: 'a', text: 'Reifendruck, Ölstand, Kühlwasser, Scheibenwaschanlage, Beleuchtung', correct: true },
-      { id: 'b', text: 'Nur den Tankstand', correct: false },
-      { id: 'c', text: 'Nur Reifenprofil und Bremsen', correct: false },
-    ],
-  },
-  {
-    id: 'Z08',
-    topic: 'Verkehrszeichen',
-    points: 3,
-    question: 'Was bedeutet ein Schild mit einem rotem Rand, schwarzem PKW und Motorrad auf weißem Grund?',
-    answers: [
-      { id: 'a', text: 'Überholverbot für PKW und Motorräder', correct: true },
-      { id: 'b', text: 'Einfahrt verboten für LKW', correct: false },
-      { id: 'c', text: 'Nur PKW und Motorräder dürfen einfahren', correct: false },
-    ],
-  },
-  {
-    id: 'AB07',
-    topic: 'Autobahn',
-    points: 3,
-    question: 'Was gilt für das Wenden und Rückwärtsfahren auf der Autobahn?',
-    answers: [
-      { id: 'a', text: 'Beides ist auf der Autobahn generell verboten', correct: true },
-      { id: 'b', text: 'Nur Wenden ist verboten, Rückwärtsfahren ist erlaubt', correct: false },
-      { id: 'c', text: 'Beides ist auf dem Standstreifen erlaubt', correct: false },
-    ],
-  },
-  {
-    id: 'UE05',
-    topic: 'Überholen',
-    points: 4,
-    question: 'Dürfen Sie einen Schulbus, der Kinder ein- oder aussteigen lässt, überholen?',
-    answers: [
-      { id: 'a', text: 'Nein, nur mit Schrittgeschwindigkeit und größtem Abstand vorbeifahren', correct: true },
-      { id: 'b', text: 'Ja, wenn Sie langsam fahren', correct: false },
-      { id: 'c', text: 'Ja, wenn die Kinder auf dem Gehweg sind', correct: false },
-    ],
-  },
-  {
-    id: 'GL09',
-    topic: 'Gefahrenlehre',
-    points: 5,
-    question: 'Was müssen Sie bei Gegenwind oder beim Überholen von LKW beachten?',
-    answers: [
-      { id: 'a', text: 'Seitenwind kann das Fahrzeug abdrängen – Lenkrad fest halten und Geschwindigkeit reduzieren', correct: true },
-      { id: 'b', text: 'Nichts, moderne Fahrzeuge sind windstabil genug', correct: false },
-      { id: 'c', text: 'Blinker setzen und schnell überholen', correct: false },
-    ],
-  },
-  {
-    id: 'RV06',
-    topic: 'Ruhender Verkehr',
-    points: 3,
-    question: 'Dürfen Sie ein Fahrzeug in zweiter Reihe kurz anhalten?',
-    answers: [
-      { id: 'a', text: 'Nein, es sei denn es handelt sich um ein kurzes Halten zum Ein- oder Aussteigen ohne Behinderung anderer', correct: true },
-      { id: 'b', text: 'Ja, immer mit Warnblinkanlage', correct: false },
-      { id: 'c', text: 'Ja, für bis zu 5 Minuten', correct: false },
-    ],
-  },
 ]
 
-export const getQuestionsByTopic = (topic: string) =>
-  questions.filter((q) => q.topic === topic)
+export function getQuestionsByTopic(topic: string): Question[] {
+  return questions.filter(q => q.topic === topic)
+}
 
-export const getTopicStats = () => {
+export function getTopicStats() {
   const stats: Record<string, number> = {}
   for (const q of questions) {
     stats[q.topic] = (stats[q.topic] ?? 0) + 1
