@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
 import CarSlideshow from './CarSlideshow'
+import ChatBox from './ChatBox'
 
 /* ── Ranks ─────────────────────────────────────────────── */
 
@@ -486,6 +487,9 @@ export default function Dashboard() {
                 })}
               </div>
             </div>
+
+            {/* Live Chat */}
+            <ChatBox userId={userId} username={username} />
 
           </div>
         </div>
