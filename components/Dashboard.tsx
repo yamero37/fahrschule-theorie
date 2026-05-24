@@ -2,11 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
-import CarSlideshow from './CarSlideshow'
 import ChatBox from './ChatBox'
 
 /* ── Ranks ─────────────────────────────────────────────── */
@@ -193,362 +192,358 @@ export default function Dashboard() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(201,162,39,0.15)', borderTop: '3px solid var(--gold)', margin: '0 auto 1rem', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(201,144,122,0.15)', borderTop: '3px solid var(--gold)', margin: '0 auto 1rem', animation: 'spin 0.8s linear infinite' }} />
           <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>Wird geladen…</span>
         </div>
       </div>
     )
   }
 
+  const progressVal = Math.round(progress)
+
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1.5rem 3rem', position: 'relative', overflow: 'hidden' }}>
-      <CarSlideshow />
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: '84px', position: 'relative' }}>
+
       {showTutorial && (
-        <div style={{ position: 'relative', zIndex: 100 }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100 }}>
           <TutorialModal username={username} userId={userId}
             onComplete={(pts) => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }}
           />
         </div>
       )}
 
-      <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      {/* ── Admin sections ── */}
+      {isAdmin && (
+        <div style={{ maxWidth: '720px', margin: '0 auto', padding: '1rem 1rem 0' }}>
+          <AdminTermine appointments={appointments} filter={apptFilter} setFilter={setApptFilter} acting={actingAppt} onUpdate={updateAppt} />
+          <AdminFahrstundler token={adminToken} />
+          <AdminBlockedDays token={adminToken} />
+          <AdminSettings token={adminToken} />
+        </div>
+      )}
+
+      {/* ── Main content ── */}
+      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '1rem 1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
 
         {/* ── HERO CARD ── */}
         <div style={{
-          background: 'linear-gradient(135deg, #111008 0%, #0e0c08 60%, #120a06 100%)',
-          border: '1px solid rgba(201,162,39,0.22)',
-          borderRadius: '1.75rem',
-          padding: '2rem 2.5rem',
-          marginBottom: '1.25rem',
-          position: 'relative',
-          overflow: 'hidden',
+          background: 'var(--surface)',
+          borderRadius: '1.5rem',
+          padding: '1.4rem 1.4rem 1.25rem',
+          position: 'relative', overflow: 'hidden',
         }}>
-          {/* Background glow orbs */}
-          <div style={{ position: 'absolute', top: '-100px', right: '120px', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${rank.color}0d 0%, transparent 65%)`, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-80px', left: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(239,68,68,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-60px', right: '-30px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(201,144,122,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-          <div className="dash-hero-flex" style={{ display: 'flex', justifyContent: 'space-between', gap: '2rem', alignItems: 'flex-start' }}>
+          {/* Badge */}
+          <p style={{ margin: '0 0 0.9rem', fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.05em' }}>
+            Führerschein Klasse B · 2026
+          </p>
 
-            {/* Left */}
+          {/* Content row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              {/* Badge */}
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: '7px',
-                background: 'rgba(201,162,39,0.08)', border: '1px solid rgba(201,162,39,0.25)',
-                borderRadius: '100px', padding: '5px 14px', marginBottom: '1.25rem',
-              }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold)', flexShrink: 0, boxShadow: '0 0 6px var(--gold)' }} />
-                <span style={{ fontSize: '0.63rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--gold)', textTransform: 'uppercase' }}>
-                  Führerschein Klasse B · 2026
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1 style={{ margin: '0 0 0.4rem', fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.15, color: 'var(--text)' }}>
-                Willkommen zurück,{' '}
-                <span style={{
-                  background: 'linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light))',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                }}>{username}</span>
+              <h1 style={{ margin: '0 0 0.35rem', fontSize: 'clamp(1.35rem, 5vw, 1.65rem)', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2, color: 'var(--text)' }}>
+                Willkommen zurück,
               </h1>
-              <p style={{ margin: '0 0 1.5rem', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              <h1 style={{ margin: '0 0 0.55rem', fontSize: 'clamp(1.35rem, 5vw, 1.65rem)', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                <span style={{ background: 'linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  {username} 👋
+                </span>
+              </h1>
+              <p style={{ margin: '0 0 1.25rem', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
                 Deine persönliche Lernzentrale für die Führerscheinprüfung.
               </p>
 
-              {/* Stats row */}
-              <div className="dash-stats-row" style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-                {[
-                  { icon: '📚', value: '14', label: 'Lektionen' },
-                  { icon: '🎯', value: `${points}`, label: 'Punkte' },
-                  { icon: '🏆', value: rank.id, label: rank.name, accent: rank.color, glow: rank.glow },
-                  { icon: '📈', value: `${Math.round(progress)}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Maximum' },
-                ].map(s => (
-                  <div key={s.label} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    background: s.accent ? `${s.accent}10` : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${s.accent ? `${s.accent}28` : 'rgba(255,255,255,0.07)'}`,
-                    borderRadius: '12px', padding: '0.65rem 1rem',
-                    boxShadow: s.glow ? `0 0 14px ${s.glow}` : 'none',
-                  }}>
-                    <span style={{ fontSize: '1.05rem' }}>{s.icon}</span>
-                    <div>
-                      <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: s.accent ?? 'var(--text)', lineHeight: 1 }}>{s.value}</p>
-                      <p style={{ margin: '2px 0 0', fontSize: '0.57rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: rank circle + sign out */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
-              <div style={{
-                width: '82px', height: '82px', borderRadius: '50%',
-                border: `2.5px solid ${rank.color}`,
-                boxShadow: `0 0 28px ${rank.glow}, 0 0 56px ${rank.glow}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: `${rank.color}12`,
-              }}>
-                <span style={{
-                  fontSize: rank.id === 'Legende' ? '0.75rem' : rank.id === 'SS' ? '1.15rem' : '1.75rem',
-                  fontWeight: 900, color: rank.color,
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <Link href="/fragen" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  padding: '0.6rem 1.1rem', borderRadius: '100px',
+                  background: 'linear-gradient(135deg, #8b5a47, #c9907a)',
+                  color: '#fff', fontWeight: 700, fontSize: '0.8rem',
+                  textDecoration: 'none', boxShadow: '0 4px 20px rgba(201,144,122,0.35)',
                 }}>
-                  {rank.id}
-                </span>
+                  Weiterlernen
+                  <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>→</span>
+                </Link>
+                <Link href="/rangliste" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: '0.6rem 1rem', borderRadius: '100px',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.8rem',
+                  textDecoration: 'none',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  Statistik
+                </Link>
+                <button
+                  onClick={async () => { await signOut(); window.location.href = '/' }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    padding: '0.6rem 1rem', borderRadius: '100px',
+                    background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.18)',
+                    color: '#f87171', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer',
+                  }}
+                >
+                  Abmelden
+                </button>
               </div>
-              <button
-                onClick={async () => { await signOut(); window.location.href = '/' }}
-                style={{
-                  padding: '7px 15px', borderRadius: '10px', fontSize: '0.73rem', fontWeight: 600,
-                  background: 'rgba(239,68,68,0.08)', color: '#f87171',
-                  border: '1px solid rgba(239,68,68,0.22)', cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.22)' }}
-              >
-                Abmelden
-              </button>
             </div>
-          </div>
 
-          {/* Progress bar */}
-          {nextRank && (
-            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
-                <span style={{ fontSize: '0.63rem', color: 'var(--text-dim)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  Fortschritt zu {nextRank.name} — noch {nextRank.min - points} Punkte
-                </span>
-                <span style={{ fontSize: '0.63rem', color: rank.color, fontWeight: 700 }}>{Math.round(progress)}%</span>
-              </div>
-              <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', borderRadius: '3px', width: `${progress}%`,
-                  background: `linear-gradient(90deg, ${rank.color}70, ${rank.color})`,
-                  boxShadow: `0 0 10px ${rank.glow}`,
-                  transition: 'width 1.2s ease',
-                }} />
-              </div>
-            </div>
-          )}
+            {/* Circular progress */}
+            <CircularProgress value={progressVal} color="var(--gold)" />
+          </div>
         </div>
 
         {/* ── TUTORIAL BANNER ── */}
         {!tutorialDone && (
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem',
             background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.22)',
-            borderRadius: '1rem', padding: '1rem 1.5rem', marginBottom: '1.25rem', flexWrap: 'wrap',
+            borderRadius: '1.25rem', padding: '0.9rem 1.1rem', flexWrap: 'wrap',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '1.4rem' }}>🎯</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '1.2rem' }}>🎯</span>
               <div>
-                <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#f87171' }}>Tutorial läuft…</p>
-                <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>Schließe es ab und erhalte +100 Punkte</p>
+                <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: '#f87171' }}>Tutorial läuft…</p>
+                <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)' }}>Abschließen → +100 Punkte</p>
               </div>
             </div>
-            <span style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 700, background: 'rgba(239,68,68,0.1)', padding: '4px 10px', borderRadius: '100px', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <span style={{ fontSize: '0.65rem', color: '#f87171', fontWeight: 700, background: 'rgba(239,68,68,0.1)', padding: '3px 9px', borderRadius: '100px', border: '1px solid rgba(239,68,68,0.2)', flexShrink: 0 }}>
               ⏳ In Bearbeitung
             </span>
           </div>
         )}
 
-        {/* ── ADMIN BEREICH ── */}
-        {isAdmin && (
-          <>
-            <AdminTermine
-              appointments={appointments}
-              filter={apptFilter}
-              setFilter={setApptFilter}
-              acting={actingAppt}
-              onUpdate={updateAppt}
-            />
-            <AdminFahrstundler token={adminToken} />
-            <AdminBlockedDays token={adminToken} />
-            <AdminSettings token={adminToken} />
-          </>
-        )}
-
-        {/* ── MAIN GRID ── */}
-        <div className="dash-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
-
-          {/* ── LEFT COLUMN ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-            {/* Section header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, var(--gold), rgba(201,162,39,0.3))' }} />
-                <p style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text)' }}>Deine Bereiche</p>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-dim)' }}>Wähle einen Bereich zum Starten</p>
-            </div>
-
-            {/* Feature grid */}
-            <div className="dash-feat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-              {FEATURES.map(f => <FeatureCard key={f.title} {...f} />)}
-            </div>
-
-            {/* Tutorial done badge */}
-            {tutorialDone && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '14px',
-                background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)',
-                borderRadius: '1rem', padding: '1rem 1.5rem',
-              }}>
-                <div style={{
-                  width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
-                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
-                }}>✅</div>
-                <div>
-                  <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 700, color: '#22c55e' }}>Tutorial abgeschlossen</p>
-                  <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>+100 Punkte erhalten · Rang C freigeschaltet</p>
-                </div>
-              </div>
-            )}
-
-            {/* Notepad */}
-            <div style={{
-              background: 'var(--surface)',
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '1.25rem',
-              padding: '1.25rem',
+        {/* ── STAT CARDS row ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+          {[
+            { icon: '📖', value: '14',             label: 'Lektionen', color: '#8b5cf6', barPct: 40  },
+            { icon: '🎯', value: `${points}`,       label: 'Punkte',    color: '#ec4899', barPct: Math.min(100, (points / 300) * 100) },
+            { icon: '🏆', value: rank.id,           label: rank.name,   color: rank.color, barPct: progress },
+            { icon: '📈', value: `${progressVal}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Max', color: '#22c55e', barPct: progress },
+          ].map(s => (
+            <div key={s.label} style={{
+              background: 'var(--surface)', borderRadius: '1rem', padding: '0.8rem 0.65rem',
+              display: 'flex', flexDirection: 'column', gap: '0.15rem',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <p style={{ margin: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  📝 Privater Notizblock
-                </p>
-                <span style={{
-                  fontSize: '0.6rem', fontWeight: 600,
-                  color: noteSaved ? '#22c55e' : 'var(--text-dim)',
-                  transition: 'color 0.3s',
-                }}>
-                  {noteSaved ? '✓ Gespeichert' : 'Auto-Save'}
-                </span>
+              <span style={{ fontSize: '1rem', marginBottom: '0.2rem' }}>{s.icon}</span>
+              <span style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1 }}>{s.value}</span>
+              <span style={{ fontSize: '0.55rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>{s.label}</span>
+              <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginTop: '0.4rem' }}>
+                <div style={{ width: `${s.barPct}%`, height: '100%', background: s.color, borderRadius: '2px', transition: 'width 1.2s ease' }} />
               </div>
-              <textarea
-                value={noteText}
-                onChange={e => handleNoteChange(e.target.value)}
-                placeholder="Notizen, Merkhilfen, wichtige Punkte…"
-                rows={5}
-                style={{
-                  width: '100%', resize: 'vertical', minHeight: '110px',
-                  padding: '0.75rem', borderRadius: '0.6rem', fontSize: '0.8rem',
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'var(--text)', outline: 'none', lineHeight: 1.6,
-                  fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.15s',
-                }}
-                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,162,39,0.35)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
-              />
             </div>
+          ))}
+        </div>
+
+        {/* ── FEATURE GRID ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+          {FEATURES.map(f => <FeatureCard key={f.title} {...f} />)}
+        </div>
+
+        {/* ── PREMIUM BANNER ── */}
+        <div style={{
+          background: `linear-gradient(135deg, var(--surface) 0%, rgba(201,144,122,0.07) 100%)`,
+          border: '1px solid rgba(201,144,122,0.2)',
+          borderRadius: '1.25rem', padding: '1rem 1.1rem',
+          display: 'flex', alignItems: 'center', gap: '0.85rem',
+        }}>
+          <div style={{
+            width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0,
+            background: 'rgba(201,144,122,0.1)', border: '1px solid rgba(201,144,122,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem',
+          }}>💎</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text)' }}>Hol dir Premium</p>
+            <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>Mehr Funktionen. Mehr Fortschritt.</p>
           </div>
+          <button style={{
+            padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
+            background: 'linear-gradient(135deg, #8b5a47, #c9907a)',
+            color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
+            boxShadow: '0 4px 16px rgba(201,144,122,0.3)',
+          }}>
+            Jetzt upgraden 👑
+          </button>
+        </div>
 
-          {/* ── RIGHT SIDEBAR ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-            {/* Leaderboard */}
-            <div style={{
-              background: 'var(--surface)',
-              border: '1px solid rgba(201,162,39,0.15)',
-              borderRadius: '1.25rem',
-              padding: '1.25rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '3px', height: '18px', borderRadius: '2px', background: 'linear-gradient(180deg, var(--gold), rgba(201,162,39,0.3))' }} />
-                  <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 800, color: 'var(--text)' }}>Top Spieler</p>
-                </div>
-                <Link href="/rangliste" style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--gold)', textDecoration: 'none' }}>
-                  Alle →
-                </Link>
-              </div>
-
-              {topEntries.length === 0 ? (
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0.75rem 0' }}>
-                  Noch keine Einträge
-                </p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {topEntries.map((entry, i) => {
-                    const rColor = RANK_COLORS[getRankId(entry.points)]
-                    const isMe = entry.userId === userId
-                    const medals = ['🥇', '🥈', '🥉']
-                    return (
-                      <div key={entry.userId} style={{
-                        display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '0.6rem 0.75rem', borderRadius: '10px',
-                        background: isMe ? 'rgba(201,162,39,0.08)' : 'rgba(255,255,255,0.025)',
-                        border: isMe ? '1px solid rgba(201,162,39,0.22)' : '1px solid transparent',
-                      }}>
-                        <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{medals[i]}</span>
-                        <span style={{ flex: 1, fontSize: '0.78rem', fontWeight: 700, color: isMe ? 'var(--gold)' : 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {entry.displayName}
-                        </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                          <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>{entry.points}</span>
-                          <span style={{ fontSize: '0.56rem', fontWeight: 800, padding: '2px 6px', borderRadius: '8px', border: `1px solid ${rColor}40`, background: `${rColor}10`, color: rColor }}>
-                            {getRankId(entry.points)}
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+        {/* ── DAILY GOAL ── */}
+        <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🔄 Dein heutiges Ziel
+            </p>
+            <button style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}>
+              Ziel bearbeiten ✏️
+            </button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+            <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
+              <svg width="46" height="46" viewBox="0 0 46 46">
+                <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
+                <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
+                  strokeDasharray={`${(2 / 5) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
+                  strokeLinecap="round" transform="rotate(-90 23 23)" />
+              </svg>
+              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.52rem', fontWeight: 900, color: '#3b82f6' }}>2/5</span>
             </div>
-
-            {/* Rank system */}
-            <div style={{
-              background: 'var(--surface)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '1.25rem',
-              padding: '1.25rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                <div style={{ width: '3px', height: '18px', borderRadius: '2px', background: 'linear-gradient(180deg, var(--gold), rgba(201,162,39,0.3))' }} />
-                <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 800, color: 'var(--text)' }}>Rangsystem</p>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {RANKS.slice().reverse().map(r => {
-                  const active = r.id === rank.id
-                  return (
-                    <div key={r.id} style={{
-                      display: 'flex', alignItems: 'center', gap: '10px',
-                      padding: '6px 10px', borderRadius: '8px',
-                      background: active ? `${r.color}10` : 'transparent',
-                      border: active ? `1px solid ${r.color}28` : '1px solid transparent',
-                      transition: 'all 0.2s',
-                    }}>
-                      <span style={{
-                        width: '32px', height: '22px', borderRadius: '6px',
-                        border: `1.5px solid ${r.color}${active ? 'cc' : '50'}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '0.48rem', fontWeight: 900,
-                        color: active ? r.color : `${r.color}70`,
-                        flexShrink: 0,
-                      }}>{r.id}</span>
-                      <span style={{ flex: 1, fontSize: '0.72rem', fontWeight: active ? 700 : 500, color: active ? r.color : 'var(--text-dim)' }}>
-                        {r.name}
-                      </span>
-                      <span style={{ fontSize: '0.58rem', color: active ? `${r.color}bb` : 'var(--text-dim)', fontWeight: 600 }}>
-                        {r.min === 0 ? '0' : r.min}{r.max === Infinity ? '+' : `–${r.max}`}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Lektion abschließen</p>
+              <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>5 Lektionen pro Tag</p>
             </div>
-
-            {/* Live Chat */}
-            <ChatBox userId={userId} username={username} />
-
+            <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>40%</span>
           </div>
         </div>
+
+        {/* ── LEADERBOARD (compact) ── */}
+        {topEntries.length > 0 && (
+          <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: 'var(--text)' }}>🏅 Top Spieler</p>
+              <Link href="/rangliste" style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', textDecoration: 'none' }}>Alle →</Link>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {topEntries.map((entry, i) => {
+                const rColor = RANK_COLORS[getRankId(entry.points)]
+                const isMe = entry.userId === userId
+                const medals = ['🥇', '🥈', '🥉']
+                return (
+                  <div key={entry.userId} style={{
+                    display: 'flex', alignItems: 'center', gap: '9px',
+                    padding: '0.5rem 0.7rem', borderRadius: '9px',
+                    background: isMe ? 'rgba(201,144,122,0.08)' : 'rgba(255,255,255,0.025)',
+                    border: isMe ? '1px solid rgba(201,144,122,0.22)' : '1px solid transparent',
+                  }}>
+                    <span style={{ fontSize: '1rem', flexShrink: 0 }}>{medals[i]}</span>
+                    <span style={{ flex: 1, fontSize: '0.75rem', fontWeight: 700, color: isMe ? 'var(--gold)' : 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.displayName}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>{entry.points}</span>
+                      <span style={{ fontSize: '0.53rem', fontWeight: 800, padding: '2px 6px', borderRadius: '6px', border: `1px solid ${rColor}40`, background: `${rColor}10`, color: rColor }}>{getRankId(entry.points)}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── NOTEPAD ── */}
+        <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+            <p style={{ margin: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              📝 Notizblock
+            </p>
+            <span style={{ fontSize: '0.6rem', fontWeight: 600, color: noteSaved ? '#22c55e' : 'var(--text-dim)', transition: 'color 0.3s' }}>
+              {noteSaved ? '✓ Gespeichert' : 'Auto-Save'}
+            </span>
+          </div>
+          <textarea
+            value={noteText}
+            onChange={e => handleNoteChange(e.target.value)}
+            placeholder="Notizen, Merkhilfen…"
+            rows={4}
+            style={{
+              width: '100%', resize: 'vertical', minHeight: '90px',
+              padding: '0.65rem 0.75rem', borderRadius: '0.6rem', fontSize: '0.78rem',
+              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+              color: 'var(--text)', outline: 'none', lineHeight: 1.6,
+              fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.15s',
+            }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,144,122,0.35)' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+          />
+        </div>
+
+        {/* Live Chat */}
+        <ChatBox userId={userId} username={username} />
+
       </div>
 
+      {/* ── BOTTOM NAV ── */}
+      <BottomNav />
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
+}
+
+/* ── Circular Progress ──────────────────────────────────── */
+
+function CircularProgress({ value, color }: { value: number; color: string }) {
+  const r = 36
+  const circ = 2 * Math.PI * r
+  const filled = circ * (value / 100)
+  return (
+    <div style={{ position: 'relative', width: '92px', height: '92px', flexShrink: 0 }}>
+      <svg width="92" height="92" viewBox="0 0 92 92">
+        <circle cx="46" cy="46" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="5" />
+        <circle cx="46" cy="46" r={r} fill="none"
+          stroke={color} strokeWidth="5" strokeLinecap="round"
+          strokeDasharray={`${filled} ${circ - filled}`}
+          transform="rotate(-90 46 46)"
+        />
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{value}%</span>
+        <span style={{ fontSize: '0.46rem', color: 'var(--text-dim)', letterSpacing: '0.04em', marginTop: '3px', textTransform: 'uppercase' }}>Fortschritt</span>
+      </div>
+    </div>
+  )
+}
+
+/* ── Bottom Navigation ──────────────────────────────────── */
+
+function BottomNav() {
+  const pathname = usePathname()
+  const tabs = [
+    {
+      label: 'Dashboard', href: '/dashboard',
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+    },
+    {
+      label: 'Lernen', href: '/unterricht',
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
+    },
+    {
+      label: 'Prüfung', href: '/fragen',
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>,
+    },
+    {
+      label: 'Fortschritt', href: '/rangliste',
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+    },
+    {
+      label: 'Mehr', href: '/termin',
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>,
+    },
+  ]
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+      background: 'rgba(15,15,18,0.96)',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      borderTop: '1px solid rgba(255,255,255,0.07)',
+      display: 'flex', justifyContent: 'space-around', alignItems: 'stretch',
+      padding: '0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom, 0px))',
+    }}>
+      {tabs.map(tab => {
+        const active = pathname === tab.href
+        return (
+          <Link key={tab.label} href={tab.href} style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+            textDecoration: 'none', padding: '0.3rem 0.75rem', flex: 1,
+            color: active ? 'var(--gold)' : 'var(--text-dim)',
+            transition: 'color 0.15s',
+          }}>
+            {tab.icon}
+            <span style={{ fontSize: '0.58rem', fontWeight: active ? 700 : 500 }}>{tab.label}</span>
+          </Link>
+        )
+      })}
     </div>
   )
 }
@@ -1148,78 +1143,61 @@ function FeatureCard({ icon, title, desc, href, soon, color, badge }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: hovered && !soon ? `linear-gradient(135deg, ${color}0d 0%, var(--surface) 100%)` : 'var(--surface)',
-        border: `1px solid ${hovered && !soon ? `${color}35` : 'rgba(255,255,255,0.06)'}`,
-        borderRadius: '1.25rem',
-        padding: '1.25rem',
+        background: hovered && !soon ? `linear-gradient(135deg, ${color}12 0%, var(--surface) 100%)` : 'var(--surface)',
+        border: `1px solid ${hovered && !soon ? `${color}30` : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: '1.1rem',
+        padding: '0.9rem 0.75rem',
         cursor: soon ? 'default' : 'pointer',
         transition: 'all 0.2s',
-        transform: hovered && !soon ? 'translateY(-3px)' : 'none',
-        boxShadow: hovered && !soon ? `0 14px 36px ${color}12` : 'none',
-        opacity: soon ? 0.6 : 1,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        boxSizing: 'border-box',
+        transform: hovered && !soon ? 'translateY(-2px)' : 'none',
+        boxShadow: hovered && !soon ? `0 8px 24px ${color}14` : 'none',
+        display: 'flex', flexDirection: 'column',
+        height: '100%', boxSizing: 'border-box',
       }}
     >
-      {/* Top row: icon + badge */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-        <div style={{
-          width: '46px', height: '46px', borderRadius: '12px',
-          background: `linear-gradient(135deg, ${color}22, ${color}0d)`,
-          border: `1px solid ${color}28`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1.3rem', flexShrink: 0,
-        }}>
-          {icon}
-        </div>
-        <span style={{
-          fontSize: '0.56rem', fontWeight: 700, letterSpacing: '0.04em',
-          padding: '3px 8px', borderRadius: '100px',
-          background: soon ? 'rgba(239,68,68,0.1)' : `${color}10`,
-          color: soon ? '#f87171' : color,
-          border: `1px solid ${soon ? 'rgba(239,68,68,0.25)' : `${color}25`}`,
-          whiteSpace: 'nowrap',
-        }}>{badge}</span>
+      {/* Icon box */}
+      <div style={{
+        width: '38px', height: '38px', borderRadius: '10px', marginBottom: '0.6rem',
+        background: `linear-gradient(135deg, ${color}20, ${color}0d)`,
+        border: `1px solid ${color}25`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '1.1rem', flexShrink: 0,
+      }}>
+        {icon}
       </div>
 
       {/* Title */}
       <p style={{
-        margin: '0 0 0.3rem', fontSize: '0.88rem', fontWeight: 800,
+        margin: '0 0 0.2rem', fontSize: '0.78rem', fontWeight: 800,
         color: hovered && !soon ? color : 'var(--text)',
-        transition: 'color 0.2s',
+        transition: 'color 0.2s', lineHeight: 1.2,
       }}>
         {title}
       </p>
 
       {/* Description */}
-      <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-dim)', lineHeight: 1.5, flex: 1 }}>
+      <p style={{ margin: '0 0 0.65rem', fontSize: '0.6rem', color: 'var(--text-dim)', lineHeight: 1.45, flex: 1 }}>
         {desc}
       </p>
 
-      {/* Footer */}
-      {!soon ? (
-        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      {/* Badge footer */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{
+          fontSize: '0.55rem', fontWeight: 700,
+          color: soon ? '#ef4444' : color,
+          display: 'flex', alignItems: 'center', gap: '3px',
+        }}>
+          {soon ? '🔒' : '•'} {badge}
+        </span>
+        {!soon && (
           <span style={{
-            fontSize: '0.7rem', fontWeight: 700,
-            color: hovered ? color : 'var(--text-muted)',
-            transition: 'color 0.2s',
-            display: 'flex', alignItems: 'center', gap: '4px',
-          }}>
-            Öffnen
-            <span style={{
-              display: 'inline-block',
-              transform: hovered ? 'translateX(4px)' : 'none',
-              transition: 'transform 0.2s',
-            }}>→</span>
-          </span>
-        </div>
-      ) : (
-        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <span style={{ fontSize: '0.7rem', color: 'rgba(239,68,68,0.5)', fontWeight: 600 }}>Bald verfügbar</span>
-        </div>
-      )}
+            width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+            background: `${color}15`, border: `1px solid ${color}25`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.55rem', color,
+          }}>←</span>
+        )}
+      </div>
     </div>
   )
 
