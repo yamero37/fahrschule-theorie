@@ -10,7 +10,7 @@ const BASIC_THEMES: { id: Theme; label: string; desc: string; preview: { bg: str
     id: 'light',
     label: 'Helles Design',
     desc: 'Warmes, helles Layout für den Tag',
-    preview: { bg: '#f2ede8', surface: '#ffffff', card: '#f8f4f0', accent: '#c9907a', text: '#1c100a', textDim: '#b09888' },
+    preview: { bg: '#edf2f7', surface: '#ffffff', card: '#f7fafc', accent: '#0d9488', text: '#0f172a', textDim: '#94a3b8' },
   },
   {
     id: 'dark',
@@ -141,10 +141,10 @@ function ThemeCard({
       {/* Mini UI preview */}
       <div style={{
         borderRadius: '8px', overflow: 'hidden', marginBottom: '0.75rem',
-        border: `1px solid ${p.bg === '#f2ede8' ? '#e2d8d0' : '#252530'}`,
+        border: `1px solid ${p.bg === '#edf2f7' ? '#e2d8d0' : '#252530'}`,
       }}>
         {/* Top bar */}
-        <div style={{ background: p.surface, padding: '5px 7px', display: 'flex', alignItems: 'center', gap: '4px', borderBottom: `1px solid ${p.bg === '#f2ede8' ? '#e2d8d0' : '#252530'}` }}>
+        <div style={{ background: p.surface, padding: '5px 7px', display: 'flex', alignItems: 'center', gap: '4px', borderBottom: `1px solid ${p.bg === '#edf2f7' ? '#e2d8d0' : '#252530'}` }}>
           <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.accent }} />
           <div style={{ flex: 1, height: '3px', borderRadius: '2px', background: p.textDim, opacity: 0.3 }} />
         </div>

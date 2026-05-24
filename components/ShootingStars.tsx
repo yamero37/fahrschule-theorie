@@ -28,7 +28,7 @@ export default function ShootingStars() {
   return (
     <>
       <style>{css}</style>
-      <div style={{
+      <div className="shooting-stars" style={{
         position: 'fixed', inset: 0,
         pointerEvents: 'none', zIndex: 1, overflow: 'hidden',
       }}>
