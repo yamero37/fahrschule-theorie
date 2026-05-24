@@ -83,17 +83,22 @@ export default function Dashboard() {
     async function load() {
       try {
         const timeout = new Promise<{ data: { session: null } }>(res =>
-          setTimeout(() => res({ data: { session: null } }), 8000)
+          setTimeout(() => res({ data: { session: null } }), 6000)
         )
         const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
         if (!session) { router.replace('/'); return }
 
+        // Populate from session immediately — no extra network round-trip needed
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
         noteUserId.current = session.user.id
 
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
+
+        // ↓ Show dashboard now — everything below loads in background
+        setLoading(false)
+
         if (admin) {
           const tok = session.access_token ?? ''
           setAdminToken(tok)
@@ -104,58 +109,47 @@ export default function Dashboard() {
         }
 
         const uid = session.user.id
+        let localDone = false
+        try { localDone = localStorage.getItem(`tutorial_done_${uid}`) === '1' } catch {}
+
+        // Notes — local first (instant), then sync from DB
+        try {
+          const local = localStorage.getItem(`note_${uid}`)
+          if (local) setNoteText(local)
+        } catch {}
+
+        // Stats + leaderboard + notes DB — all fire in parallel, update as they arrive
         ;(async () => {
           try {
-            const local = localStorage.getItem(`note_${uid}`)
-            if (local) setNoteText(local)
-          } catch {}
-          try {
-            const { data: noteData } = await supabase
-              .from('user_notes').select('content').eq('user_id', uid).single()
-            if (noteData?.content != null) setNoteText(noteData.content)
-          } catch {}
-        })()
-
-        let localDone = false
-        try { localDone = localStorage.getItem(`tutorial_done_${session.user.id}`) === '1' } catch {}
-
-        const statsP = (async () => {
-          try {
-            const { data: stats } = await supabase
-              .from('user_stats')
-              .select('points, tutorial_done')
-              .eq('user_id', session.user.id)
-              .single()
+            const { data: stats } = await supabase.from('user_stats')
+              .select('points, tutorial_done').eq('user_id', uid).single()
             if (stats) {
               setPoints(stats.points ?? 0)
               const done = !!stats.tutorial_done || localDone
               setTutorialDone(done)
               if (!done) setShowTutorial(true)
             } else {
-              if (localDone) { setTutorialDone(true) } else { setShowTutorial(true) }
+              if (localDone) setTutorialDone(true); else setShowTutorial(true)
             }
           } catch {
-            if (localDone) { setTutorialDone(true) } else { setShowTutorial(true) }
+            if (localDone) setTutorialDone(true); else setShowTutorial(true)
           }
         })()
 
-        const leaderP = (async () => {
+        ;(async () => {
           try {
-            const ctrl = new AbortController()
-            const timer = setTimeout(() => ctrl.abort(), 4000)
-            const res = await fetch('/api/leaderboard', { signal: ctrl.signal })
-            clearTimeout(timer)
-            const data = await res.json()
-            if (Array.isArray(data)) setTopEntries(data.slice(0, 3))
+            const { data: noteData } = await supabase.from('user_notes')
+              .select('content').eq('user_id', uid).single()
+            if (noteData?.content != null) setNoteText(noteData.content)
           } catch {}
         })()
 
-        await Promise.race([
-          Promise.allSettled([statsP, leaderP]),
-          new Promise<void>(res => setTimeout(res, 5000)),
-        ])
+        fetch('/api/leaderboard', { signal: AbortSignal.timeout(4000) })
+          .then(r => r.json())
+          .then((data: unknown) => { if (Array.isArray(data)) setTopEntries(data.slice(0, 3)) })
+          .catch(() => {})
 
-      } finally {
+      } catch {
         setLoading(false)
       }
     }
