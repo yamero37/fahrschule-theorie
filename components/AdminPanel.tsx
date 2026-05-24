@@ -134,8 +134,7 @@ export default function AdminPanel() {
     return (
       <div style={{
         minHeight: '100svh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--bg)',
-      }}>
+              }}>
         <div style={{
           width: '100%', maxWidth: '360px', padding: '2.5rem',
           background: 'var(--surface)',

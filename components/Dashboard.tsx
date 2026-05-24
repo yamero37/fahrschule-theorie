@@ -203,7 +203,7 @@ export default function Dashboard() {
   const progressVal = Math.round(progress)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: '84px', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: '84px', position: 'relative' }}>
 
       {showTutorial && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 100 }}>

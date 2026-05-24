@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -24,7 +24,7 @@ function minsToTime(m: number) { return `${pad(Math.floor(m / 60))}:${pad(m % 60
 function StatusBadge({ s }: { s: string }) {
   const cfg: Record<string, { label: string; bg: string; color: string; border: string }> = {
     pending:  { label: 'Ausstehend', bg: 'rgba(201,162,39,0.1)', color: 'var(--gold)',   border: 'rgba(201,162,39,0.3)' },
-    accepted: { label: 'Bestätigt',  bg: 'rgba(34,197,94,0.08)', color: '#22c55e',       border: 'rgba(34,197,94,0.25)' },
+    accepted: { label: 'BestÃ¤tigt',  bg: 'rgba(34,197,94,0.08)', color: '#22c55e',       border: 'rgba(34,197,94,0.25)' },
     rejected: { label: 'Abgelehnt', bg: 'rgba(239,68,68,0.08)', color: '#f87171',       border: 'rgba(239,68,68,0.25)' },
   }
   const c = cfg[s] ?? cfg.pending
@@ -81,7 +81,7 @@ export default function AdminTerminePage() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1.5rem 4rem' }}>
+    <div style={{ minHeight: '100vh', padding: '2rem 1.5rem 4rem' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
@@ -96,13 +96,13 @@ export default function AdminTerminePage() {
               </span>
             )}
           </div>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Admin-Ansicht · Nur für Fahrlehrer Tolga</p>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Admin-Ansicht Â· Nur fÃ¼r Fahrlehrer Tolga</p>
         </div>
 
         {/* Filter tabs */}
         <div style={{ display: 'flex', gap: '4px', marginBottom: '1.25rem' }}>
           {(['pending', 'accepted', 'rejected', 'all'] as const).map(f => {
-            const labels = { pending: 'Ausstehend', accepted: 'Bestätigt', rejected: 'Abgelehnt', all: 'Alle' }
+            const labels = { pending: 'Ausstehend', accepted: 'BestÃ¤tigt', rejected: 'Abgelehnt', all: 'Alle' }
             const count = f === 'all' ? appointments.length : appointments.filter(a => a.status === f).length
             return (
               <button key={f} onClick={() => setFilter(f)} style={{
@@ -125,7 +125,7 @@ export default function AdminTerminePage() {
               textAlign: 'center', padding: '3rem', color: 'var(--text-dim)', fontSize: '0.8rem',
               background: 'rgba(255,255,255,0.02)', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.06)',
             }}>
-              Keine Einträge.
+              Keine EintrÃ¤ge.
             </div>
           )}
           {filtered.map(a => {
@@ -144,18 +144,18 @@ export default function AdminTerminePage() {
                 {/* Date + time */}
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '1.1rem' }}>🚗</span>
+                    <span style={{ fontSize: '1.1rem' }}>ðŸš—</span>
                     <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text)' }}>{dateStr}</p>
                   </div>
                   <p style={{ margin: '0 0 4px', fontSize: '0.75rem', color: 'var(--text-muted)', paddingLeft: '1.7rem' }}>
-                    {minsToTime(startMins)} – {minsToTime(endMins)} Uhr · {a.duration_min} Min.
+                    {minsToTime(startMins)} â€“ {minsToTime(endMins)} Uhr Â· {a.duration_min} Min.
                   </p>
                   <p style={{ margin: '0 0 4px', fontSize: '0.73rem', color: 'var(--gold)', fontWeight: 700, paddingLeft: '1.7rem' }}>
-                    👤 {a.student_name}
+                    ðŸ‘¤ {a.student_name}
                   </p>
                   {a.note && (
                     <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-dim)', fontStyle: 'italic', paddingLeft: '1.7rem' }}>
-                      „{a.note}"
+                      â€ž{a.note}"
                     </p>
                   )}
                   <p style={{ margin: '4px 0 0', fontSize: '0.6rem', color: 'var(--text-dim)', paddingLeft: '1.7rem' }}>
@@ -177,7 +177,7 @@ export default function AdminTerminePage() {
                           color: '#22c55e', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
                         }}
                       >
-                        ✓ Bestätigen
+                        âœ“ BestÃ¤tigen
                       </button>
                       <button
                         onClick={() => updateStatus(a.id, 'rejected')}
@@ -188,7 +188,7 @@ export default function AdminTerminePage() {
                           color: '#f87171', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
                         }}
                       >
-                        ✕ Ablehnen
+                        âœ• Ablehnen
                       </button>
                     </div>
                   )}
@@ -201,7 +201,7 @@ export default function AdminTerminePage() {
                         color: 'var(--text-dim)', cursor: 'pointer',
                       }}
                     >
-                      Zurücksetzen
+                      ZurÃ¼cksetzen
                     </button>
                   )}
                 </div>
@@ -215,3 +215,4 @@ export default function AdminTerminePage() {
     </div>
   )
 }
+

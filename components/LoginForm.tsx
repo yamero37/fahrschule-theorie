@@ -73,7 +73,6 @@ export default function LoginForm() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0f0f12',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',

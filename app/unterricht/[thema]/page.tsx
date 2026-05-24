@@ -16,7 +16,7 @@ export default async function ThemaPage({ params }: Props) {
   if (!topic || !topic.available) notFound()
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1rem 5rem' }}>
+    <div style={{ minHeight: '100vh', padding: '2rem 1rem 5rem' }}>
       <div style={{ maxWidth: '680px', margin: '0 auto' }}>
 
         {/* Breadcrumb */}

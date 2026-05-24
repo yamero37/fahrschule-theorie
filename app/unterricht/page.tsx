@@ -1,14 +1,14 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { TOPICS } from '@/data/lektionen'
 
-export const metadata = { title: 'Theorie Unterricht – TolDrive' }
+export const metadata = { title: 'Theorie Unterricht â€“ TolDrive' }
 
 export default function UnterrichtPage() {
   const generalTopics = TOPICS.filter(t => !t.classB)
   const classBTopics  = TOPICS.filter(t =>  t.classB)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '2rem 1rem 4rem' }}>
+    <div style={{ minHeight: '100vh', padding: '2rem 1rem 4rem' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
@@ -17,7 +17,7 @@ export default function UnterrichtPage() {
             TolDrive
           </p>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text)', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-            📖 Theorie Unterricht
+            ðŸ“– Theorie Unterricht
           </h1>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
             12 allgemeine Themen + 2 Klasse-B-Themen
@@ -119,7 +119,7 @@ function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
         border: `1px solid ${topic.available ? tagBorder : 'rgba(255,255,255,0.1)'}`,
         borderRadius: '20px', padding: '2px 8px',
       }}>
-        {topic.available ? 'Verfügbar' : 'Demnächst'}
+        {topic.available ? 'VerfÃ¼gbar' : 'DemnÃ¤chst'}
       </span>
 
       <div style={{ fontSize: '2rem', marginBottom: '0.75rem', marginTop: topic.tag ? '1rem' : '0' }}>
@@ -144,7 +144,7 @@ function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
 
       {topic.available && (
         <div style={{ marginTop: '1rem', fontSize: '0.72rem', fontWeight: 700, color: tagColor }}>
-          {topic.lessons.length} Lektion{topic.lessons.length !== 1 ? 'en' : ''} →
+          {topic.lessons.length} Lektion{topic.lessons.length !== 1 ? 'en' : ''} â†’
         </div>
       )}
     </div>
@@ -157,3 +157,4 @@ function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
     </Link>
   )
 }
+
