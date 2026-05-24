@@ -85,9 +85,10 @@
   color: var(--text);
 }
 
-/* Shooting stars: teal on light theme */
+/* Shooting stars: teal on light theme — !important overrides inline style */
 [data-theme="light"] .shooting-stars div {
-  background: linear-gradient(90deg, transparent 0%, rgba(13,148,136,0.22) 40%, rgba(45,212,191,0.1) 72%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(13,148,136,0.65) 35%, rgba(45,212,191,0.35) 65%, transparent 100%) !important;
+  filter: blur(2px) !important;
 }
 
 /* ── Leaf decorations (LoginForm) ─────────────────────── */
