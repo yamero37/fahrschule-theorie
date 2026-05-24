@@ -297,12 +297,19 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
     if (presenceRef.current) presenceRef.current.track({ username, isTyping: false })
     if (typingTimer.current) clearTimeout(typingTimer.current)
 
-    const { error } = await supabase.from('chat_messages').insert({
-      user_id: userId, username, message: input.trim(), channel: activeChannel,
-      is_admin: isAdmin, is_premium: isPremium,
+    const baseMsg = { user_id: userId, username, message: input.trim(), channel: activeChannel }
+
+    let result = await supabase.from('chat_messages').insert({
+      ...baseMsg, is_admin: isAdmin, is_premium: isPremium,
     })
-    if (error) setChatError(`Senden fehlgeschlagen: ${error.message}`)
-    else setInput('')
+
+    // Spalten noch nicht in DB? Fallback ohne diese Felder
+    if (result.error?.message?.includes('is_admin') || result.error?.message?.includes('is_premium')) {
+      result = await supabase.from('chat_messages').insert(baseMsg)
+    }
+
+    if (result.error) setChatError(`Senden fehlgeschlagen: ${result.error.message}`)
+    else { setInput(''); setChatError('') }
     setSending(false)
   }
 
