@@ -480,7 +480,7 @@ export default function Dashboard() {
         </div>
 
         {/* Live Chat */}
-        <ChatBox userId={userId} username={username} />
+        <ChatBox userId={userId} username={username} isAdmin={isAdmin} />
 
       </div>
 
