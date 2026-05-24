@@ -36,13 +36,15 @@ function getProgress(points: number, rank: typeof RANKS[0]) {
 /* ── Features ───────────────────────────────────────────── */
 
 const FEATURES = [
-  { icon: '📖', title: 'Unterricht',    desc: 'Theorie lernen & verstehen',   href: '/unterricht', soon: false, color: '#a78bfa', badge: '14 Lektionen'   },
-  { icon: '📚', title: 'Theoriefragen', desc: 'Alle Prüfungsfragen üben',     href: '/fragen',     soon: false, color: '#c9a227', badge: '700 Fragen'     },
-  { icon: '⚡', title: 'Quiz',          desc: 'Schnell-Test starten',         href: '/quiz',       soon: false, color: '#f97316', badge: 'Prüfungsmodus'  },
-  { icon: '🎬', title: 'Lernvideos',    desc: 'Erklärvideos ansehen',         href: '/videos',     soon: true,  color: '#22c55e', badge: 'Bald'           },
-  { icon: '⚔️', title: 'Battle',       desc: 'Gegen Freunde antreten',       href: '/battle',     soon: true,  color: '#ef4444', badge: 'Bald'           },
-  { icon: '🏆', title: 'Rangliste',     desc: 'Globales Online-Ranking',      href: '/rangliste',  soon: false, color: '#ffd700', badge: 'Live'           },
-  { icon: '📅', title: 'Termin wählen', desc: 'Fahrstunde buchen · Mo–Sa',    href: '/termin',     soon: false, color: '#22c55e', badge: 'Fahrstunde'     },
+  { icon: '📖', title: 'Unterricht',    desc: 'Theorie lernen & verstehen',   href: '/unterricht',  soon: false, color: '#a78bfa', badge: '14 Lektionen'   },
+  { icon: '📚', title: 'Theoriefragen', desc: 'Alle Prüfungsfragen üben',     href: '/fragen',      soon: false, color: '#c9a227', badge: '700 Fragen'     },
+  { icon: '⚡', title: 'Quiz',          desc: 'Schnell-Test starten',         href: '/quiz',        soon: false, color: '#f97316', badge: 'Prüfungsmodus'  },
+  { icon: '🔧', title: 'Technik',       desc: 'Fahrzeugtechnik verstehen',    href: '/technik',     soon: false, color: '#06b6d4', badge: 'Neu'            },
+  { icon: '🎓', title: 'Simulation',    desc: 'Echte Prüfung simulieren',     href: '/simulation',  soon: false, color: '#8b5cf6', badge: 'Prüfung'        },
+  { icon: '🎬', title: 'Lernvideos',    desc: 'Erklärvideos ansehen',         href: '/videos',      soon: true,  color: '#22c55e', badge: 'Bald'           },
+  { icon: '⚔️', title: 'Battle',       desc: 'Gegen Freunde antreten',       href: '/battle',      soon: true,  color: '#ef4444', badge: 'Bald'           },
+  { icon: '🏆', title: 'Rangliste',     desc: 'Globales Online-Ranking',      href: '/rangliste',   soon: false, color: '#ffd700', badge: 'Live'           },
+  { icon: '📅', title: 'Termin wählen', desc: 'Fahrstunde buchen · Mo–Sa',    href: '/termin',      soon: false, color: '#22c55e', badge: 'Fahrstunde'     },
 ]
 
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
