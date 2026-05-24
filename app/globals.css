@@ -26,6 +26,30 @@
   --color-text: var(--text);
 }
 
+/* ── Light theme ────────────────────────────────────────── */
+
+[data-theme="light"] {
+  --bg:           #f2ede8;
+  --surface:      #ffffff;
+  --surface-2:    #f8f4f0;
+  --border:       #e2d8d0;
+  --border-light: #d0c4b8;
+  --gold:         #c9907a;
+  --gold-light:   #e8b4a0;
+  --gold-dark:    #8b5a47;
+  --gold-glow:    rgba(201,144,122,0.18);
+  --text:         #1c100a;
+  --text-muted:   #6b4a38;
+  --text-dim:     #b09888;
+}
+
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+
 * { border-color: var(--border); }
 
 body {
