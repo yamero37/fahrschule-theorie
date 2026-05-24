@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 
@@ -64,6 +65,12 @@ export default function EinstellungenPage() {
 
         {/* App section */}
         <Section title="App" icon="📱">
+          <LinkRow
+            label="Layout ändern"
+            desc="Dashboard-Ansicht anpassen"
+            href="/einstellungen/layout"
+            accent
+          />
           <SettingRow label="Benachrichtigungen" desc="Push-Nachrichten & Erinnerungen" value="Bald verfügbar" muted />
           <SettingRow label="Sprache" desc="App-Sprache" value="Deutsch" muted />
           <SettingRow label="Design" desc="Helles / Dunkles Design" value="Dunkel" muted />
@@ -137,12 +144,34 @@ function SettingRow({ label, desc, value, muted }: { label: string; desc: string
         <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}>{label}</p>
         <p style={{ margin: 0, fontSize: '0.63rem', color: 'var(--text-dim)', marginTop: '1px' }}>{desc}</p>
       </div>
-      <span style={{
-        fontSize: '0.75rem', fontWeight: 600, flexShrink: 0,
-        color: muted ? 'var(--text-dim)' : 'var(--gold)',
-      }}>
+      <span style={{ fontSize: '0.75rem', fontWeight: 600, flexShrink: 0, color: muted ? 'var(--text-dim)' : 'var(--gold)' }}>
         {value}
       </span>
     </div>
+  )
+}
+
+function LinkRow({ label, desc, href, accent }: { label: string; desc: string; href: string; accent?: boolean }) {
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0.85rem 1rem', gap: '1rem',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        cursor: 'pointer',
+        transition: 'background 0.15s',
+      }}
+        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700, color: accent ? 'var(--gold)' : 'var(--text)' }}>{label}</p>
+          <p style={{ margin: 0, fontSize: '0.63rem', color: 'var(--text-dim)', marginTop: '1px' }}>{desc}</p>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accent ? 'var(--gold)' : 'var(--text-dim)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </Link>
   )
 }
