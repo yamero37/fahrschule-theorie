@@ -52,18 +52,33 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const data = await loginUser(form.email.trim(), form.password)
-      const isAdmin = data.session?.user.email === 'spieletolga@gmail.com'
-      if (isAdmin || data.session?.user.app_metadata?.approved === true) {
+
+      if (!data.session) {
+        setError('Anmeldung fehlgeschlagen – bitte versuche es erneut oder kontaktiere den Admin.')
+        return
+      }
+
+      const isAdmin = data.session.user.email === 'spieletolga@gmail.com'
+      if (isAdmin || data.session.user.app_metadata?.approved === true) {
         router.replace('/dashboard')
       } else {
         router.replace('/warten')
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Anmeldung fehlgeschlagen.'
-      if (msg.includes('Invalid login') || msg.includes('invalid_credentials')) {
+      let msg = 'Anmeldung fehlgeschlagen.'
+      if (err instanceof Error) {
+        msg = err.message
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        msg = String((err as { message: unknown }).message)
+      }
+      if (msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email')) {
         setError('E-Mail oder Passwort falsch.')
+      } else if (msg.includes('Email not confirmed')) {
+        setError('E-Mail-Adresse noch nicht bestätigt. Bitte prüfe dein Postfach.')
+      } else if (msg.includes('rate limit') || msg.includes('too many')) {
+        setError('Zu viele Versuche. Bitte warte kurz und versuche es erneut.')
       } else {
-        setError(msg)
+        setError(msg || 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.')
       }
     } finally {
       setLoading(false)
