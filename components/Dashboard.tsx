@@ -297,7 +297,7 @@ export default function Dashboard() {
                 </span>
               </div>
               <button
-                onClick={async () => { await signOut(); router.replace('/') }}
+                onClick={async () => { await signOut(); window.location.href = '/' }}
                 style={{
                   padding: '7px 15px', borderRadius: '10px', fontSize: '0.73rem', fontWeight: 600,
                   background: 'rgba(239,68,68,0.08)', color: '#f87171',
