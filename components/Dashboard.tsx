@@ -77,6 +77,7 @@ export default function Dashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [apptFilter, setApptFilter] = useState<'pending' | 'accepted' | 'rejected' | 'all'>('pending')
   const [actingAppt, setActingAppt] = useState<string | null>(null)
+  const [showAdmin, setShowAdmin] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -212,18 +213,44 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── Admin sections ── */}
-      {isAdmin && (
-        <div style={{ maxWidth: '720px', margin: '0 auto', padding: '1rem 1rem 0' }}>
-          <AdminTermine appointments={appointments} filter={apptFilter} setFilter={setApptFilter} acting={actingAppt} onUpdate={updateAppt} />
-          <AdminFahrstundler token={adminToken} />
-          <AdminBlockedDays token={adminToken} />
-          <AdminSettings token={adminToken} />
-        </div>
+      {/* ── Admin Drawer ── */}
+      {isAdmin && showAdmin && (
+        <AdminDrawer
+          onClose={() => setShowAdmin(false)}
+          appointments={appointments}
+          filter={apptFilter}
+          setFilter={setApptFilter}
+          acting={actingAppt}
+          onUpdate={updateAppt}
+          token={adminToken}
+        />
       )}
 
       {/* ── Main content ── */}
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '1rem 1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+
+        {/* ── Admin button (only for admin) ── */}
+        {isAdmin && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => setShowAdmin(true)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '7px',
+                padding: '7px 14px', borderRadius: '100px',
+                background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.3)',
+                color: '#a78bfa', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.18)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.1)' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Admin
+            </button>
+          </div>
+        )}
 
         {/* ── HERO CARD ── */}
         <div style={{
@@ -545,6 +572,152 @@ function BottomNav() {
         )
       })}
     </div>
+  )
+}
+
+/* ── Admin Drawer ───────────────────────────────────────── */
+
+type AdminDrawerProps = {
+  onClose: () => void
+  appointments: Appointment[]
+  filter: 'pending' | 'accepted' | 'rejected' | 'all'
+  setFilter: (f: 'pending' | 'accepted' | 'rejected' | 'all') => void
+  acting: string | null
+  onUpdate: (id: string, status: 'accepted' | 'rejected' | 'pending') => void
+  token: string
+}
+
+const ADMIN_SECTIONS = [
+  { id: 'fahrstundler', label: 'Fahrschüler verwalten', icon: '👤' },
+  { id: 'anfragen',     label: 'Fahrstunden-Anfragen',  icon: '🚗' },
+  { id: 'sperren',      label: 'Tage sperren',           icon: '🚫' },
+  { id: 'einstellung',  label: 'Kalender-Einstellungen', icon: '⚙️' },
+] as const
+
+type AdminSectionId = typeof ADMIN_SECTIONS[number]['id']
+
+function AdminDrawer({ onClose, appointments, filter, setFilter, acting, onUpdate, token }: AdminDrawerProps) {
+  const [active, setActive] = useState<AdminSectionId | null>(null)
+  const pending = appointments.filter(a => a.status === 'pending').length
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          background: 'rgba(0,0,0,0.65)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+        }}
+      />
+
+      {/* Drawer panel */}
+      <div style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 201,
+        width: 'min(480px, 100vw)',
+        background: '#17171c',
+        borderLeft: '1px solid rgba(139,92,246,0.2)',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '-12px 0 48px rgba(0,0,0,0.6)',
+      }}>
+
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '1.25rem 1.4rem',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
+              background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)' }}>Admin-Bereich</p>
+              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)' }}>Nur für Administratoren</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: '32px', height: '32px', borderRadius: '8px',
+              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+              color: 'var(--text-dim)', fontSize: '1rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >✕</button>
+        </div>
+
+        {/* Section list */}
+        <div style={{ overflowY: 'auto', flex: 1, padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+
+          {ADMIN_SECTIONS.map(s => (
+            <div key={s.id}>
+              {/* Section toggle button */}
+              <button
+                onClick={() => setActive(prev => prev === s.id ? null : s.id)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '0.85rem',
+                  padding: '0.9rem 1rem', borderRadius: '1rem',
+                  background: active === s.id ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${active === s.id ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                }}
+              >
+                <span style={{
+                  width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
+                  background: active === s.id ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${active === s.id ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem',
+                }}>{s.icon}</span>
+                <span style={{ flex: 1, fontSize: '0.83rem', fontWeight: 700, color: active === s.id ? '#a78bfa' : 'var(--text)' }}>
+                  {s.label}
+                  {s.id === 'anfragen' && pending > 0 && (
+                    <span style={{ marginLeft: '8px', padding: '1px 7px', borderRadius: '100px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: '0.62rem', fontWeight: 800 }}>
+                      {pending}
+                    </span>
+                  )}
+                </span>
+                <svg
+                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke={active === s.id ? '#a78bfa' : 'var(--text-dim)'}
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transform: active === s.id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}
+                >
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+
+              {/* Section content */}
+              {active === s.id && (
+                <div style={{ marginTop: '0.5rem', paddingLeft: '0.25rem' }}>
+                  {s.id === 'fahrstundler' && <AdminFahrstundler token={token} />}
+                  {s.id === 'anfragen'     && (
+                    <AdminTermine
+                      appointments={appointments}
+                      filter={filter}
+                      setFilter={setFilter}
+                      acting={acting}
+                      onUpdate={onUpdate}
+                    />
+                  )}
+                  {s.id === 'sperren'      && <AdminBlockedDays token={token} />}
+                  {s.id === 'einstellung'  && <AdminSettings token={token} />}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   )
 }
 
