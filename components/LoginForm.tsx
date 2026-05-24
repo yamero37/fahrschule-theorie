@@ -111,8 +111,8 @@ export default function LoginForm() {
         <div style={{ textAlign: 'center', marginBottom: '1.5rem', animation: 'fadeUp 0.5s ease both' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/Toldrive.jpeg"
-            alt="TolDrive"
+            src="/avatar.jpeg"
+            alt="Tolga"
             style={{
               width: '90px', height: '90px',
               objectFit: 'cover', borderRadius: '50%',
@@ -125,10 +125,11 @@ export default function LoginForm() {
             margin: '0 0 0.3rem',
             fontSize: '1.55rem', fontWeight: 900,
             letterSpacing: '0.22em', textTransform: 'uppercase',
-            background: 'linear-gradient(180deg, #e8c960 0%, #c9a227 60%, #8b6914 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            TolDrive
+            <span style={{ color: '#ffffff' }}>Tol</span><span style={{
+              background: 'linear-gradient(180deg, #e8c960 0%, #c9a227 60%, #8b6914 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            }}>Drive</span>
           </h2>
           <span style={{
             fontSize: '0.53rem', fontWeight: 700,
