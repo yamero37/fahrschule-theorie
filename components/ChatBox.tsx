@@ -131,6 +131,7 @@ export default function ChatBox({ userId, username }: Props) {
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [chatError, setChatError] = useState('')
 
   // groups state
   const [groups, setGroups] = useState<Group[]>([])
@@ -160,7 +161,12 @@ export default function ChatBox({ userId, username }: Props) {
       .eq('channel', activeChannel)
       .order('created_at', { ascending: true })
       .limit(60)
-      .then(({ data }) => { if (!cancelled && data) setMsgs(data) })
+      .then(({ data, error }) => {
+        if (!cancelled) {
+          if (error) setChatError(`DB-Fehler: ${error.message}`)
+          else { setChatError(''); if (data) setMsgs(data) }
+        }
+      })
 
     const ch = supabase
       .channel(`chat:${activeChannel}:${Date.now()}`)
@@ -198,10 +204,11 @@ export default function ChatBox({ userId, username }: Props) {
   async function send() {
     if (!input.trim() || !activeChannel || sending) return
     setSending(true)
-    await supabase.from('chat_messages').insert({
+    const { error } = await supabase.from('chat_messages').insert({
       user_id: userId, username, message: input.trim(), channel: activeChannel,
     })
-    setInput('')
+    if (error) setChatError(`Senden fehlgeschlagen: ${error.message}`)
+    else setInput('')
     setSending(false)
   }
 
@@ -236,8 +243,8 @@ export default function ChatBox({ userId, username }: Props) {
 
   return (
     <div style={{
-      background: 'var(--surface)',
-      border: '1px solid rgba(201,162,39,0.15)',
+      background: 'transparent',
+      border: '1px solid rgba(var(--gold-rgb),0.28)',
       borderRadius: '1.25rem',
       overflow: 'hidden',
       display: 'flex', flexDirection: 'column',
@@ -273,6 +280,13 @@ export default function ChatBox({ userId, username }: Props) {
           ))}
         </div>
       </div>
+
+      {/* ── Error banner ── */}
+      {chatError && (
+        <div style={{ margin: '0.5rem 1rem', padding: '0.55rem 0.8rem', borderRadius: '8px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', fontSize: '0.7rem', color: '#f87171' }}>
+          ⚠ {chatError}
+        </div>
+      )}
 
       {/* ── Public tab ── */}
       {tab === 'public' && (
