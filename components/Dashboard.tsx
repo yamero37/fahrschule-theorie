@@ -187,7 +187,7 @@ export default function Dashboard() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(201,144,122,0.15)', borderTop: '3px solid var(--gold)', margin: '0 auto 1rem', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(var(--gold-rgb),0.15)', borderTop: '3px solid var(--gold)', margin: '0 auto 1rem', animation: 'spin 0.8s linear infinite' }} />
           <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>Wird geladen…</span>
         </div>
       </div>
@@ -248,12 +248,13 @@ export default function Dashboard() {
 
         {/* ── HERO CARD ── */}
         <div style={{
-          background: 'var(--surface)',
+          background: 'transparent',
+          border: '1px solid rgba(var(--gold-rgb),0.3)',
           borderRadius: '1.5rem',
           padding: '1.4rem 1.4rem 1.25rem',
           position: 'relative', overflow: 'hidden',
         }}>
-          <div style={{ position: 'absolute', top: '-60px', right: '-30px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(201,144,122,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-60px', right: '-30px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--gold-rgb),0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
           {/* Badge */}
           <p style={{ margin: '0 0 0.9rem', fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.05em' }}>
@@ -280,9 +281,9 @@ export default function Dashboard() {
                 <Link href="/fragen" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '8px',
                   padding: '0.6rem 1.1rem', borderRadius: '100px',
-                  background: 'linear-gradient(135deg, #8b5a47, #c9907a)',
+                  background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
                   color: '#fff', fontWeight: 700, fontSize: '0.8rem',
-                  textDecoration: 'none', boxShadow: '0 4px 20px rgba(201,144,122,0.35)',
+                  textDecoration: 'none', boxShadow: '0 4px 20px rgba(var(--gold-rgb),0.35)',
                 }}>
                   Weiterlernen
                   <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>→</span>
@@ -290,7 +291,7 @@ export default function Dashboard() {
                 <Link href="/rangliste" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
                   padding: '0.6rem 1rem', borderRadius: '100px',
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'var(--input-bg)', border: '1px solid var(--input-border)',
                   color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.8rem',
                   textDecoration: 'none',
                 }}>
@@ -345,13 +346,14 @@ export default function Dashboard() {
             { icon: '📈', value: `${progressVal}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Max', color: '#22c55e', barPct: progress },
           ].map(s => (
             <div key={s.label} style={{
-              background: 'var(--surface)', borderRadius: '1rem', padding: '0.8rem 0.65rem',
+              background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)',
+              borderRadius: '1rem', padding: '0.8rem 0.65rem',
               display: 'flex', flexDirection: 'column', gap: '0.15rem',
             }}>
               <span style={{ fontSize: '1rem', marginBottom: '0.2rem' }}>{s.icon}</span>
               <span style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1 }}>{s.value}</span>
               <span style={{ fontSize: '0.55rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>{s.label}</span>
-              <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginTop: '0.4rem' }}>
+              <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(var(--gold-rgb),0.1)', overflow: 'hidden', marginTop: '0.4rem' }}>
                 <div style={{ width: `${s.barPct}%`, height: '100%', background: s.color, borderRadius: '2px', transition: 'width 1.2s ease' }} />
               </div>
             </div>
@@ -365,14 +367,14 @@ export default function Dashboard() {
 
         {/* ── PREMIUM BANNER ── */}
         <div style={{
-          background: `linear-gradient(135deg, var(--surface) 0%, rgba(201,144,122,0.07) 100%)`,
-          border: '1px solid rgba(201,144,122,0.2)',
+          background: 'transparent',
+          border: '1px solid rgba(var(--gold-rgb),0.3)',
           borderRadius: '1.25rem', padding: '1rem 1.1rem',
           display: 'flex', alignItems: 'center', gap: '0.85rem',
         }}>
           <div style={{
             width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0,
-            background: 'rgba(201,144,122,0.1)', border: '1px solid rgba(201,144,122,0.2)',
+            background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.22)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem',
           }}>💎</div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -381,17 +383,17 @@ export default function Dashboard() {
           </div>
           <button style={{
             padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
-            background: 'linear-gradient(135deg, #8b5a47, #c9907a)',
+            background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
             color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
-            boxShadow: '0 4px 16px rgba(201,144,122,0.3)',
+            boxShadow: '0 4px 16px rgba(var(--gold-rgb),0.3)',
           }}>
             Jetzt upgraden 👑
           </button>
         </div>
 
         {/* ── DAILY GOAL ── */}
-        <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+        <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
             <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               🔄 Dein heutiges Ziel
@@ -403,7 +405,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
             <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
               <svg width="46" height="46" viewBox="0 0 46 46">
-                <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
+                <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
                 <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
                   strokeDasharray={`${(2 / 5) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
                   strokeLinecap="round" transform="rotate(-90 23 23)" />
@@ -420,7 +422,7 @@ export default function Dashboard() {
 
         {/* ── LEADERBOARD (compact) ── */}
         {topEntries.length > 0 && (
-          <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+          <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
               <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: 'var(--text)' }}>🏅 Top Spieler</p>
               <Link href="/rangliste" style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', textDecoration: 'none' }}>Alle →</Link>
@@ -434,8 +436,8 @@ export default function Dashboard() {
                   <div key={entry.userId} style={{
                     display: 'flex', alignItems: 'center', gap: '9px',
                     padding: '0.5rem 0.7rem', borderRadius: '9px',
-                    background: isMe ? 'rgba(201,144,122,0.08)' : 'rgba(255,255,255,0.025)',
-                    border: isMe ? '1px solid rgba(201,144,122,0.22)' : '1px solid transparent',
+                    background: isMe ? 'rgba(var(--gold-rgb),0.08)' : 'transparent',
+                    border: isMe ? '1px solid rgba(var(--gold-rgb),0.22)' : '1px solid transparent',
                   }}>
                     <span style={{ fontSize: '1rem', flexShrink: 0 }}>{medals[i]}</span>
                     <span style={{ flex: 1, fontSize: '0.75rem', fontWeight: 700, color: isMe ? 'var(--gold)' : 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.displayName}</span>
@@ -451,7 +453,7 @@ export default function Dashboard() {
         )}
 
         {/* ── NOTEPAD ── */}
-        <div style={{ background: 'var(--surface)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
+        <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
             <p style={{ margin: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               📝 Notizblock
@@ -468,12 +470,12 @@ export default function Dashboard() {
             style={{
               width: '100%', resize: 'vertical', minHeight: '90px',
               padding: '0.65rem 0.75rem', borderRadius: '0.6rem', fontSize: '0.78rem',
-              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
               color: 'var(--text)', outline: 'none', lineHeight: 1.6,
               fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.15s',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,144,122,0.35)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(var(--gold-rgb),0.45)' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--input-border)' }}
           />
         </div>
 
@@ -548,10 +550,10 @@ function BottomNav() {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
-      background: 'rgba(15,15,18,0.96)',
+      background: 'var(--nav-bg)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
-      borderTop: '1px solid rgba(255,255,255,0.07)',
+      borderTop: '1px solid rgba(var(--gold-rgb),0.25)',
       display: 'flex', justifyContent: 'space-around', alignItems: 'stretch',
       padding: '0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom, 0px))',
     }}>
@@ -1314,8 +1316,8 @@ function FeatureCard({ icon, title, desc, href, soon, color, badge }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: hovered && !soon ? `linear-gradient(135deg, ${color}12 0%, var(--surface) 100%)` : 'var(--surface)',
-        border: `1px solid ${hovered && !soon ? `${color}30` : 'rgba(255,255,255,0.06)'}`,
+        background: hovered && !soon ? `linear-gradient(135deg, ${color}18 0%, transparent 100%)` : 'transparent',
+        border: `1px solid ${hovered && !soon ? `${color}50` : 'rgba(var(--gold-rgb),0.25)'}`,
         borderRadius: '1.1rem',
         padding: '0.9rem 0.75rem',
         cursor: soon ? 'default' : 'pointer',
