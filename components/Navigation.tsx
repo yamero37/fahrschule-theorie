@@ -47,8 +47,8 @@ export default function Navigation() {
 
   return (
     <header style={{
-      background: 'rgba(8,8,8,0.95)',
-      borderBottom: '1px solid rgba(201,162,39,0.2)',
+      background: 'var(--nav-bg)',
+      borderBottom: '1px solid var(--nav-border)',
       backdropFilter: 'blur(12px)',
       position: 'sticky',
       top: 0,
@@ -71,7 +71,7 @@ export default function Navigation() {
           <img src="/Toldrive.jpeg" alt="TolDrive" style={{
             width: '30px', height: '30px',
             objectFit: 'cover', borderRadius: '6px',
-            border: '1px solid rgba(201,162,39,0.35)',
+            border: '1px solid rgba(var(--gold-rgb),0.35)',
           }} />
           <span className="nav-title" style={{
             fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.01em',
@@ -91,7 +91,7 @@ export default function Navigation() {
             fontSize: '0.82rem', fontWeight: 700, textDecoration: 'none',
             transition: 'all 0.15s',
             ...(pathname === '/dashboard'
-              ? { background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.3)' }
+              ? { background: 'rgba(var(--gold-rgb),0.12)', color: 'var(--gold)', border: '1px solid rgba(var(--gold-rgb),0.3)' }
               : { color: 'var(--text-muted)', border: '1px solid transparent' }
             ),
           }}>
@@ -109,8 +109,8 @@ export default function Navigation() {
                 onClick={() => setFriendsOpen(v => !v)}
                 style={{
                   width: '38px', height: '38px', borderRadius: '10px',
-                  background: friendsOpen ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${friendsOpen ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  background: friendsOpen ? 'rgba(var(--gold-rgb),0.12)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${friendsOpen ? 'rgba(var(--gold-rgb),0.3)' : 'rgba(255,255,255,0.1)'}`,
                   color: friendsOpen ? 'var(--gold)' : 'var(--text-muted)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.15s',
