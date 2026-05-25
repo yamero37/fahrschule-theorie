@@ -175,11 +175,11 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       color: '#dc2626',
       checks: [
         { label: 'Rote Dreiecks-Taste an der Decke drücken' },
-        { label: 'Alle 4 Blinker leuchten gleichzeitig orange auf' },
+        { label: 'Alle 6 Blinker leuchten gleichzeitig orange auf (4 Fahrzeugecken + 2 Spiegelblinker)' },
         { label: 'Nur bei tatsächlicher Gefahr oder Notlage einschalten' },
         { label: 'So früh wie möglich einschalten — nicht erst an der Gefahrenstelle' },
       ],
-      info: 'Der Warnblinker warnt andere Verkehrsteilnehmer frühzeitig. Er darf nur bei echter Gefahr eingesetzt werden — nicht zum Parken im Halteverbot oder als Danke-Geste.',
+      info: 'Der Warnblinker lässt alle 6 Blinkleuchten gleichzeitig orange aufleuchten: vorne links + rechts, hinten links + rechts und die beiden Spiegelblinker. Er darf nur bei echter Gefahr eingesetzt werden — nicht zum Parken im Halteverbot oder als Danke-Geste.',
       supa: true,
     },
     {
