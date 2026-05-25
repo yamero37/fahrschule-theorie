@@ -23,88 +23,159 @@ interface Question {
 /* ─── Question Bank ────────────────────────────────────────── */
 const ALL_QUESTIONS: Question[] = [
   {
-    id: 'reifen_profil', category: 'Reifen',
-    question: 'Was ist die gesetzliche Mindestprofiltiefe für Pkw-Reifen?',
-    options: ['0,8 mm', '1,6 mm', '2,4 mm', '3,2 mm'],
+    id: 'reifen_wichtig', category: 'Reifen',
+    question: 'Was ist bei der Sichtkontrolle der Reifen zu beachten?',
+    options: [
+      'Farbe und Marke des Reifens',
+      'Profiltiefe, Luftdruck und sichtbare Schäden',
+      'Ob der Reifen neu oder gebraucht ist',
+      'Die Seriennummer auf der Felge',
+    ],
     correctIdx: 1,
-    hint: 'Mindestprofiltiefe: 1,6 mm. Empfohlen: min. 3–4 mm.',
+    hint: 'Profiltiefe mind. 1,6 mm, Luftdruck laut Herstellerangabe, keine Risse oder Beulen – das sind die drei Kernpunkte.',
     pos: 'side', posLabel: 'SEITE • Reifen',
   },
   {
-    id: 'reifendruck', category: 'Reifen',
-    question: 'Wann sollte der Reifendruck kontrolliert werden?',
-    options: ['Nur im Winter', 'Nur beim TÜV', 'Monatlich bei kalten Reifen', 'Einmal jährlich'],
-    correctIdx: 2,
-    hint: 'Reifendruck monatlich bei kalten Reifen prüfen – Wärme verändert den Druck.',
-    pos: 'side', posLabel: 'SEITE • Reifendruck',
+    id: 'reflektor_ort', category: 'Beleuchtung',
+    question: 'Wo befinden sich die Reflektoren am Fahrzeug?',
+    options: [
+      'Nur vorne am Stoßfänger',
+      'Links und rechts am Heck des Fahrzeugs',
+      'An allen vier Türen',
+      'Nur an den Seiten',
+    ],
+    correctIdx: 1,
+    hint: 'Rote Reflektoren sitzen links und rechts am Heck – sie werfen das Licht nachfolgender Fahrzeuge zurück.',
+    pos: 'rear', posLabel: 'HECK • Reflektoren',
   },
   {
-    id: 'motoroel', category: 'Motoröl',
-    question: 'Wie oft sollte der Motorölstand kontrolliert werden?',
-    options: ['Nur beim Werkstattbesuch', 'Täglich', 'Alle 1.000 km / monatlich', 'Einmal im Jahr'],
-    correctIdx: 2,
-    hint: 'Ölstand alle 1.000 km oder monatlich prüfen – auf ebenem Untergrund, Motor kalt.',
+    id: 'motoroel_pruefen', category: 'Motoröl',
+    question: 'Wie prüfen Sie korrekt den Motorölstand?',
+    options: [
+      'Motor warm laufen lassen, sofort messen',
+      'Motor abgestellt, Fahrzeug eben, Messstab ablesen',
+      'Einfach Öl nachfüllen bis es überläuft',
+      'Nur beim Ölwechsel in der Werkstatt',
+    ],
+    correctIdx: 1,
+    hint: 'Motor kalt und abgestellt, Fahrzeug auf ebenem Untergrund: Messstab entnehmen, abwischen, erneut eintauchen, ablesen.',
     pos: 'front', posLabel: 'FRONT • Motoröl',
   },
   {
-    id: 'kuehlwasser', category: 'Kühlwasser',
-    question: 'Was passiert wenn das Kühlwasser zu niedrig ist?',
-    options: ['Das Auto fährt schneller', 'Motor überhitzt und wird beschädigt', 'Besserer Verbrauch', 'Scheibenwischer versagen'],
+    id: 'kuehlwasser_gefahr', category: 'Kühlwasser',
+    question: 'Was ist beim Öffnen des Kühlwasserdeckels unbedingt zu beachten?',
+    options: [
+      'Immer mit heißem Motor öffnen für genaue Messung',
+      'Nie bei warmem Motor öffnen – Verbrühungsgefahr!',
+      'Deckel immer mit Werkzeug öffnen',
+      'Kühlwasser kann bedenkenlos jederzeit geöffnet werden',
+    ],
     correctIdx: 1,
-    hint: 'Zu wenig Kühlwasser → Motorüberhitzung → schwerer Motorschaden möglich.',
+    hint: 'Bei heißem Motor steht der Kühlkreislauf unter Druck – beim Öffnen kann kochendes Kühlwasser herausspritzen.',
     pos: 'front', posLabel: 'FRONT • Kühlwasser',
   },
   {
-    id: 'scheinwerfer', category: 'Beleuchtung',
-    question: 'Was müssen Sie tun wenn ein Scheinwerfer defekt ist?',
-    options: ['Erst beim nächsten TÜV', 'Mit Warnblinker weiterfahren', 'Unverzüglich reparieren lassen', 'Nur nachts reparieren'],
+    id: 'bremslicht_test', category: 'Beleuchtung',
+    question: 'Wie testen Sie selbst ob die Bremslichter funktionieren?',
+    options: [
+      'Das ist nur in der Werkstatt möglich',
+      'Bremse drücken, Reflektion an Wand oder Garage prüfen',
+      'Bei 100 km/h stark bremsen und beobachten',
+      'Bremslichter müssen nie geprüft werden',
+    ],
+    correctIdx: 1,
+    hint: 'Bremse treten und die Reflektion an einer Wand oder Garagentor beobachten – oder eine zweite Person bittten.',
+    pos: 'rear', posLabel: 'HECK • Bremslichter',
+  },
+  {
+    id: 'scheibenwasser_check', category: 'Scheibenwischer',
+    question: 'Was gehört zur Kontrolle der Scheibenwaschanlage?',
+    options: [
+      'Nur die Wischergummis tauschen',
+      'Wasserstand prüfen und Düsen auf korrekte Ausrichtung testen',
+      'Scheibenwischer täglich wechseln',
+      'Leitungswasser ohne Zusätze reicht immer',
+    ],
+    correctIdx: 1,
+    hint: 'Waschwasserstand prüfen (im Winter mit Frostschutz), Düsen auf die Scheibe ausrichten, Wischergummis auf Schlieren testen.',
+    pos: 'front', posLabel: 'FRONT • Scheibenwasser',
+  },
+  {
+    id: 'nebel_wann', category: 'Beleuchtung',
+    question: 'Wann darf die Nebelschlussleuchte am Heck eingeschaltet werden?',
+    options: [
+      'Bei jedem Regen',
+      'Nur auf der Autobahn',
+      'Nur bei Sichtweite unter 50 Meter',
+      'Immer bei Dunkelheit',
+    ],
     correctIdx: 2,
-    hint: 'Defekte Beleuchtung ist ein Pflichtverstoß – unverzügliche Reparatur ist vorgeschrieben.',
-    pos: 'front', posLabel: 'FRONT • Beleuchtung',
+    hint: 'Nebelschlussleuchte nur bei Sichtweite unter 50 m – sonst blendet sie nachfolgende Fahrer erheblich.',
+    pos: 'rear', posLabel: 'HECK • Nebelschluss',
   },
   {
-    id: 'bremsen', category: 'Bremsen',
-    question: 'Warum muss Bremsflüssigkeit regelmäßig gewechselt werden?',
-    options: ['Sie verfärbt sich', 'Sie zieht Wasser an und verliert Siedepunkt', 'Sie wird zu kalt', 'Sie wird zu dünn'],
-    correctIdx: 1,
-    hint: 'Bremsflüssigkeit zieht Wasser an → Siedepunkt sinkt → Dampfblasen bei Hitze.',
-    pos: 'rear', posLabel: 'HECK • Bremsen',
-  },
-  {
-    id: 'hu_intervall', category: 'HU / TÜV',
-    question: 'In welchem Intervall findet die Hauptuntersuchung (TÜV) statt?',
-    options: ['Jedes Jahr', 'Alle 2 Jahre', 'Alle 3 Jahre', 'Alle 5 Jahre'],
-    correctIdx: 1,
-    hint: 'HU alle 2 Jahre (Erstzulassung: nach 3 Jahren). Abgelaufene HU = Bußgeld.',
+    id: 'tuev_sticker', category: 'HU / TÜV',
+    question: 'Was zeigt der TÜV-Sticker am Kennzeichen an?',
+    options: [
+      'Das Baujahr des Fahrzeugs',
+      'Wann der letzte Ölwechsel war',
+      'Monat und Jahr der nächsten Hauptuntersuchung',
+      'Die Anzahl der bisherigen Inspektionen',
+    ],
+    correctIdx: 2,
+    hint: 'Der Sticker zeigt Monat (Zahlen außen am Rand) und Jahr (Zahl in der Mitte) der nächsten fälligen HU.',
     pos: 'rear', posLabel: 'HECK • TÜV-Sticker',
   },
   {
-    id: 'winterreifen', category: 'Reifen',
-    question: 'Ab welcher Temperatur sind Winterreifen empfohlen?',
-    options: ['Unter 0°C', 'Unter +4°C', 'Unter +7°C', 'Erst bei Schnee und Eis'],
-    correctIdx: 2,
-    hint: 'Winterreifen ab +7°C – Gummimischung ist auf Kälte optimiert.',
-    pos: 'side', posLabel: 'SEITE • Winterreifen',
-  },
-  {
-    id: 'wischer', category: 'Scheibenwischer',
-    question: 'Wann müssen Scheibenwischer ersetzt werden?',
-    options: ['Nur wenn komplett kaputt', 'Bei Schlieren oder Quietschen', 'Alle 10 Jahre', 'Nur im Winter'],
+    id: 'kennzeichen_pflicht', category: 'Kennzeichen',
+    question: 'Was muss beim Kennzeichen stets gewährleistet sein?',
+    options: [
+      'Es muss poliert und glänzend sein',
+      'Es muss gut lesbar, unbeschädigt und beleuchtet sein',
+      'Es darf beliebig gestaltet werden',
+      'Nur das hintere Kennzeichen ist Pflicht',
+    ],
     correctIdx: 1,
-    hint: 'Wischer bei Schlieren oder Quietschen wechseln – gute Sicht ist entscheidend.',
-    pos: 'front', posLabel: 'FRONT • Scheibenwischer',
+    hint: 'Das Kennzeichen muss gut lesbar, vollständig und sauber sein – sowie hinten beleuchtet. Verdecken ist verboten.',
+    pos: 'rear', posLabel: 'HECK • Kennzeichen',
   },
   {
-    id: 'nebel', category: 'Beleuchtung',
-    question: 'Wann darf die Nebelschlussleuchte eingeschaltet werden?',
-    options: ['Bei jedem Regen', 'Immer bei Dunkelheit', 'Bei Sichtweite unter 50 m', 'Nur auf der Autobahn'],
-    correctIdx: 2,
-    hint: 'Nebelschlussleuchte nur bei Sichtweite unter 50 m – sonst blendet sie andere.',
-    pos: 'rear', posLabel: 'HECK • Nebelschluss',
+    id: 'reifen_profil_wert', category: 'Reifen',
+    question: 'Was ist die gesetzliche Mindestprofiltiefe für Pkw-Reifen in Deutschland?',
+    options: ['0,8 mm', '1,6 mm', '2,4 mm', '3,2 mm'],
+    correctIdx: 1,
+    hint: 'Gesetzlich: 1,6 mm – Experten empfehlen jedoch mindestens 3–4 mm für optimale Sicherheit bei Nässe.',
+    pos: 'side', posLabel: 'SEITE • Reifenprofil',
+  },
+  {
+    id: 'nebel_vorne', category: 'Beleuchtung',
+    question: 'Was sagt das Nebellicht vorne (Nebelscheinwerfer) aus?',
+    options: [
+      'Darf immer bei schlechtem Wetter eingeschaltet werden',
+      'Darf bei unsichtigem Wetter (Nebel, Schneefall) eingeschaltet werden',
+      'Ist nur für die Autobahn zugelassen',
+      'Muss bei jeder Nachtfahrt leuchten',
+    ],
+    correctIdx: 1,
+    hint: 'Nebelscheinwerfer vorne: bei Nebel, starkem Schneefall oder Regen erlaubt – nicht bei normaler Dunkelheit.',
+    pos: 'front', posLabel: 'FRONT • Nebelscheinwerfer',
+  },
+  {
+    id: 'bremsflüssigkeit', category: 'Bremsen',
+    question: 'Warum muss Bremsflüssigkeit regelmäßig gewechselt werden?',
+    options: [
+      'Sie verfärbt sich mit der Zeit bunt',
+      'Sie zieht Wasser an und verliert dadurch ihren Siedepunkt',
+      'Sie wird bei Kälte zu dünn',
+      'Der Gesetzgeber schreibt es ohne besonderen Grund vor',
+    ],
+    correctIdx: 1,
+    hint: 'Bremsflüssigkeit ist hygroskopisch – sie zieht Wasser an. Dadurch sinkt der Siedepunkt und es entstehen Dampfblasen → Bremsversagen.',
+    pos: 'rear', posLabel: 'HECK • Bremsen',
   },
 ]
 
-const QUESTIONS_PER_ROUND = 5
+const QUESTIONS_PER_ROUND = 3
 
 /* ─── Texts ────────────────────────────────────────────────── */
 const GREETING = 'Hallo, ich heiße Tars und ich bin dein heutiger Prüfer.'
@@ -158,16 +229,16 @@ function matchTextToOption(text: string, options: string[]): number {
 
 /* ─── TarsPosition for Phase 2 ────────────────────────────── */
 function tarsP2Style(pos: CarPos): React.CSSProperties {
-  const leftMap: Record<CarPos, string> = { front: '60%', side: '70%', rear: '80%' }
+  const leftMap: Record<CarPos, string> = { front: '55%', side: '65%', rear: '77%' }
   return {
     position: 'absolute',
     left: leftMap[pos],
-    bottom: '55%',
+    bottom: '53%',
     width: '90px',
     transformOrigin: 'bottom center',
-    transform: 'translateX(-50%) scale(0.55)',
+    transform: 'translateX(-50%) scale(0.82)',
     opacity: 1,
-    transition: 'left 0.6s cubic-bezier(0.4,0,0.2,1)',
+    transition: 'left 0.7s cubic-bezier(0.4,0,0.2,1)',
     pointerEvents: 'none',
     zIndex: 50,
   }
@@ -207,15 +278,36 @@ export default function SimulationClient() {
   const speakText = useCallback((text: string) => {
     if (!ttsOn || typeof window === 'undefined' || !window.speechSynthesis) return
     window.speechSynthesis.cancel()
-    const utt = new SpeechSynthesisUtterance(text)
-    utt.lang  = 'de-DE'
-    utt.rate  = 0.88
-    utt.pitch = 0.95
-    // prefer German voice
-    const voices = window.speechSynthesis.getVoices()
-    const de = voices.find(v => v.lang.startsWith('de'))
-    if (de) utt.voice = de
-    window.speechSynthesis.speak(utt)
+
+    const doSpeak = () => {
+      const utt   = new SpeechSynthesisUtterance(text)
+      utt.lang    = 'de-DE'
+      utt.rate    = 0.80   // etwas langsamer = natürlicher
+      utt.pitch   = 1.05
+      utt.volume  = 1.0
+
+      const voices = window.speechSynthesis.getVoices()
+      // Priorität: Google Deutsch > iOS/macOS Anna/Yannick > beliebige de-DE ohne Microsoft > beliebige de
+      const best =
+        voices.find(v => v.name === 'Google Deutsch') ??
+        voices.find(v => /Anna|Yannick|Petra|Hans/.test(v.name) && v.lang.startsWith('de')) ??
+        voices.find(v => v.lang === 'de-DE' && !v.name.includes('Microsoft')) ??
+        voices.find(v => v.lang === 'de-AT') ??
+        voices.find(v => v.lang.startsWith('de') && !v.name.includes('Microsoft')) ??
+        voices.find(v => v.lang.startsWith('de'))
+      if (best) utt.voice = best
+
+      window.speechSynthesis.speak(utt)
+    }
+
+    // Stimmen werden asynchron geladen – kurz warten falls noch nicht bereit
+    if (window.speechSynthesis.getVoices().length > 0) {
+      doSpeak()
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null }
+      // Fallback falls onvoiceschanged nicht feuert
+      setTimeout(doSpeak, 350)
+    }
   }, [ttsOn])
 
   /* ─── Phase 1 timers ──────────────────────────────────── */
@@ -597,7 +689,8 @@ export default function SimulationClient() {
           <animateTransform attributeName="transform" type="skewX" values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
         </text>
 
-        {/* Fahrschule car */}
+        {/* Fahrschule car — scale 0.60 um Bodenpunkt (320, 320) */}
+        <g transform="translate(320,320) scale(0.60) translate(-320,-320)">
         <ellipse cx="322" cy="316" rx="60" ry="7" fill="rgba(0,0,0,0.5)"/>
         <path d="M262,308 L262,285 Q264,270 278,266 L308,258 L342,258 Q360,258 372,268 L378,285 L378,308 Z"
           fill="#18283e" stroke="#2a3e5a" strokeWidth="1.5"/>
@@ -627,6 +720,7 @@ export default function SimulationClient() {
         <text x="323" y="256" textAnchor="middle" fontSize="7" fontWeight="900" fill="#78350f" letterSpacing="0.5">FAHRSCHULE</text>
         <line x1="305" y1="256" x2="305" y2="260" stroke="#d97706" strokeWidth="1.5"/>
         <line x1="341" y1="256" x2="341" y2="260" stroke="#d97706" strokeWidth="1.5"/>
+        </g>
       </svg>
 
       {/* ═══ TARS CHARACTER ═══ */}
