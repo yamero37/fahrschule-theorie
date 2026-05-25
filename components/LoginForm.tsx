@@ -51,7 +51,11 @@ export default function LoginForm() {
     }
     setLoading(true)
     try {
-      const data = await loginUser(form.email.trim(), form.password)
+      const loginPromise = loginUser(form.email.trim(), form.password)
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 10000)
+      )
+      const data = await Promise.race([loginPromise, timeout])
 
       if (!data.session) {
         setError('Anmeldung fehlgeschlagen – bitte versuche es erneut oder kontaktiere den Admin.')
@@ -71,7 +75,9 @@ export default function LoginForm() {
       } else if (err && typeof err === 'object' && 'message' in err) {
         msg = String((err as { message: unknown }).message)
       }
-      if (msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email')) {
+      if (msg === 'timeout') {
+        setError('Verbindung fehlgeschlagen – prüfe deine Internetverbindung oder deaktiviere Browser-Erweiterungen (Adblocker etc.).')
+      } else if (msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email')) {
         setError('E-Mail oder Passwort falsch.')
       } else if (msg.includes('Email not confirmed')) {
         setError('E-Mail-Adresse noch nicht bestätigt. Bitte prüfe dein Postfach.')
