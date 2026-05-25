@@ -84,11 +84,11 @@ export default function TrocPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
               {SPECS.map(s => (
                 <div key={s.label} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  display: 'flex', flexDirection: 'column', gap: '0.1rem',
                   padding: '0.45rem 0.65rem', borderRadius: '0.6rem',
                   background: 'rgba(34,197,94,0.05)',
                 }}>
-                  <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)' }}>{s.label}</span>
+                  <span style={{ fontSize: '0.57rem', color: 'var(--text-dim)', letterSpacing: '0.03em' }}>{s.label}</span>
                   <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text)' }}>{s.value}</span>
                 </div>
               ))}

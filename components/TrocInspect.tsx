@@ -47,7 +47,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
       law: '§ 51a StVZO',
     },
     {
-      id: 'bremslicht-l', cx: 36, cy: 106, color: '#ef4444',
+      id: 'bremslicht-l', cx: 50, cy: 106, color: '#ef4444',
       title: 'Bremslicht Links', subtitle: 'Aktiv · Rot',
       checks: [
         { label: 'Leuchtet beim Bremsen', done: false },
@@ -59,7 +59,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
       law: '§ 53 StVZO',
     },
     {
-      id: 'bremslicht-r', cx: 364, cy: 106, color: '#ef4444',
+      id: 'bremslicht-r', cx: 350, cy: 106, color: '#ef4444',
       title: 'Bremslicht Rechts', subtitle: 'Aktiv · Rot',
       checks: [
         { label: 'Leuchtet beim Bremsen', done: false },
@@ -81,7 +81,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
       law: '§ 53 StVZO',
     },
     {
-      id: 'nebel', cx: 30, cy: 170, color: '#f97316',
+      id: 'nebel', cx: 42, cy: 165, color: '#f97316',
       title: 'Nebelschlussleuchte', subtitle: 'Links hinten · Orange/Rot',
       checks: [
         { label: 'Funktioniert (leuchtet bei Aktivierung)', done: false },
@@ -109,7 +109,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
 
   Front: [
     {
-      id: 'scheibenwasser', cx: 200, cy: 65, color: '#38bdf8',
+      id: 'scheibenwasser', cx: 200, cy: 48, color: '#38bdf8',
       title: 'Scheibenwischwasser', subtitle: 'Motorraum · Vorratsbehälter',
       washer: true,
       checks: [
@@ -121,7 +121,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
       tip: 'Reines Wasser im Sommer reicht – aber im Winter unbedingt Frostschutz beimischen!',
     },
     {
-      id: 'motoroel', cx: 143, cy: 74, color: '#fbbf24',
+      id: 'motoroel', cx: 143, cy: 50, color: '#fbbf24',
       title: 'Motoröl', subtitle: 'Motorraum · Ölmessstab',
       oilCheck: true,
       checks: [
@@ -133,7 +133,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
       tip: 'Öl kalt prüfen (Motor aus, mindestens 5 Min. stehen lassen). Nie über MAX befüllen!',
     },
     {
-      id: 'kuehlwasser', cx: 257, cy: 74, color: '#22d3ee',
+      id: 'kuehlwasser', cx: 257, cy: 50, color: '#22d3ee',
       title: 'Kühlwasser', subtitle: 'Motorraum · Ausgleichsbehälter',
       coolantCheck: true,
       checks: [
@@ -149,7 +149,7 @@ const VIEW_PARTS: Record<View, CarPart[]> = {
 
   Seite: [
     {
-      id: 'reifen', cx: 304, cy: 164, color: '#4ade80',
+      id: 'reifen', cx: 308, cy: 168, color: '#4ade80',
       title: 'Reifen', subtitle: 'Alle 4 Reifen prüfen',
       tire: true,
       checks: [
@@ -240,9 +240,13 @@ function TrocRearSVG() {
       <rect x="336" y="175" width="22" height="12" rx="3" fill="#1a1a2e" stroke="#64748b" strokeWidth="0.5"/>
       <rect x="337" y="176" width="20" height="10" rx="2" fill="#fef08a" opacity="0.15"/>
 
-      {/* Nebelschlussleuchte indicator */}
-      <rect x="30" y="158" width="20" height="14" rx="2" fill="#ea580c" opacity="0.8" stroke="#f97316" strokeWidth="0.5"/>
-      <text x="40" y="167" textAnchor="middle" fontSize="7" fill="white" fontWeight="700">N</text>
+      {/* Nebelschlussleuchte indicator – moved inward so it never clips */}
+      <rect x="33" y="156" width="20" height="16" rx="2" fill="#ea580c" opacity="0.9" stroke="#f97316" strokeWidth="0.8"/>
+      <text x="43" y="167" textAnchor="middle" fontSize="7" fontWeight="900" fill="white">N</text>
+
+      {/* Reflectors in bumper – visible red rectangles */}
+      <rect x="63" y="177" width="26" height="8" rx="2" fill="#ef4444" stroke="#991b1b" strokeWidth="0.5" opacity="0.85"/>
+      <rect x="311" y="177" width="26" height="8" rx="2" fill="#ef4444" stroke="#991b1b" strokeWidth="0.5" opacity="0.85"/>
 
       {/* Wheels */}
       <ellipse cx="90" cy="195" rx="35" ry="18" fill="#111827" stroke="#374151" strokeWidth="1.5"/>
@@ -272,108 +276,125 @@ function TrocFrontSVG() {
   return (
     <svg viewBox="0 0 400 220" width="100%" style={{ display: 'block' }}>
       <defs>
-        <radialGradient id="trfBodyGrad" cx="50%" cy="40%" r="60%">
+        <radialGradient id="trfBodyGrad" cx="50%" cy="45%" r="65%">
           <stop offset="0%" stopColor="#1e293b"/>
           <stop offset="100%" stopColor="#0f172a"/>
         </radialGradient>
-        <radialGradient id="trfHoodGrad" cx="50%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#243044"/>
-          <stop offset="100%" stopColor="#131f2e"/>
+        <radialGradient id="trfHoodGrad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#243450"/>
+          <stop offset="100%" stopColor="#0f1a2e"/>
         </radialGradient>
-        <radialGradient id="trfGlassGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1e3a5f" stopOpacity="0.9"/>
-          <stop offset="100%" stopColor="#0c1a2e" stopOpacity="0.95"/>
+        <radialGradient id="trfGlassGrad" cx="50%" cy="50%" r="55%">
+          <stop offset="0%" stopColor="#1e3a5f" stopOpacity="0.85"/>
+          <stop offset="100%" stopColor="#0a1628" stopOpacity="0.98"/>
         </radialGradient>
         <filter id="trfGlow">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
 
-      {/* Main body */}
-      <rect x="30" y="70" width="340" height="120" rx="10" fill="url(#trfBodyGrad)" stroke="#334155" strokeWidth="1.5"/>
-
-      {/* Hood */}
-      <path d="M55,70 L55,30 Q55,22 65,20 L200,16 L335,20 Q345,22 345,30 L345,70 Z"
+      {/* ── Hood (shorter: y=22 → y=68, giving ~46px hood height) ── */}
+      <path d="M60,68 L62,34 Q63,24 75,22 L200,18 L325,22 Q337,24 338,34 L340,68 Z"
         fill="url(#trfHoodGrad)" stroke="#334155" strokeWidth="1.5"/>
 
-      {/* Engine bay outline */}
-      <rect x="90" y="30" width="220" height="35" rx="5" fill="none" stroke="#fbbf24" strokeWidth="1" strokeDasharray="4,3" strokeOpacity="0.5"/>
-      <text x="200" y="50" textAnchor="middle" fontSize="7" fill="#fbbf24" fontWeight="600" opacity="0.6">MOTORRAUM</text>
+      {/* Engine bay dashed box on hood */}
+      <rect x="100" y="28" width="200" height="34" rx="5"
+        fill="none" stroke="#fbbf24" strokeWidth="1" strokeDasharray="5,3" strokeOpacity="0.55"/>
+      <text x="200" y="48" textAnchor="middle" fontSize="6.5" fill="#fbbf24" fontWeight="700" opacity="0.7">MOTORRAUM</text>
 
-      {/* Hood gap */}
-      <line x1="55" y1="70" x2="345" y2="70" stroke="#475569" strokeWidth="0.8"/>
+      {/* Oil cap marker */}
+      <circle cx="143" cy="44" r="7" fill="#f59e0b" stroke="#78350f" strokeWidth="1.2" opacity="0.9"/>
+      <text x="143" y="47" textAnchor="middle" fontSize="5.5" fontWeight="900" fill="white">OIL</text>
 
-      {/* Windshield */}
-      <path d="M70,70 L75,25 L325,25 L330,70 Z" fill="url(#trfGlassGrad)" stroke="#1e3a5f" strokeWidth="1"/>
+      {/* Coolant cap marker */}
+      <circle cx="257" cy="44" r="7" fill="#0e7490" stroke="#0e4f5e" strokeWidth="1.2" opacity="0.9"/>
+      <text x="257" y="47" textAnchor="middle" fontSize="4.5" fontWeight="900" fill="white">COOL</text>
 
-      {/* Grille frame */}
-      <path d="M80,130 L80,160 Q80,168 88,170 L312,170 Q320,168 320,160 L320,130 Z"
-        fill="#111827" stroke="#374151" strokeWidth="1"/>
-      {[138, 146, 154, 162].map(y => (
-        <rect key={y} x="84" y={y} width="232" height="5" rx="1" fill="#1e2d45" stroke="#3b5268" strokeWidth="0.5"/>
+      {/* Washer nozzles at hood base */}
+      <rect x="172" y="66" width="7" height="4" rx="1.5" fill="#64748b"/>
+      <rect x="221" y="66" width="7" height="4" rx="1.5" fill="#64748b"/>
+
+      {/* ── Main body (taller: y=68 → y=200) ── */}
+      <rect x="28" y="68" width="344" height="132" rx="12" fill="url(#trfBodyGrad)" stroke="#334155" strokeWidth="1.5"/>
+
+      {/* Hood-to-body gap line */}
+      <line x1="60" y1="68" x2="340" y2="68" stroke="#475569" strokeWidth="1"/>
+
+      {/* ── Windshield (short trapezoid – SUV style) ── */}
+      <path d="M72,68 L80,30 L320,30 L328,68 Z"
+        fill="url(#trfGlassGrad)" stroke="#1e3a5f" strokeWidth="0.8"/>
+
+      {/* ── Wide angular headlights (T-Roc style) ── */}
+      {/* Left housing */}
+      <path d="M28,72 L28,118 L75,118 L75,72 Z" fill="#080e18" stroke="#1e293b" strokeWidth="1"/>
+      {/* Left DRL – thin horizontal strip at top */}
+      <rect x="30" y="74" width="43" height="9" rx="2" fill="#fef08a" opacity="0.9" filter="url(#trfGlow)"/>
+      {/* Left signature L-shaped DRL */}
+      <path d="M30,74 L30,100 L38,100 L38,83 L73,83 L73,74 Z" fill="#fde68a" opacity="0.55"/>
+      {/* Left main beam lens */}
+      <ellipse cx="53" cy="108" rx="17" ry="7" fill="#dbeafe" opacity="0.65"/>
+      <ellipse cx="53" cy="108" rx="10" ry="4" fill="#eff6ff" opacity="0.85"/>
+
+      {/* Right housing */}
+      <path d="M372,72 L372,118 L325,118 L325,72 Z" fill="#080e18" stroke="#1e293b" strokeWidth="1"/>
+      {/* Right DRL */}
+      <rect x="327" y="74" width="43" height="9" rx="2" fill="#fef08a" opacity="0.9" filter="url(#trfGlow)"/>
+      <path d="M370,74 L370,100 L362,100 L362,83 L327,83 L327,74 Z" fill="#fde68a" opacity="0.55"/>
+      {/* Right main beam lens */}
+      <ellipse cx="347" cy="108" rx="17" ry="7" fill="#dbeafe" opacity="0.65"/>
+      <ellipse cx="347" cy="108" rx="10" ry="4" fill="#eff6ff" opacity="0.85"/>
+
+      {/* ── Wide VW grille (T-Roc: spans full width) ── */}
+      <path d="M75,120 L75,158 Q75,166 84,168 L316,168 Q325,166 325,158 L325,120 Z"
+        fill="#0c1220" stroke="#2d3a50" strokeWidth="1"/>
+      {/* Horizontal bars */}
+      {[128, 137, 146, 155].map(y => (
+        <rect key={y} x="80" y={y} width="240" height="6" rx="1.5" fill="#172035" stroke="#2d4060" strokeWidth="0.5"/>
       ))}
-      {[120, 160, 200, 240, 280].map(x => (
-        <line key={x} x1={x} y1="130" x2={x} y2="170" stroke="#1e2d45" strokeWidth="1"/>
+      {/* Vertical mesh lines */}
+      {[120, 152, 184, 216, 248, 280].map(x => (
+        <line key={x} x1={x} y1="120" x2={x} y2="162" stroke="#172035" strokeWidth="0.8" strokeOpacity="0.7"/>
       ))}
 
-      {/* VW Badge */}
-      <circle cx="200" cy="128" r="15" fill="#1e293b" stroke="#64748b" strokeWidth="2"/>
-      <circle cx="200" cy="128" r="12" fill="#172035" stroke="#94a3b8" strokeWidth="1"/>
-      <path d="M193,122 L197,133 L200,127 L203,133 L207,122" fill="none" stroke="#94a3b8" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round"/>
-      <path d="M193,122 L196,129 L200,124 L204,129 L207,122" fill="none" stroke="#94a3b8" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round"/>
+      {/* VW Badge – centered on grille */}
+      <circle cx="200" cy="132" r="16" fill="#111827" stroke="#4b5563" strokeWidth="2"/>
+      <circle cx="200" cy="132" r="13" fill="#0f172a" stroke="#94a3b8" strokeWidth="1"/>
+      <path d="M192,125 L196,137 L200,130 L204,137 L208,125" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M192,125 L195,132 L200,127 L205,132 L208,125" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
 
-      {/* Left headlight */}
-      <path d="M30,80 L30,125 L82,125 L82,80 Z" fill="#0f1520" stroke="#334155" strokeWidth="1"/>
-      <path d="M34,84 L78,84 L78,90 L40,90 L40,120 L34,120 Z" fill="#fef08a" opacity="0.85" filter="url(#trfGlow)"/>
-      <ellipse cx="56" cy="107" rx="16" ry="11" fill="#e0f2fe" opacity="0.7"/>
-      <ellipse cx="56" cy="107" rx="10" ry="7" fill="#f0f9ff" opacity="0.9"/>
+      {/* ── Front bumper ── */}
+      <rect x="28" y="166" width="344" height="36" rx="10" fill="#111927" stroke="#2d3748" strokeWidth="1"/>
+      {/* Lower lip / splitter */}
+      <rect x="28" y="196" width="344" height="6" rx="3" fill="#0d1420" stroke="#253040" strokeWidth="0.5"/>
+      {/* Fog light housings */}
+      <rect x="40" y="171" width="30" height="18" rx="4" fill="#0d1520" stroke="#374151" strokeWidth="0.8"/>
+      <ellipse cx="55" cy="180" rx="9" ry="6" fill="#fef9c3" opacity="0.18"/>
+      <rect x="330" y="171" width="30" height="18" rx="4" fill="#0d1520" stroke="#374151" strokeWidth="0.8"/>
+      <ellipse cx="345" cy="180" rx="9" ry="6" fill="#fef9c3" opacity="0.18"/>
+      {/* Center air intake */}
+      <rect x="145" y="172" width="110" height="14" rx="3" fill="#080f1a" stroke="#2d3748" strokeWidth="0.5"/>
 
-      {/* Right headlight */}
-      <path d="M370,80 L370,125 L318,125 L318,80 Z" fill="#0f1520" stroke="#334155" strokeWidth="1"/>
-      <path d="M366,84 L322,84 L322,90 L360,90 L360,120 L366,120 Z" fill="#fef08a" opacity="0.85" filter="url(#trfGlow)"/>
-      <ellipse cx="344" cy="107" rx="16" ry="11" fill="#e0f2fe" opacity="0.7"/>
-      <ellipse cx="344" cy="107" rx="10" ry="7" fill="#f0f9ff" opacity="0.9"/>
-
-      {/* Front bumper */}
-      <rect x="30" y="168" width="340" height="32" rx="8" fill="#1a2030" stroke="#334155" strokeWidth="1"/>
-      <rect x="30" y="193" width="340" height="7" rx="3" fill="#141c28" stroke="#2d3748" strokeWidth="0.5"/>
-      <rect x="42" y="173" width="26" height="14" rx="3" fill="#1a1a2e" stroke="#64748b" strokeWidth="0.5"/>
-      <ellipse cx="55" cy="180" rx="8" ry="5" fill="#fef9c3" opacity="0.2"/>
-      <rect x="332" y="173" width="26" height="14" rx="3" fill="#1a1a2e" stroke="#64748b" strokeWidth="0.5"/>
-      <ellipse cx="345" cy="180" rx="8" ry="5" fill="#fef9c3" opacity="0.2"/>
-
-      {/* Washer nozzles */}
-      <rect x="170" y="70" width="6" height="3" rx="1" fill="#64748b"/>
-      <rect x="224" y="70" width="6" height="3" rx="1" fill="#64748b"/>
-
-      {/* Oil cap */}
-      <circle cx="143" cy="52" r="6" fill="#f59e0b" stroke="#92400e" strokeWidth="1" opacity="0.8"/>
-      <text x="143" y="55" textAnchor="middle" fontSize="5" fontWeight="900" fill="white">OIL</text>
-
-      {/* Coolant cap */}
-      <circle cx="257" cy="52" r="6" fill="#0891b2" stroke="#0e4f5e" strokeWidth="1" opacity="0.8"/>
-      <text x="257" y="55" textAnchor="middle" fontSize="4" fontWeight="900" fill="white">COOL</text>
-
-      {/* Wheels */}
-      <ellipse cx="90" cy="197" rx="32" ry="18" fill="#111827" stroke="#374151" strokeWidth="1.5"/>
-      <ellipse cx="90" cy="197" rx="23" ry="13" fill="#1f2937" stroke="#4b5563" strokeWidth="1"/>
-      <ellipse cx="90" cy="197" rx="7" ry="4" fill="#374151"/>
+      {/* ── Wheels ── */}
+      <ellipse cx="88" cy="198" rx="30" ry="17" fill="#111827" stroke="#374151" strokeWidth="1.5"/>
+      <ellipse cx="88" cy="198" rx="22" ry="12" fill="#1a2035" stroke="#4b5563" strokeWidth="1"/>
+      <ellipse cx="88" cy="198" rx="7" ry="4" fill="#374151"/>
       {[0,45,90,135,180,225,270,315].map((a,i) => (
-        <line key={i} x1={90 + 9*Math.cos(a*Math.PI/180)} y1={197 + 5*Math.sin(a*Math.PI/180)}
-          x2={90 + 21*Math.cos(a*Math.PI/180)} y2={197 + 12*Math.sin(a*Math.PI/180)}
+        <line key={i} x1={88 + 9*Math.cos(a*Math.PI/180)} y1={198 + 5*Math.sin(a*Math.PI/180)}
+          x2={88 + 20*Math.cos(a*Math.PI/180)} y2={198 + 11*Math.sin(a*Math.PI/180)}
           stroke="#4b5563" strokeWidth="1.5"/>
       ))}
-      <ellipse cx="310" cy="197" rx="32" ry="18" fill="#111827" stroke="#374151" strokeWidth="1.5"/>
-      <ellipse cx="310" cy="197" rx="23" ry="13" fill="#1f2937" stroke="#4b5563" strokeWidth="1"/>
-      <ellipse cx="310" cy="197" rx="7" ry="4" fill="#374151"/>
+      <ellipse cx="312" cy="198" rx="30" ry="17" fill="#111827" stroke="#374151" strokeWidth="1.5"/>
+      <ellipse cx="312" cy="198" rx="22" ry="12" fill="#1a2035" stroke="#4b5563" strokeWidth="1"/>
+      <ellipse cx="312" cy="198" rx="7" ry="4" fill="#374151"/>
       {[0,45,90,135,180,225,270,315].map((a,i) => (
-        <line key={i} x1={310 + 9*Math.cos(a*Math.PI/180)} y1={197 + 5*Math.sin(a*Math.PI/180)}
-          x2={310 + 21*Math.cos(a*Math.PI/180)} y2={197 + 12*Math.sin(a*Math.PI/180)}
+        <line key={i} x1={312 + 9*Math.cos(a*Math.PI/180)} y1={198 + 5*Math.sin(a*Math.PI/180)}
+          x2={312 + 20*Math.cos(a*Math.PI/180)} y2={198 + 11*Math.sin(a*Math.PI/180)}
           stroke="#4b5563" strokeWidth="1.5"/>
       ))}
 
-      <ellipse cx="200" cy="215" rx="165" ry="5" fill="black" opacity="0.4"/>
+      {/* Ground shadow */}
+      <ellipse cx="200" cy="216" rx="162" ry="5" fill="black" opacity="0.45"/>
     </svg>
   )
 }
@@ -383,81 +404,123 @@ function TrocSideSVG() {
   return (
     <svg viewBox="0 0 400 210" width="100%" style={{ display: 'block' }}>
       <defs>
-        <radialGradient id="trsBodyGrad" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#1e293b"/>
+        <linearGradient id="trsBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#243450"/>
+          <stop offset="60%" stopColor="#1a2740"/>
           <stop offset="100%" stopColor="#0f172a"/>
-        </radialGradient>
-        <radialGradient id="trsGlassGrad" cx="50%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="#1e3a5f" stopOpacity="0.9"/>
-          <stop offset="100%" stopColor="#0c1a2e" stopOpacity="0.95"/>
+        </linearGradient>
+        <linearGradient id="trsRoofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1a2535"/>
+          <stop offset="100%" stopColor="#111827"/>
+        </linearGradient>
+        <radialGradient id="trsGlassGrad" cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#1e3a5f" stopOpacity="0.8"/>
+          <stop offset="100%" stopColor="#0a1628" stopOpacity="0.97"/>
         </radialGradient>
       </defs>
 
-      {/* Body */}
-      <path d="M22,170 L22,80 Q22,70 30,68 L85,68 L110,30 L300,28 L340,55 L375,60 L378,80 L378,170 Z"
+      {/* ── SUV body – high waistline, raised rear, short front overhang ── */}
+      {/*  Main lower body panel (doors + sill area) */}
+      <path d="M18,172 L18,90 Q19,78 30,76
+               L95,74 L115,34 L295,30 L340,52 L368,58
+               L380,72 L380,172 Z"
         fill="url(#trsBodyGrad)" stroke="#334155" strokeWidth="1.5"/>
 
-      {/* Roof */}
-      <path d="M110,30 L300,28 L340,55 L85,68 Z" fill="#1a2535" stroke="#334155" strokeWidth="1"/>
+      {/* ── Roof / greenhouse area ── */}
+      <path d="M115,34 L295,30 L340,52 L368,58 L368,74 L380,72
+               L380,60 L342,50 L296,28 L113,32 L94,72 L18,76 L18,88 L95,74 Z"
+        fill="url(#trsRoofGrad)" stroke="#2d3a50" strokeWidth="0.8"/>
 
-      {/* Windows */}
-      <path d="M115,35 L175,33 L175,62 L92,65 Z" fill="url(#trsGlassGrad)" stroke="#1e3a5f" strokeWidth="1"/>
-      <path d="M182,32 L295,30 L333,56 L182,62 Z" fill="url(#trsGlassGrad)" stroke="#1e3a5f" strokeWidth="1"/>
-      <rect x="176" y="32" width="6" height="34" fill="#1a2535"/>
+      {/* ── Windshield (steeply raked) ── */}
+      <path d="M115,34 L94,72 L140,72 L148,34 Z"
+        fill="url(#trsGlassGrad)" stroke="#1e3a5f" strokeWidth="1"/>
 
-      {/* Door lines */}
-      <line x1="40" y1="100" x2="370" y2="100" stroke="#475569" strokeWidth="0.5"/>
-      <line x1="178" y1="68" x2="178" y2="165" stroke="#475569" strokeWidth="0.5"/>
+      {/* ── Rear window (more upright – SUV style) ── */}
+      <path d="M156,32 L295,30 L338,52 L336,72 L156,72 Z"
+        fill="url(#trsGlassGrad)" stroke="#1e3a5f" strokeWidth="1"/>
 
-      {/* Side mirror */}
-      <path d="M110,55 L125,50 L128,62 L108,65 Z" fill="#1e293b" stroke="#334155" strokeWidth="1"/>
+      {/* B-pillar */}
+      <rect x="148" y="32" width="8" height="42" rx="2" fill="#111827" stroke="#1e293b" strokeWidth="0.5"/>
+
+      {/* Waist crease line */}
+      <path d="M18,108 L95,104 L380,100" stroke="#475569" strokeWidth="0.6" strokeOpacity="0.7"/>
+
+      {/* Door split line */}
+      <line x1="156" y1="74" x2="156" y2="164" stroke="#334155" strokeWidth="0.8"/>
 
       {/* Door handles */}
-      <rect x="150" y="92" width="22" height="5" rx="2" fill="#334155" stroke="#475569" strokeWidth="0.5"/>
-      <rect x="230" y="92" width="22" height="5" rx="2" fill="#334155" stroke="#475569" strokeWidth="0.5"/>
+      <rect x="120" y="97" width="26" height="5" rx="2" fill="#2d3a50" stroke="#4b5563" strokeWidth="0.5"/>
+      <rect x="220" y="95" width="26" height="5" rx="2" fill="#2d3a50" stroke="#4b5563" strokeWidth="0.5"/>
 
-      {/* Wheel arches */}
-      <path d="M22,170 Q22,132 60,128 L96,128 Q130,128 130,165 L130,170 Z" fill="#0f172a" stroke="#334155" strokeWidth="1"/>
-      <path d="M272,165 Q272,128 308,128 L340,128 Q378,128 378,165 L378,170 Z" fill="#0f172a" stroke="#334155" strokeWidth="1"/>
+      {/* Side mirror – aerodynamic shape */}
+      <path d="M113,48 L130,44 L133,58 L110,62 Z"
+        fill="#1a2535" stroke="#2d3a50" strokeWidth="1"/>
 
-      {/* Front wheel */}
-      <circle cx="76" cy="168" r="32" fill="#111827" stroke="#374151" strokeWidth="2"/>
-      <circle cx="76" cy="168" r="24" fill="#1a2035" stroke="#374151" strokeWidth="1"/>
-      <circle cx="76" cy="168" r="9" fill="#2d3748" stroke="#4b5563" strokeWidth="1"/>
+      {/* ── Rocker/sill panel ── */}
+      <rect x="128" y="162" width="152" height="10" rx="4" fill="#0f1520" stroke="#1e293b" strokeWidth="0.8"/>
+
+      {/* ── Front bumper/fascia ── */}
+      <path d="M18,90 L18,172 L30,172 L30,158 Q20,148 18,130 Z"
+        fill="#111827" stroke="#1e293b" strokeWidth="0.5"/>
+      <rect x="18" y="162" width="30" height="10" rx="3" fill="#0d1520"/>
+
+      {/* Front headlight (slim, angular) */}
+      <path d="M18,78 L18,98 L42,96 L42,80 Z" fill="#080f18" stroke="#1e293b" strokeWidth="0.8"/>
+      <rect x="20" y="80" width="20" height="8" rx="2" fill="#fef08a" opacity="0.85"/>
+      <rect x="20" y="90" width="20" height="5" rx="1" fill="#dbeafe" opacity="0.5"/>
+
+      {/* ── Rear lights (L-shaped, T-Roc style) ── */}
+      <path d="M368,58 L380,58 L380,130 L368,130 Z" fill="#1a0505"/>
+      {/* Outer vertical bar */}
+      <rect x="372" y="60" width="6" height="68" rx="2" fill="#ef4444" opacity="0.85"/>
+      {/* Top horizontal arm */}
+      <rect x="360" y="60" width="18" height="10" rx="2" fill="#ef4444" opacity="0.85"/>
+      {/* Inner glow */}
+      <rect x="374" y="62" width="3" height="64" rx="1" fill="#ff8080" opacity="0.45"/>
+
+      {/* ── Wheel arch cut-outs (pronounced – SUV style) ── */}
+      {/* Front arch */}
+      <path d="M18,172 Q18,128 58,124 L100,124 Q136,124 136,164 L136,172 Z"
+        fill="#0a1220" stroke="#1e293b" strokeWidth="1.2"/>
+      {/* Rear arch */}
+      <path d="M272,164 Q272,124 308,124 L348,124 Q380,124 380,160 L380,172 Z"
+        fill="#0a1220" stroke="#1e293b" strokeWidth="1.2"/>
+
+      {/* Arch lips (chrome trim) */}
+      <path d="M18,172 Q18,128 58,124 L100,124 Q136,124 136,164"
+        fill="none" stroke="#4b5563" strokeWidth="2.5"/>
+      <path d="M272,164 Q272,124 308,124 L348,124 Q380,124 380,160"
+        fill="none" stroke="#4b5563" strokeWidth="2.5"/>
+
+      {/* ── Front wheel (r=30 – SUV ride height) ── */}
+      <circle cx="77" cy="168" r="30" fill="#111827" stroke="#374151" strokeWidth="2"/>
+      <circle cx="77" cy="168" r="22" fill="#171f30" stroke="#374151" strokeWidth="1"/>
+      <circle cx="77" cy="168" r="8" fill="#2a3447" stroke="#4b5563" strokeWidth="1"/>
       {[0,40,80,120,160,200,240,280,320].map((a,i) => (
         <line key={i}
-          x1={76 + 11*Math.cos(a*Math.PI/180)} y1={168 + 11*Math.sin(a*Math.PI/180)}
-          x2={76 + 23*Math.cos(a*Math.PI/180)} y2={168 + 23*Math.sin(a*Math.PI/180)}
-          stroke="#64748b" strokeWidth="2"/>
+          x1={77 + 10*Math.cos(a*Math.PI/180)} y1={168 + 10*Math.sin(a*Math.PI/180)}
+          x2={77 + 21*Math.cos(a*Math.PI/180)} y2={168 + 21*Math.sin(a*Math.PI/180)}
+          stroke="#64748b" strokeWidth="2.2"/>
       ))}
-      <circle cx="76" cy="168" r="30" fill="none" stroke="#1a1a1a" strokeWidth="4"
-        strokeDasharray="6,4" strokeOpacity="0.8"/>
+      {/* Tread */}
+      <circle cx="77" cy="168" r="28.5" fill="none" stroke="#0d1218" strokeWidth="4"
+        strokeDasharray="7,4" strokeOpacity="0.7"/>
 
-      {/* Rear wheel */}
-      <circle cx="304" cy="168" r="32" fill="#111827" stroke="#374151" strokeWidth="2"/>
-      <circle cx="304" cy="168" r="24" fill="#1a2035" stroke="#374151" strokeWidth="1"/>
-      <circle cx="304" cy="168" r="9" fill="#2d3748" stroke="#4b5563" strokeWidth="1"/>
+      {/* ── Rear wheel ── */}
+      <circle cx="308" cy="168" r="30" fill="#111827" stroke="#374151" strokeWidth="2"/>
+      <circle cx="308" cy="168" r="22" fill="#171f30" stroke="#374151" strokeWidth="1"/>
+      <circle cx="308" cy="168" r="8" fill="#2a3447" stroke="#4b5563" strokeWidth="1"/>
       {[0,40,80,120,160,200,240,280,320].map((a,i) => (
         <line key={i}
-          x1={304 + 11*Math.cos(a*Math.PI/180)} y1={168 + 11*Math.sin(a*Math.PI/180)}
-          x2={304 + 23*Math.cos(a*Math.PI/180)} y2={168 + 23*Math.sin(a*Math.PI/180)}
-          stroke="#64748b" strokeWidth="2"/>
+          x1={308 + 10*Math.cos(a*Math.PI/180)} y1={168 + 10*Math.sin(a*Math.PI/180)}
+          x2={308 + 21*Math.cos(a*Math.PI/180)} y2={168 + 21*Math.sin(a*Math.PI/180)}
+          stroke="#64748b" strokeWidth="2.2"/>
       ))}
-      <circle cx="304" cy="168" r="30" fill="none" stroke="#1a1a1a" strokeWidth="4"
-        strokeDasharray="6,4" strokeOpacity="0.8"/>
+      <circle cx="308" cy="168" r="28.5" fill="none" stroke="#0d1218" strokeWidth="4"
+        strokeDasharray="7,4" strokeOpacity="0.7"/>
 
-      {/* Rocker panel */}
-      <rect x="130" y="162" width="142" height="8" rx="3" fill="#131c2a" stroke="#334155" strokeWidth="0.5"/>
-
-      {/* Front headlight */}
-      <path d="M22,75 L22,95 L38,95 L38,75 Z" fill="#0f1520" stroke="#334155" strokeWidth="1"/>
-      <rect x="24" y="77" width="12" height="8" rx="1" fill="#fef08a" opacity="0.7"/>
-
-      {/* Rear tail light */}
-      <path d="M370,70 L378,70 L378,115 L370,115 Z" fill="#7f1d1d"/>
-      <rect x="372" y="72" width="4" height="40" rx="1" fill="#ef4444" opacity="0.8"/>
-
-      <ellipse cx="200" cy="202" rx="175" ry="6" fill="black" opacity="0.4"/>
+      {/* Ground shadow */}
+      <ellipse cx="200" cy="202" rx="172" ry="6" fill="black" opacity="0.45"/>
     </svg>
   )
 }
