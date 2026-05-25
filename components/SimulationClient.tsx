@@ -338,16 +338,6 @@ export default function SimulationClient() {
     const t = setTimeout(() => setPhase('speaking'), 500)
     return () => clearTimeout(t)
   }, [phase])
-  useEffect(() => {
-    if (phase !== 'speaking') return
-    if (ttsOn) { setPhase('ready'); return }
-    if (typed >= GREETING.length) { setPhase('ready'); return }
-    const ch = GREETING[typed]
-    const delay = ch === '.' ? 320 : ch === ',' ? 160 : 42
-    const t = setTimeout(() => setTyped(i => i + 1), delay)
-    return () => clearTimeout(t)
-  }, [phase, typed, ttsOn])
-
   /* ─── Phase 2 feedback typewriter ────────────────────── */
   useEffect(() => {
     if (p2Phase !== 'feedback' || !aiFeedback || loadingFb) return
