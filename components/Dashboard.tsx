@@ -36,11 +36,12 @@ function getProgress(points: number, rank: typeof RANKS[0]) {
 /* ── Features ───────────────────────────────────────────── */
 
 type FeatureItem = { icon: string; title: string; desc: string; href: string; soon: boolean; color: string; badge: string }
-type FeatureGroup = { label: string; color: string; items: FeatureItem[] }
+type FeatureGroup = { label: string; color: string; anim: string; shimmer: string; bg: string; items: FeatureItem[] }
 
 const GROUPS: FeatureGroup[] = [
   {
     label: '📚 Theorie', color: '#a78bfa',
+    anim: 'glowPurple', shimmer: 'rgba(167,139,250,0.08)', bg: 'rgba(167,139,250,0.06)',
     items: [
       { icon: '📖', title: 'Unterricht',       desc: 'Theorie lernen & verstehen',    href: '/unterricht',  soon: false, color: '#a78bfa', badge: '14 Lektionen' },
       { icon: '📚', title: 'Theoriefragen',    desc: 'Alle Prüfungsfragen üben',      href: '/fragen',      soon: false, color: '#c9a227', badge: '700 Fragen'   },
@@ -49,6 +50,7 @@ const GROUPS: FeatureGroup[] = [
   },
   {
     label: '🔧 Praxis', color: '#06b6d4',
+    anim: 'glowCyan', shimmer: 'rgba(6,182,212,0.08)', bg: 'rgba(6,182,212,0.06)',
     items: [
       { icon: '🔧', title: 'Technik',    desc: 'Fahrzeugtechnik verstehen', href: '/technik',    soon: false, color: '#06b6d4', badge: 'Neu'     },
       { icon: '🎓', title: 'Simulation', desc: 'Echte Prüfung simulieren',  href: '/simulation', soon: false, color: '#8b5cf6', badge: 'Prüfung' },
@@ -56,6 +58,7 @@ const GROUPS: FeatureGroup[] = [
   },
   {
     label: '🌐 Online', color: '#22c55e',
+    anim: 'glowGreen', shimmer: 'rgba(34,197,94,0.07)', bg: 'rgba(34,197,94,0.05)',
     items: [
       { icon: '🎬', title: 'Lernvideos', desc: 'Erklärvideos ansehen',    href: '/videos',    soon: true,  color: '#22c55e', badge: 'Bald' },
       { icon: '⚔️', title: 'Battle',    desc: 'Gegen Freunde antreten',  href: '/battle',    soon: true,  color: '#ef4444', badge: 'Bald' },
@@ -380,22 +383,40 @@ export default function Dashboard() {
         </div>
 
         {/* ── FEATURE GROUPS ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {GROUPS.map(group => (
-            <div key={group.label}>
+            <div key={group.label} style={{
+              position: 'relative', overflow: 'hidden',
+              background: `linear-gradient(135deg, ${group.bg} 0%, transparent 100%)`,
+              border: `1.5px solid ${group.color}55`,
+              borderRadius: '1.25rem',
+              padding: '0.9rem 0.9rem 0.9rem',
+              animation: `${group.anim} 3s ease-in-out infinite`,
+            }}>
+              {/* shimmer sweep */}
+              <div style={{
+                position: 'absolute', top: 0, bottom: 0, width: '55%',
+                background: `linear-gradient(90deg, transparent, ${group.shimmer}, transparent)`,
+                animation: 'terminShimmer 3s linear infinite',
+                pointerEvents: 'none',
+              }} />
+
               {/* Section label */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem', position: 'relative' }}>
                 <span style={{
-                  fontSize: '0.62rem', fontWeight: 800, letterSpacing: '0.1em',
+                  fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.1em',
                   textTransform: 'uppercase', color: group.color,
+                  filter: `drop-shadow(0 0 4px ${group.color}80)`,
                 }}>{group.label}</span>
-                <div style={{ flex: 1, height: '1px', background: `${group.color}25` }} />
+                <div style={{ flex: 1, height: '1px', background: `${group.color}30` }} />
               </div>
+
               {/* Cards */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${group.items.length === 2 ? 2 : 3}, 1fr)`,
-                gap: '0.5rem',
+                gap: '0.45rem',
+                position: 'relative',
               }}>
                 {group.items.map(f => <FeatureCard key={f.title} {...f} />)}
               </div>
@@ -454,28 +475,45 @@ export default function Dashboard() {
 
         {/* ── PREMIUM BANNER ── */}
         <div style={{
-          background: 'transparent',
-          border: '1px solid rgba(var(--gold-rgb),0.3)',
+          position: 'relative', overflow: 'hidden',
+          background: 'linear-gradient(135deg, rgba(96,165,250,0.07), rgba(167,139,250,0.06), rgba(244,114,182,0.05))',
+          border: '1.5px solid rgba(147,197,253,0.45)',
           borderRadius: '1.25rem', padding: '1rem 1.1rem',
           display: 'flex', alignItems: 'center', gap: '0.85rem',
+          animation: 'glowDiamond 4s ease-in-out infinite',
         }}>
+          {/* diamond shimmer */}
           <div style={{
-            width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0,
-            background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.22)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem',
+            position: 'absolute', top: 0, bottom: 0, width: '55%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
+            animation: 'terminShimmer 4s linear infinite',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0,
+            background: 'linear-gradient(135deg, rgba(96,165,250,0.18), rgba(167,139,250,0.15), rgba(244,114,182,0.12))',
+            border: '1.5px solid rgba(147,197,253,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem',
+            filter: 'drop-shadow(0 0 8px rgba(147,197,253,0.5))',
+            position: 'relative',
           }}>💎</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text)' }}>Hol dir Premium</p>
+          <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+            <p style={{
+              margin: '0 0 0.15rem', fontSize: '0.88rem', fontWeight: 900,
+              background: 'linear-gradient(90deg, #93c5fd, #c4b5fd, #f9a8d4)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>Hol dir Premium</p>
             <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>Mehr Funktionen. Mehr Fortschritt.</p>
           </div>
           <button style={{
             padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
-            background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
+            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
             color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
-            boxShadow: '0 4px 16px rgba(var(--gold-rgb),0.3)',
+            boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
+            position: 'relative',
           }}>
-            Jetzt upgraden 👑
+            Jetzt upgraden 💎
           </button>
         </div>
 
@@ -576,13 +614,33 @@ export default function Dashboard() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes terminGlow {
-          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.5); }
-          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.35); border-color: rgba(34,197,94,0.8); }
-        }
+
         @keyframes terminShimmer {
           0%   { left: -60%; }
           100% { left: 160%; }
+        }
+        @keyframes terminGlow {
+          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.5); }
+          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.3);  border-color: rgba(34,197,94,0.8); }
+        }
+        @keyframes glowPurple {
+          0%,100% { box-shadow: 0 0 16px rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35); }
+          50%      { box-shadow: 0 0 36px rgba(167,139,250,0.32); border-color: rgba(167,139,250,0.72); }
+        }
+        @keyframes glowCyan {
+          0%,100% { box-shadow: 0 0 16px rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.35); }
+          50%      { box-shadow: 0 0 36px rgba(6,182,212,0.32); border-color: rgba(6,182,212,0.72); }
+        }
+        @keyframes glowGreen {
+          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); }
+          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.32); border-color: rgba(34,197,94,0.72); }
+        }
+        @keyframes glowDiamond {
+          0%   { box-shadow: 0 0 20px rgba(96,165,250,0.22);  border-color: rgba(96,165,250,0.5);  }
+          25%  { box-shadow: 0 0 28px rgba(167,139,250,0.28); border-color: rgba(167,139,250,0.6); }
+          50%  { box-shadow: 0 0 28px rgba(244,114,182,0.22); border-color: rgba(244,114,182,0.5); }
+          75%  { box-shadow: 0 0 24px rgba(52,211,153,0.22);  border-color: rgba(52,211,153,0.5);  }
+          100% { box-shadow: 0 0 20px rgba(96,165,250,0.22);  border-color: rgba(96,165,250,0.5);  }
         }
       `}</style>
     </div>
