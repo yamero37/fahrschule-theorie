@@ -273,42 +273,52 @@ export default function SimulationClient() {
 
   const recognitionRef = useRef<any>(null)
   const panelRef       = useRef<HTMLDivElement>(null)
+  const audioRef       = useRef<HTMLAudioElement | null>(null)
 
-  /* ─── TTS ──────────────────────────────────────────────── */
-  const speakText = useCallback((text: string) => {
-    if (!ttsOn || typeof window === 'undefined' || !window.speechSynthesis) return
+  /* ─── TTS: ElevenLabs (primär) + Browser-Fallback ──────── */
+  const speakBrowser = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
     window.speechSynthesis.cancel()
-
     const doSpeak = () => {
-      const utt   = new SpeechSynthesisUtterance(text)
-      utt.lang    = 'de-DE'
-      utt.rate    = 0.80   // etwas langsamer = natürlicher
-      utt.pitch   = 1.05
-      utt.volume  = 1.0
-
+      const utt = new SpeechSynthesisUtterance(text)
+      utt.lang  = 'de-DE'; utt.rate = 0.80; utt.pitch = 1.05; utt.volume = 1.0
       const voices = window.speechSynthesis.getVoices()
-      // Priorität: Google Deutsch > iOS/macOS Anna/Yannick > beliebige de-DE ohne Microsoft > beliebige de
       const best =
         voices.find(v => v.name === 'Google Deutsch') ??
         voices.find(v => /Anna|Yannick|Petra|Hans/.test(v.name) && v.lang.startsWith('de')) ??
         voices.find(v => v.lang === 'de-DE' && !v.name.includes('Microsoft')) ??
-        voices.find(v => v.lang === 'de-AT') ??
-        voices.find(v => v.lang.startsWith('de') && !v.name.includes('Microsoft')) ??
         voices.find(v => v.lang.startsWith('de'))
       if (best) utt.voice = best
-
       window.speechSynthesis.speak(utt)
     }
+    if (window.speechSynthesis.getVoices().length > 0) doSpeak()
+    else { window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null }; setTimeout(doSpeak, 350) }
+  }, [])
 
-    // Stimmen werden asynchron geladen – kurz warten falls noch nicht bereit
-    if (window.speechSynthesis.getVoices().length > 0) {
-      doSpeak()
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null }
-      // Fallback falls onvoiceschanged nicht feuert
-      setTimeout(doSpeak, 350)
+  const speakText = useCallback(async (text: string) => {
+    if (!ttsOn) return
+    // laufendes Audio stoppen
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+    if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
+
+    try {
+      const res = await fetch('/api/tars/speak', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ text }),
+      })
+      if (!res.ok) throw new Error('ElevenLabs nicht verfügbar')
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audioRef.current = audio
+      audio.play()
+      audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null }
+    } catch {
+      // Fallback: Browser-TTS
+      speakBrowser(text)
     }
-  }, [ttsOn])
+  }, [ttsOn, speakBrowser])
 
   /* ─── Phase 1 timers ──────────────────────────────────── */
   useEffect(() => {
@@ -430,6 +440,7 @@ export default function SimulationClient() {
     if (next >= questions.length) {
       setP2Phase('complete')
       window.speechSynthesis?.cancel()
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
     } else {
       setCurrentQ(next)
       setSelectedAns(null)
