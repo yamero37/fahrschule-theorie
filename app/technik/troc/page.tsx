@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AuthGuard from '@/components/AuthGuard'
+import TrocInspect from '@/components/TrocInspect'
 
 export const metadata = { title: 'VW T-Roc – TolDrive' }
 
@@ -93,6 +94,9 @@ export default function TrocPage() {
               ))}
             </div>
           </div>
+
+          {/* Interaktiver Fahrzeug-Check */}
+          <TrocInspect />
 
         </div>
       </div>
