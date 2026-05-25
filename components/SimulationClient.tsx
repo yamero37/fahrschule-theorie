@@ -307,15 +307,19 @@ export default function SimulationClient() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ text }),
       })
-      if (!res.ok) throw new Error('ElevenLabs nicht verfügbar')
-      const blob = await res.blob()
-      const url  = URL.createObjectURL(blob)
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        console.warn('[TTS] ElevenLabs fehlgeschlagen:', res.status, errData)
+        throw new Error('ElevenLabs nicht verfügbar')
+      }
+      const blob  = await res.blob()
+      const url   = URL.createObjectURL(blob)
       const audio = new Audio(url)
       audioRef.current = audio
-      audio.play()
+      await audio.play()
       audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null }
-    } catch {
-      // Fallback: Browser-TTS
+    } catch (e) {
+      console.warn('[TTS] Fallback auf Browser-TTS:', e)
       speakBrowser(text)
     }
   }, [ttsOn, speakBrowser])

@@ -7,13 +7,18 @@ const MODEL_ID = 'eleven_multilingual_v2'
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ELEVENLABS_API_KEY
+  console.log('[tars/speak] apiKey present:', !!apiKey, '| voiceId:', VOICE_ID)
+
   if (!apiKey) {
+    console.error('[tars/speak] ELEVENLABS_API_KEY fehlt!')
     return NextResponse.json({ error: 'ELEVENLABS_API_KEY nicht gesetzt' }, { status: 503 })
   }
 
   try {
     const { text } = await req.json()
     if (!text) return NextResponse.json({ error: 'Kein Text' }, { status: 400 })
+
+    console.log('[tars/speak] calling ElevenLabs, text length:', text.length)
 
     const res = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
@@ -28,22 +33,23 @@ export async function POST(req: NextRequest) {
           text,
           model_id: MODEL_ID,
           voice_settings: {
-            stability:        0.60,
-            similarity_boost: 0.78,
-            style:            0.20,
+            stability:         0.60,
+            similarity_boost:  0.78,
+            style:             0.20,
             use_speaker_boost: true,
           },
         }),
       }
     )
 
+    console.log('[tars/speak] ElevenLabs status:', res.status)
+
     if (!res.ok) {
       const err = await res.text()
-      console.error('ElevenLabs error:', res.status, err)
-      return NextResponse.json({ error: 'ElevenLabs Fehler' }, { status: 502 })
+      console.error('[tars/speak] ElevenLabs error body:', err)
+      return NextResponse.json({ error: 'ElevenLabs Fehler', detail: err }, { status: 502 })
     }
 
-    // Audio-Stream direkt durchleiten
     return new Response(res.body, {
       headers: {
         'Content-Type':  'audio/mpeg',
@@ -51,7 +57,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (err) {
-    console.error('speak route error:', err)
+    console.error('[tars/speak] Exception:', err)
     return NextResponse.json({ error: 'Interner Fehler' }, { status: 500 })
   }
 }
