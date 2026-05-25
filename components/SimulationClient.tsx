@@ -5,19 +5,28 @@ import Link from 'next/link'
 /* ─── Types ────────────────────────────────────────────────── */
 type P1Phase   = 'scene' | 'approaching' | 'stopped' | 'speaking' | 'ready'
 type MainPhase = 'phase1' | 'phase2'
-type P2Phase   = 'intro' | 'intro_typing' | 'question' | 'answered' | 'feedback' | 'complete'
-type InputMode = 'choice' | 'voice' | 'text'
+type P2Phase   = 'intro' | 'intro_typing' | 'question' | 'feedback' | 'complete'
+type InputMode = 'text' | 'voice'
 type CarPos    = 'front' | 'side' | 'rear'
 
 interface Question {
   id:          string
   category:    string
   question:    string
-  options:     string[]
+  options:     string[]   // kept for correctAnswer reference
   correctIdx:  number
   hint:        string
   pos:         CarPos
   posLabel:    string
+}
+
+interface AnswerRecord {
+  question:      string
+  correctAnswer: string
+  userAnswer:    string
+  correct:       boolean
+  feedback:      string
+  hint:          string
 }
 
 /* ─── Question Bank ────────────────────────────────────────── */
@@ -202,30 +211,6 @@ function shufflePick<T>(arr: T[], n: number): T[] {
   return copy.slice(0, n)
 }
 
-function matchTextToOption(text: string, options: string[]): number {
-  const t = text.toLowerCase().trim()
-  // letter A/B/C/D
-  const letters = ['a','b','c','d']
-  for (let i = 0; i < 4; i++) {
-    if (t === letters[i] || t.startsWith(letters[i]+' ') || t.startsWith(letters[i]+',')) return i
-  }
-  // number words
-  const numMap: [string, number][] = [
-    ['eins',0],['erste',0],['ersten',0],
-    ['zwei',1],['zweite',1],['zweiten',1],
-    ['drei',2],['dritte',2],['dritten',2],
-    ['vier',3],['vierte',3],['vierten',3],
-  ]
-  for (const [word, idx] of numMap) if (t.includes(word)) return idx
-  // best word overlap
-  let best = -1, bestScore = 0
-  options.forEach((opt, i) => {
-    const words = opt.toLowerCase().split(/\s+/)
-    const score = words.filter(w => w.length > 2 && t.includes(w)).length
-    if (score > bestScore) { bestScore = score; best = i }
-  })
-  return best
-}
 
 /* ─── TarsPosition for Phase 2 ────────────────────────────── */
 function tarsP2Style(pos: CarPos): React.CSSProperties {
@@ -260,10 +245,10 @@ export default function SimulationClient() {
   const [p2Typed,     setP2Typed]     = useState(0)
   const [questions,   setQuestions]   = useState<Question[]>([])
   const [currentQ,    setCurrentQ]    = useState(0)
-  const [selectedAns, setSelectedAns] = useState<number | null>(null)
+  const [answers,     setAnswers]     = useState<AnswerRecord[]>([])
   const [score,       setScore]       = useState(0)
-  const [inputMode,   setInputMode]   = useState<InputMode>('choice')
-  const [textInput,   setTextInput]   = useState('')
+  const [inputMode,   setInputMode]   = useState<InputMode>('text')
+  const [userInput,   setUserInput]   = useState('')
   const [isListening, setIsListening] = useState(false)
   const [aiFeedback,  setAiFeedback]  = useState('')
   const [fbTyped,     setFbTyped]     = useState(0)
@@ -390,25 +375,24 @@ export default function SimulationClient() {
     setQuestions(picked)
     setCurrentQ(0)
     setScore(0)
-    setSelectedAns(null)
+    setAnswers([])
     setAiFeedback('')
     setFbTyped(0)
+    setUserInput('')
     setP2Phase('question')
     setTimeout(() => speakText(picked[0].question), 400)
   }
 
-  /* ─── Handle answer ────────────────────────────────────── */
-  const handleAnswer = async (optIdx: number) => {
-    if (p2Phase !== 'question' || selectedAns !== null) return
+  /* ─── Submit free-text answer ──────────────────────────── */
+  const submitAnswer = async (text: string) => {
+    if (!text.trim() || p2Phase !== 'question') return
     const q = questions[currentQ]
-    const correct = optIdx === q.correctIdx
-
-    setSelectedAns(optIdx)
-    setP2Phase('answered')
-    if (correct) setScore(s => s + 1)
+    setUserInput('')
+    setVoiceError('')
     setLoadingFb(true)
     setAiFeedback('')
     setFbTyped(0)
+    setP2Phase('feedback')
 
     try {
       const res  = await fetch('/api/tars', {
@@ -417,26 +401,38 @@ export default function SimulationClient() {
         body:    JSON.stringify({
           question:      q.question,
           correctAnswer: q.options[q.correctIdx],
-          userAnswer:    q.options[optIdx],
-          isCorrect:     correct,
+          userAnswer:    text,
           category:      q.category,
         }),
       })
       const data = await res.json()
-      setAiFeedback(data.feedback)
+      const correct = !!data.correct
+      const feedback = data.feedback ?? (correct ? 'Richtig!' : `Korrekte Antwort: „${q.options[q.correctIdx]}"`)
+      if (correct) setScore(s => s + 1)
+      setAnswers(prev => [...prev, {
+        question:      q.question,
+        correctAnswer: q.options[q.correctIdx],
+        userAnswer:    text,
+        correct,
+        feedback,
+        hint:          q.hint,
+      }])
+      setAiFeedback(feedback)
       setLoadingFb(false)
-      setP2Phase('feedback')
-      setTimeout(() => speakText(data.feedback), 200)
+      setTimeout(() => speakText(feedback), 150)
     } catch {
-      const fallback = correct
-        ? 'Richtig! Sehr gut gemacht.'
-        : `Leider falsch. Korrekt: „${q.options[q.correctIdx]}"`
+      const fallback = `Antwort gespeichert.`
+      setAnswers(prev => [...prev, {
+        question:      q.question,
+        correctAnswer: q.options[q.correctIdx],
+        userAnswer:    text,
+        correct:       false,
+        feedback:      fallback,
+        hint:          q.hint,
+      }])
       setAiFeedback(fallback)
       setLoadingFb(false)
-      setP2Phase('feedback')
-      setTimeout(() => speakText(fallback), 200)
     }
-    setTextInput('')
   }
 
   /* ─── Next question ────────────────────────────────────── */
@@ -448,16 +444,16 @@ export default function SimulationClient() {
       if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
     } else {
       setCurrentQ(next)
-      setSelectedAns(null)
       setAiFeedback('')
       setFbTyped(0)
-      setInputMode('choice')
+      setUserInput('')
+      setVoiceError('')
       setP2Phase('question')
       setTimeout(() => speakText(questions[next].question), 400)
     }
   }
 
-  /* ─── Voice input ──────────────────────────────────────── */
+  /* ─── Voice input (auto-submit after recognition) ──────── */
   const startVoice = () => {
     setVoiceError('')
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
@@ -465,9 +461,8 @@ export default function SimulationClient() {
     const rec = new SR()
     rec.lang            = 'de-DE'
     rec.interimResults  = false
-    rec.maxAlternatives = 3
+    rec.maxAlternatives = 1
     recognitionRef.current = rec
-
     rec.onstart  = () => setIsListening(true)
     rec.onend    = () => setIsListening(false)
     rec.onerror  = (e: any) => {
@@ -476,30 +471,12 @@ export default function SimulationClient() {
     }
     rec.onresult = (e: any) => {
       const transcript = e.results[0][0].transcript
-      setTextInput(transcript)
-      const idx = matchTextToOption(transcript, questions[currentQ]?.options ?? [])
-      if (idx >= 0) {
-        setInputMode('choice')
-        handleAnswer(idx)
-      } else {
-        setVoiceError(`Konnte „${transcript}" keiner Antwort zuordnen. Bitte auswählen.`)
-      }
+      setUserInput(transcript)
+      submitAnswer(transcript)
     }
     rec.start()
   }
   const stopVoice = () => { recognitionRef.current?.stop() }
-
-  /* ─── Submit text answer ───────────────────────────────── */
-  const submitText = () => {
-    if (!textInput.trim()) return
-    const idx = matchTextToOption(textInput, questions[currentQ]?.options ?? [])
-    if (idx >= 0) {
-      setInputMode('choice')
-      handleAnswer(idx)
-    } else {
-      setVoiceError(`Keine passende Antwort für „${textInput}" gefunden. Bitte auswählen.`)
-    }
-  }
 
   /* ─── Restart ──────────────────────────────────────────── */
   const restart = () => {
@@ -508,11 +485,11 @@ export default function SimulationClient() {
     setP2Typed(0)
     setCurrentQ(0)
     setScore(0)
-    setSelectedAns(null)
+    setAnswers([])
     setAiFeedback('')
     setFbTyped(0)
     setLoadingFb(false)
-    setTextInput('')
+    setUserInput('')
     setVoiceError('')
   }
 
@@ -873,200 +850,144 @@ export default function SimulationClient() {
       )}
 
       {/* ═══ PHASE 2 QUESTION PANEL ═══ */}
-      {mainPhase === 'phase2' && (p2Phase === 'question' || p2Phase === 'answered' || p2Phase === 'feedback') && q && (
+      {mainPhase === 'phase2' && (p2Phase === 'question' || p2Phase === 'feedback') && q && (
         <div ref={panelRef} style={{
           position:'absolute', bottom:0, left:0, right:0, zIndex:100,
           background:'linear-gradient(to top,rgba(4,10,22,1) 0%,rgba(4,10,22,0.98) 80%,transparent 100%)',
           padding:'1rem 1.1rem 2.5rem',
-          maxHeight:'68vh', overflowY:'auto',
+          maxHeight:'70vh', overflowY:'auto',
           animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
         }}>
           {/* Progress bar */}
-          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'0.75rem' }}>
+          <div style={{ display:'flex', gap:'5px', marginBottom:'0.75rem' }}>
             {questions.map((_,i) => (
               <div key={i} style={{
                 height:'4px', flex:1, borderRadius:'2px',
                 background: i < currentQ ? '#4ade80' : i===currentQ ? '#60b4ff' : 'rgba(255,255,255,0.12)',
-                transition:'background 0.4s ease',
+                transition:'background 0.4s',
               }}/>
             ))}
           </div>
 
-          {/* Position badge + speak button */}
-          <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.7rem' }}>
+          {/* Position badge + 🔊 */}
+          <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.65rem' }}>
             <span style={{
               fontSize:'0.58rem', fontWeight:800, padding:'3px 10px', borderRadius:'6px',
               background:'rgba(96,180,255,0.1)', border:'1px solid rgba(96,180,255,0.25)',
               color:'#60b4ff', letterSpacing:'0.06em',
             }}>📍 {q.posLabel}</span>
-            <button onClick={() => speakText(q.question)} title="Frage vorlesen" style={{
+            <button onClick={() => speakText(q.question)} style={{
               background:'transparent', border:'none', color:'rgba(255,255,255,0.3)',
               cursor:'pointer', fontSize:'0.85rem', padding:'2px',
             }}>🔊</button>
           </div>
 
-          {/* Question text */}
+          {/* Question */}
           <div style={{
             background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.25)',
-            borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.75rem',
+            borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.85rem',
           }}>
-            <p style={{ margin:0, fontSize:'0.95rem', fontWeight:600, color:'rgba(255,255,255,0.95)', lineHeight:1.6 }}>
+            <p style={{ margin:0, fontSize:'0.97rem', fontWeight:600, color:'rgba(255,255,255,0.95)', lineHeight:1.6 }}>
               {q.question}
             </p>
           </div>
 
-          {/* Options */}
-          <div style={{ display:'flex', flexDirection:'column', gap:'0.45rem', marginBottom:'0.75rem' }}>
-            {q.options.map((opt, i) => {
-              const isSelected = selectedAns === i
-              const isCorrect  = i === q.correctIdx
-              const show       = p2Phase === 'feedback' || p2Phase === 'answered'
-              let bg     = 'rgba(10,24,50,0.4)'
-              let border = '1px solid rgba(255,255,255,0.09)'
-              let color  = 'rgba(255,255,255,0.82)'
-              let icon   = ''
-              if (show && isSelected && isCorrect)  { bg='rgba(34,197,94,0.18)';  border='1px solid rgba(34,197,94,0.45)';  color='#4ade80'; icon='✓' }
-              else if (show && isSelected && !isCorrect) { bg='rgba(239,68,68,0.18)'; border='1px solid rgba(239,68,68,0.45)';  color='#f87171'; icon='✗' }
-              else if (show && isCorrect)            { bg='rgba(34,197,94,0.09)';  border='1px solid rgba(34,197,94,0.25)';  color='#4ade80'; icon='✓' }
-              else if (isSelected)                   { bg='rgba(20,100,190,0.25)'; border='1px solid rgba(96,180,255,0.4)';  color='#60b4ff' }
-              return (
-                <button key={i} disabled={p2Phase !== 'question'}
-                  onClick={() => handleAnswer(i)}
-                  style={{
-                    width:'100%', textAlign:'left', padding:'0.65rem 0.85rem',
-                    background:bg, border, borderRadius:'0.65rem',
-                    color, fontWeight:600, fontSize:'0.87rem',
-                    cursor: p2Phase === 'question' ? 'pointer' : 'default',
-                    display:'flex', alignItems:'center', gap:'0.6rem',
-                    transition:'background 0.2s, border 0.2s',
-                  }}>
-                  <span style={{
-                    width:'24px', height:'24px', borderRadius:'6px', flexShrink:0,
-                    background:'rgba(255,255,255,0.07)',
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:'0.68rem', fontWeight:900,
-                  }}>
-                    {['A','B','C','D'][i]}
-                  </span>
-                  <span style={{ flex:1 }}>{opt}</span>
-                  {icon && <span style={{ fontSize:'0.9rem', marginLeft:'auto' }}>{icon}</span>}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Input mode tabs (only when question active) */}
+          {/* Input: Text + Mic (nur während Frage aktiv) */}
           {p2Phase === 'question' && (
-            <div style={{ display:'flex', gap:'0.4rem', marginBottom:'0.65rem' }}>
-              {(['choice','voice','text'] as InputMode[]).map(m => (
-                <button key={m} onClick={() => { setInputMode(m); setVoiceError('') }} style={{
-                  flex:1, padding:'0.45rem 0.2rem',
-                  background: inputMode===m ? 'rgba(20,100,190,0.28)' : 'transparent',
-                  border: `1px solid ${inputMode===m ? 'rgba(96,180,255,0.4)' : 'rgba(255,255,255,0.09)'}`,
-                  borderRadius:'0.5rem',
-                  color: inputMode===m ? '#60b4ff' : 'rgba(255,255,255,0.38)',
-                  fontSize:'0.63rem', fontWeight:700, cursor:'pointer',
-                }}>
-                  {m==='choice'?'📋 Auswahl':m==='voice'?'🎤 Sprechen':'✏️ Schreiben'}
+            <>
+              {/* Mode toggle */}
+              <div style={{ display:'flex', gap:'0.4rem', marginBottom:'0.6rem' }}>
+                {(['text','voice'] as InputMode[]).map(m => (
+                  <button key={m} onClick={() => { setInputMode(m); setVoiceError('') }} style={{
+                    flex:1, padding:'0.4rem',
+                    background: inputMode===m ? 'rgba(20,100,190,0.28)' : 'transparent',
+                    border: `1px solid ${inputMode===m ? 'rgba(96,180,255,0.4)' : 'rgba(255,255,255,0.09)'}`,
+                    borderRadius:'0.5rem',
+                    color: inputMode===m ? '#60b4ff' : 'rgba(255,255,255,0.38)',
+                    fontSize:'0.65rem', fontWeight:700, cursor:'pointer',
+                  }}>
+                    {m === 'text' ? '✏️ Schreiben' : '🎤 Sprechen'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Text input */}
+              {inputMode === 'text' && (
+                <div style={{ display:'flex', gap:'0.5rem', marginBottom:'0.5rem' }}>
+                  <input
+                    autoFocus
+                    value={userInput}
+                    onChange={e => setUserInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && submitAnswer(userInput)}
+                    placeholder="Antwort eingeben …"
+                    style={{
+                      flex:1, padding:'0.7rem 0.9rem',
+                      background:'rgba(10,24,50,0.7)', border:'1px solid rgba(20,100,190,0.35)',
+                      borderRadius:'0.65rem', color:'white', fontSize:'0.92rem', outline:'none',
+                    }}
+                  />
+                  <button
+                    onClick={() => submitAnswer(userInput)}
+                    disabled={!userInput.trim()}
+                    style={{
+                      padding:'0.7rem 1.1rem', borderRadius:'0.65rem',
+                      background: userInput.trim() ? 'linear-gradient(135deg,#1055b0,#082856)' : 'rgba(255,255,255,0.05)',
+                      border:'1px solid rgba(96,180,255,0.35)', color:'white',
+                      fontWeight:800, fontSize:'1rem', cursor: userInput.trim() ? 'pointer' : 'default',
+                      opacity: userInput.trim() ? 1 : 0.4,
+                    }}>→</button>
+                </div>
+              )}
+
+              {/* Voice input */}
+              {inputMode === 'voice' && (
+                <button
+                  onClick={isListening ? stopVoice : startVoice}
+                  style={{
+                    width:'100%', padding:'0.9rem', marginBottom:'0.5rem',
+                    background: isListening ? 'rgba(239,68,68,0.18)' : 'rgba(20,100,190,0.18)',
+                    border: `1px solid ${isListening ? 'rgba(239,68,68,0.45)' : 'rgba(96,180,255,0.35)'}`,
+                    borderRadius:'0.75rem',
+                    color: isListening ? '#f87171' : '#60b4ff',
+                    fontWeight:700, fontSize:'0.9rem', cursor:'pointer',
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:'0.6rem',
+                    animation: isListening ? 'micPulse 1.2s ease-in-out infinite' : 'none',
+                  }}>
+                  {isListening
+                    ? <><span style={{width:'9px',height:'9px',borderRadius:'50%',background:'#ef4444',display:'inline-block',animation:'tarsDot 0.8s ease-in-out infinite'}}/>Aufnahme läuft …</>
+                    : <><span>🎤</span> Antwort sprechen (automatisch gesendet)</>}
                 </button>
-              ))}
-            </div>
+              )}
+
+              {voiceError && <p style={{ margin:'0 0 0.5rem', fontSize:'0.72rem', color:'#f87171', textAlign:'center' }}>{voiceError}</p>}
+            </>
           )}
 
-          {/* Voice mode */}
-          {p2Phase === 'question' && inputMode === 'voice' && (
-            <div style={{ marginBottom:'0.65rem' }}>
-              <button
-                onClick={isListening ? stopVoice : startVoice}
-                style={{
-                  width:'100%', padding:'0.85rem',
-                  background: isListening ? 'rgba(239,68,68,0.2)' : 'rgba(20,100,190,0.2)',
-                  border: `1px solid ${isListening ? 'rgba(239,68,68,0.4)' : 'rgba(96,180,255,0.35)'}`,
-                  borderRadius:'0.65rem',
-                  color: isListening ? '#f87171' : '#60b4ff',
-                  fontWeight:700, fontSize:'0.9rem', cursor:'pointer',
-                  display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem',
-                  animation: isListening ? 'micPulse 1.2s ease-in-out infinite' : 'none',
-                }}>
-                {isListening ? (
-                  <><span style={{ width:'10px',height:'10px',borderRadius:'50%',background:'#ef4444',display:'inline-block',animation:'tarsDot 0.8s ease-in-out infinite'}}/>Aufnahme läuft … (klicken zum Stoppen)</>
-                ) : (
-                  <><span>🎤</span> Antwort sprechen</>
-                )}
-              </button>
-              {textInput && <p style={{ margin:'0.4rem 0 0', fontSize:'0.72rem', color:'rgba(255,255,255,0.4)', textAlign:'center' }}>„{textInput}"</p>}
-            </div>
-          )}
-
-          {/* Text mode */}
-          {p2Phase === 'question' && inputMode === 'text' && (
-            <div style={{ display:'flex', gap:'0.5rem', marginBottom:'0.65rem' }}>
-              <input
-                value={textInput}
-                onChange={e => setTextInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && submitText()}
-                placeholder="z.B. B oder 1,6 mm …"
-                style={{
-                  flex:1, padding:'0.65rem 0.85rem',
-                  background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.3)',
-                  borderRadius:'0.65rem', color:'white', fontSize:'0.88rem',
-                  outline:'none',
-                }}
-              />
-              <button onClick={submitText} style={{
-                padding:'0.65rem 1rem', borderRadius:'0.65rem',
-                background:'linear-gradient(135deg,#1055b0,#082856)',
-                border:'1px solid rgba(96,180,255,0.35)', color:'white',
-                fontWeight:800, fontSize:'0.9rem', cursor:'pointer',
-              }}>→</button>
-            </div>
-          )}
-
-          {/* Error message */}
-          {voiceError && (
-            <p style={{ margin:'0 0 0.65rem', fontSize:'0.72rem', color:'#f87171', textAlign:'center' }}>{voiceError}</p>
-          )}
-
-          {/* AI Feedback */}
-          {(p2Phase === 'feedback' || p2Phase === 'answered') && (
+          {/* Tars Feedback */}
+          {p2Phase === 'feedback' && (
             <div style={{
               display:'flex', gap:'0.65rem', alignItems:'flex-start',
               background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.25)',
-              borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.75rem',
+              borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.8rem',
               animation:'simFadeIn 0.4s ease',
             }}>
               <div style={{ fontSize:'1.2rem', flexShrink:0 }}>🎓</div>
               <div style={{ flex:1 }}>
-                {loadingFb ? (
-                  <div style={{ display:'flex', gap:'4px', alignItems:'center', paddingTop:'4px' }}>
-                    {[0,1,2].map(i => (
-                      <div key={i} style={{
-                        width:'7px', height:'7px', borderRadius:'50%', background:'#1464be',
-                        animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite`,
-                      }}/>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ margin:0, fontSize:'0.88rem', color:'rgba(255,255,255,0.88)', lineHeight:1.55 }}>
-                    {aiFeedback.slice(0, fbTyped)}
-                    {fbTyped < aiFeedback.length && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
-                  </p>
-                )}
-                {/* Hint */}
-                {!loadingFb && (
-                  <p style={{ margin:'0.5rem 0 0', fontSize:'0.72rem', color:'rgba(255,255,255,0.35)', lineHeight:1.45 }}>
-                    💡 {q.hint}
-                  </p>
-                )}
+                {loadingFb
+                  ? <div style={{ display:'flex', gap:'4px', paddingTop:'4px' }}>
+                      {[0,1,2].map(i => <div key={i} style={{ width:'7px',height:'7px',borderRadius:'50%',background:'#1464be', animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite` }}/>)}
+                    </div>
+                  : <p style={{ margin:0, fontSize:'0.88rem', color:'rgba(255,255,255,0.88)', lineHeight:1.55 }}>
+                      {aiFeedback.slice(0, fbTyped)}
+                      {fbTyped < aiFeedback.length && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
+                    </p>
+                }
               </div>
-              <button onClick={() => speakText(aiFeedback)} title="Vorlesen" style={{
-                background:'transparent', border:'none', color:'rgba(255,255,255,0.3)',
-                cursor:'pointer', fontSize:'0.85rem', padding:'2px', flexShrink:0,
-              }}>🔊</button>
+              <button onClick={() => speakText(aiFeedback)} style={{ background:'transparent', border:'none', color:'rgba(255,255,255,0.3)', cursor:'pointer', fontSize:'0.85rem', padding:'2px', flexShrink:0 }}>🔊</button>
             </div>
           )}
 
-          {/* Next / finish button */}
+          {/* Weiter */}
           {p2Phase === 'feedback' && !loadingFb && (
             <button onClick={nextQuestion} style={{
               width:'100%', padding:'0.9rem',
@@ -1076,89 +997,111 @@ export default function SimulationClient() {
               boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
               animation:'simFadeIn 0.35s ease',
             }}>
-              {currentQ + 1 < questions.length ? 'Nächste Frage →' : 'Ergebnis anzeigen →'}
+              {currentQ + 1 < questions.length ? 'Nächste Frage →' : 'Auswertung anzeigen →'}
             </button>
           )}
         </div>
       )}
 
-      {/* ═══ PHASE 2 COMPLETE / SCORE ═══ */}
+      {/* ═══ PHASE 2 AUSWERTUNG ═══ */}
       {mainPhase === 'phase2' && p2Phase === 'complete' && (
         <div style={{
           position:'absolute', bottom:0, left:0, right:0, zIndex:100,
-          background:'linear-gradient(to top,rgba(4,10,22,1) 0%,rgba(4,10,22,0.98) 80%,transparent 100%)',
-          padding:'1.5rem 1.25rem 3rem',
+          background:'linear-gradient(to top,rgba(4,10,22,1) 0%,rgba(4,10,22,0.99) 85%,transparent 100%)',
+          padding:'1.25rem 1.1rem 3rem',
+          maxHeight:'82vh', overflowY:'auto',
           animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
         }}>
-          {/* Result card */}
-          <div style={{
-            background:'rgba(10,24,50,0.7)', border:'1px solid rgba(20,100,190,0.3)',
-            borderRadius:'1.25rem', padding:'1.5rem', marginBottom:'1rem',
-            textAlign:'center',
-          }}>
-            {/* Score circle */}
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1rem' }}>
             <div style={{
-              width:'80px', height:'80px', borderRadius:'50%', margin:'0 auto 0.85rem',
-              background: score >= 4
-                ? 'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.05))'
+              width:'52px', height:'52px', borderRadius:'50%', flexShrink:0,
+              background: score === answers.length
+                ? 'linear-gradient(135deg,rgba(34,197,94,0.25),rgba(34,197,94,0.05))'
                 : score >= 2
-                  ? 'linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.05))'
+                  ? 'linear-gradient(135deg,rgba(251,191,36,0.25),rgba(251,191,36,0.05))'
                   : 'linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.05))',
-              border: score >= 4
-                ? '2px solid rgba(34,197,94,0.5)'
-                : score >= 2
-                  ? '2px solid rgba(251,191,36,0.5)'
-                  : '2px solid rgba(239,68,68,0.5)',
+              border: `2px solid ${score === answers.length ? 'rgba(34,197,94,0.5)' : score >= 2 ? 'rgba(251,191,36,0.5)' : 'rgba(239,68,68,0.4)'}`,
               display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
             }}>
-              <span style={{
-                fontSize:'1.8rem', fontWeight:900,
-                color: score >= 4 ? '#4ade80' : score >= 2 ? '#fbbf24' : '#f87171',
-              }}>{score}</span>
-              <span style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', marginTop:'-2px' }}>/ {questions.length}</span>
+              <span style={{ fontSize:'1.3rem', fontWeight:900, color: score === answers.length ? '#4ade80' : score >= 2 ? '#fbbf24' : '#f87171', lineHeight:1 }}>{score}</span>
+              <span style={{ fontSize:'0.52rem', color:'rgba(255,255,255,0.35)' }}>/{answers.length}</span>
             </div>
-
-            <p style={{ margin:'0 0 0.25rem', fontSize:'1.1rem', fontWeight:900, color:'white' }}>
-              {score === questions.length ? '🏆 Perfekt!' : score >= 4 ? '🎉 Sehr gut!' : score >= 3 ? '👍 Gut gemacht' : score >= 2 ? '📚 Weiter üben' : '💪 Nicht aufgeben!'}
-            </p>
-            <p style={{ margin:'0 0 1rem', fontSize:'0.8rem', color:'rgba(255,255,255,0.5)' }}>
-              {score} von {questions.length} Fragen korrekt
-            </p>
-
-            {/* Stars */}
-            <div style={{ display:'flex', gap:'0.25rem', justifyContent:'center', marginBottom:'1rem' }}>
-              {Array.from({length:5},(_,i) => (
-                <span key={i} style={{
-                  fontSize:'1.35rem',
-                  opacity: i < Math.round((score/questions.length)*5) ? 1 : 0.2,
-                  filter: i < Math.round((score/questions.length)*5) ? 'drop-shadow(0 0 4px #fbbf24)' : 'none',
-                }}>⭐</span>
-              ))}
-            </div>
-
-            {/* Tars comment */}
-            <div style={{
-              background:'rgba(20,100,190,0.1)', border:'1px solid rgba(96,180,255,0.2)',
-              borderRadius:'0.75rem', padding:'0.75rem 1rem',
-            }}>
-              <p style={{ margin:0, fontSize:'0.85rem', color:'rgba(255,255,255,0.8)', lineHeight:1.5, fontStyle:'italic' }}>
-                {score === questions.length
-                  ? '„Ausgezeichnet! Alle Fragen richtig – das ist das Niveau eines erfahrenen Fahrers."'
-                  : score >= 4
-                    ? '„Sehr gute Leistung! Noch ein bisschen üben und Sie sind bereit für die Prüfung."'
-                    : score >= 3
-                      ? '„Guter Ansatz! Wiederholen Sie die Technik-Kapitel für bessere Ergebnisse."'
-                      : '„Keine Sorge – mit etwas Übung werden Sie das schaffen. Weiter so!"'}
+            <div>
+              <p style={{ margin:0, fontSize:'1rem', fontWeight:900, color:'white' }}>
+                {score === answers.length ? '🏆 Perfekt!' : score >= 2 ? '👍 Gut gemacht' : '📚 Weiter üben'}
               </p>
-              <p style={{ margin:'0.4rem 0 0', fontSize:'0.65rem', color:'rgba(255,255,255,0.35)' }}>— Tars, Fahrprüfer</p>
+              <p style={{ margin:0, fontSize:'0.72rem', color:'rgba(255,255,255,0.45)' }}>
+                {score} von {answers.length} Fragen korrekt beantwortet
+              </p>
             </div>
           </div>
 
-          {/* Action buttons */}
+          {/* Stars */}
+          <div style={{ display:'flex', gap:'0.2rem', justifyContent:'center', marginBottom:'1rem' }}>
+            {Array.from({length:3},(_,i) => (
+              <span key={i} style={{
+                fontSize:'1.5rem',
+                opacity: i < Math.ceil((score/answers.length)*3) ? 1 : 0.15,
+                filter: i < Math.ceil((score/answers.length)*3) ? 'drop-shadow(0 0 6px #fbbf24)' : 'none',
+              }}>⭐</span>
+            ))}
+          </div>
+
+          {/* Detaillierte Auswertung */}
+          <p style={{ margin:'0 0 0.6rem', fontSize:'0.65rem', fontWeight:800, color:'rgba(255,255,255,0.4)', letterSpacing:'0.08em', textTransform:'uppercase' }}>
+            Auswertung im Detail
+          </p>
+          <div style={{ display:'flex', flexDirection:'column', gap:'0.6rem', marginBottom:'1rem' }}>
+            {answers.map((a, i) => (
+              <div key={i} style={{
+                background: a.correct ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                border: `1px solid ${a.correct ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.22)'}`,
+                borderRadius:'0.85rem', padding:'0.8rem 0.9rem',
+              }}>
+                {/* Frage */}
+                <p style={{ margin:'0 0 0.35rem', fontSize:'0.78rem', fontWeight:700, color:'rgba(255,255,255,0.85)', lineHeight:1.4 }}>
+                  {i+1}. {a.question}
+                </p>
+                {/* Deine Antwort */}
+                <p style={{ margin:'0 0 0.25rem', fontSize:'0.72rem', color:'rgba(255,255,255,0.5)', lineHeight:1.35 }}>
+                  <span style={{ color:'rgba(255,255,255,0.3)' }}>Deine Antwort: </span>
+                  <span style={{ fontStyle:'italic', color: a.correct ? '#4ade80' : '#f87171' }}>„{a.userAnswer}"</span>
+                  <span style={{ marginLeft:'0.4rem', fontSize:'0.85rem' }}>{a.correct ? '✓' : '✗'}</span>
+                </p>
+                {/* Korrekte Antwort (nur bei Fehler) */}
+                {!a.correct && (
+                  <p style={{ margin:'0 0 0.25rem', fontSize:'0.72rem', color:'#4ade80', lineHeight:1.35 }}>
+                    ✓ Korrekt: „{a.correctAnswer}"
+                  </p>
+                )}
+                {/* Tars Feedback */}
+                <p style={{ margin:'0.3rem 0 0', fontSize:'0.72rem', color:'rgba(255,255,255,0.4)', lineHeight:1.4, borderTop:'1px solid rgba(255,255,255,0.05)', paddingTop:'0.3rem' }}>
+                  🎓 {a.feedback}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tars Schlusswort */}
+          <div style={{
+            background:'rgba(20,100,190,0.08)', border:'1px solid rgba(96,180,255,0.18)',
+            borderRadius:'0.85rem', padding:'0.75rem 1rem', marginBottom:'1rem',
+          }}>
+            <p style={{ margin:0, fontSize:'0.82rem', color:'rgba(255,255,255,0.75)', lineHeight:1.5, fontStyle:'italic' }}>
+              {score === answers.length
+                ? '„Ausgezeichnet! Alle Fragen richtig – das ist das Niveau eines Profifahrers."'
+                : score >= 2
+                  ? '„Solide Leistung! Wiederholen Sie die schwachen Punkte und Sie sind bereit."'
+                  : '„Keine Sorge – mit etwas Übung werden Sie das schaffen. Weiter so!"'}
+            </p>
+            <p style={{ margin:'0.35rem 0 0', fontSize:'0.6rem', color:'rgba(255,255,255,0.3)' }}>— Tars, Fahrprüfer</p>
+          </div>
+
+          {/* Buttons */}
           <div style={{ display:'flex', gap:'0.6rem' }}>
             <button onClick={restart} style={{
-              flex:1, padding:'0.85rem',
-              background:'transparent',
+              flex:1, padding:'0.85rem', background:'transparent',
               border:'1px solid rgba(96,180,255,0.3)', borderRadius:'100px',
               color:'#60b4ff', fontWeight:700, fontSize:'0.88rem', cursor:'pointer',
             }}>🔄 Nochmal</button>
