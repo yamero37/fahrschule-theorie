@@ -255,6 +255,7 @@ export default function SimulationClient() {
   const [loadingFb,   setLoadingFb]   = useState(false)
   const [ttsOn,       setTtsOn]       = useState(true)
   const [voiceError,  setVoiceError]  = useState('')
+  const [started,     setStarted]     = useState(false)
 
   const recognitionRef = useRef<any>(null)
   const panelRef       = useRef<HTMLDivElement>(null)
@@ -314,9 +315,10 @@ export default function SimulationClient() {
 
   /* ─── Phase 1 timers ──────────────────────────────────── */
   useEffect(() => {
+    if (!started) return
     const t = setTimeout(() => setPhase('approaching'), 900)
     return () => clearTimeout(t)
-  }, [])
+  }, [started])
   useEffect(() => {
     if (phase !== 'approaching') return
     const t = setTimeout(() => setPhase('stopped'), 3200)
@@ -365,6 +367,19 @@ export default function SimulationClient() {
       setTimeout(() => panelRef.current?.scrollTo({ top: 0, behavior: 'smooth' }), 100)
     }
   }, [currentQ, p2Phase])
+
+  /* ─── Start Simulation (Start-Button) ─────────────────── */
+  const handleStart = async () => {
+    setStarted(true)
+    if (ttsOn) {
+      await new Promise<void>(r => setTimeout(r, 600))   // Animation kurz anlaufen lassen
+      await speakText(GREETING)
+      setMainPhase('phase2')
+      setP2Phase('intro_typing')
+      setP2Typed(0)
+      speakText(P2_INTRO)
+    }
+  }
 
   /* ─── Start Phase 2 ────────────────────────────────────── */
   const startPhase2 = async () => {
@@ -789,7 +804,7 @@ export default function SimulationClient() {
               {phase === 'speaking' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>}
             </p>
           </div>
-          {phase === 'ready' && (
+          {phase === 'ready' && !ttsOn && (
             <button onClick={startPhase2} style={{
               width:'100%', padding:'0.9rem',
               background:'linear-gradient(135deg,#1055b0,#082856)',
@@ -1121,6 +1136,45 @@ export default function SimulationClient() {
               display:'flex', alignItems:'center', justifyContent:'center', textDecoration:'none',
             }}>🏠 Dashboard</Link>
           </div>
+        </div>
+      )}
+
+      {/* ═══ START SCREEN ═══ */}
+      {!started && (
+        <div style={{
+          position:'absolute', inset:0, zIndex:300,
+          background:'linear-gradient(180deg,#020810 0%,#060e1e 50%,#0a1628 100%)',
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          gap:'2rem', padding:'2rem',
+        }}>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ marginBottom:'1.5rem', filter:'drop-shadow(0 0 24px rgba(20,100,190,0.4))' }}>
+              <TarsCharacter />
+            </div>
+            <div style={{
+              display:'inline-block', padding:'3px 10px', borderRadius:'6px', marginBottom:'0.75rem',
+              background:'rgba(20,100,190,0.18)', border:'1px solid rgba(96,180,255,0.3)',
+              fontSize:'0.58rem', fontWeight:800, color:'#60b4ff', letterSpacing:'0.12em',
+            }}>TARS · KI-FAHRPRÜFER</div>
+            <h1 style={{
+              color:'white', fontSize:'1.5rem', fontWeight:900, margin:'0 0 0.5rem',
+              letterSpacing:'-0.02em', lineHeight:1.2,
+            }}>Fahrprüfungs-Simulation</h1>
+            <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'0.85rem', margin:0, lineHeight:1.5 }}>
+              Technische Fahrzeugkontrolle · 3 Fragen
+            </p>
+          </div>
+          <button onClick={handleStart} style={{
+            padding:'1rem 2.5rem',
+            background:'linear-gradient(135deg,#1055b0,#082856)',
+            border:'1px solid rgba(96,180,255,0.45)', borderRadius:'100px',
+            color:'white', fontWeight:800, fontSize:'1.05rem', cursor:'pointer',
+            boxShadow:'0 4px 32px rgba(20,100,190,0.55)', letterSpacing:'0.05em',
+            animation:'simFadeIn 0.6s ease',
+          }}>▶&nbsp;&nbsp;Simulation starten</button>
+          <Link href="/dashboard" style={{
+            color:'rgba(255,255,255,0.3)', fontSize:'0.78rem', textDecoration:'none',
+          }}>← Zurück</Link>
         </div>
       )}
 
