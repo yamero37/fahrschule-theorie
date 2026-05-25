@@ -35,16 +35,33 @@ function getProgress(points: number, rank: typeof RANKS[0]) {
 
 /* ── Features ───────────────────────────────────────────── */
 
-const FEATURES = [
-  { icon: '📖', title: 'Unterricht',    desc: 'Theorie lernen & verstehen',   href: '/unterricht',  soon: false, color: '#a78bfa', badge: '14 Lektionen'   },
-  { icon: '📚', title: 'Theoriefragen', desc: 'Alle Prüfungsfragen üben',     href: '/fragen',      soon: false, color: '#c9a227', badge: '700 Fragen'     },
-  { icon: '⚡', title: 'Quiz',          desc: 'Schnell-Test starten',         href: '/quiz',        soon: false, color: '#f97316', badge: 'Prüfungsmodus'  },
-  { icon: '🔧', title: 'Technik',       desc: 'Fahrzeugtechnik verstehen',    href: '/technik',     soon: false, color: '#06b6d4', badge: 'Neu'            },
-  { icon: '🎓', title: 'Simulation',    desc: 'Echte Prüfung simulieren',     href: '/simulation',  soon: false, color: '#8b5cf6', badge: 'Prüfung'        },
-  { icon: '🎬', title: 'Lernvideos',    desc: 'Erklärvideos ansehen',         href: '/videos',      soon: true,  color: '#22c55e', badge: 'Bald'           },
-  { icon: '⚔️', title: 'Battle',       desc: 'Gegen Freunde antreten',       href: '/battle',      soon: true,  color: '#ef4444', badge: 'Bald'           },
-  { icon: '🏆', title: 'Rangliste',     desc: 'Globales Online-Ranking',      href: '/rangliste',   soon: false, color: '#ffd700', badge: 'Live'           },
-  { icon: '📅', title: 'Termin wählen', desc: 'Fahrstunde buchen · Mo–Sa',    href: '/termin',      soon: false, color: '#22c55e', badge: 'Fahrstunde'     },
+type FeatureItem = { icon: string; title: string; desc: string; href: string; soon: boolean; color: string; badge: string }
+type FeatureGroup = { label: string; color: string; items: FeatureItem[] }
+
+const GROUPS: FeatureGroup[] = [
+  {
+    label: '📚 Theorie', color: '#a78bfa',
+    items: [
+      { icon: '📖', title: 'Unterricht',       desc: 'Theorie lernen & verstehen',    href: '/unterricht',  soon: false, color: '#a78bfa', badge: '14 Lektionen' },
+      { icon: '📚', title: 'Theoriefragen',    desc: 'Alle Prüfungsfragen üben',      href: '/fragen',      soon: false, color: '#c9a227', badge: '700 Fragen'   },
+      { icon: '⚡', title: 'Theorie-Prüfung',  desc: 'Prüfung im Echtmodus starten',  href: '/quiz',        soon: false, color: '#f97316', badge: 'Simulation'   },
+    ],
+  },
+  {
+    label: '🔧 Praxis', color: '#06b6d4',
+    items: [
+      { icon: '🔧', title: 'Technik',    desc: 'Fahrzeugtechnik verstehen', href: '/technik',    soon: false, color: '#06b6d4', badge: 'Neu'     },
+      { icon: '🎓', title: 'Simulation', desc: 'Echte Prüfung simulieren',  href: '/simulation', soon: false, color: '#8b5cf6', badge: 'Prüfung' },
+    ],
+  },
+  {
+    label: '🌐 Online', color: '#22c55e',
+    items: [
+      { icon: '🎬', title: 'Lernvideos', desc: 'Erklärvideos ansehen',    href: '/videos',    soon: true,  color: '#22c55e', badge: 'Bald' },
+      { icon: '⚔️', title: 'Battle',    desc: 'Gegen Freunde antreten',  href: '/battle',    soon: true,  color: '#ef4444', badge: 'Bald' },
+      { icon: '🏆', title: 'Rangliste', desc: 'Globales Online-Ranking', href: '/rangliste', soon: false, color: '#ffd700', badge: 'Live' },
+    ],
+  },
 ]
 
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
@@ -362,10 +379,78 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* ── FEATURE GRID ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-          {FEATURES.map(f => <FeatureCard key={f.title} {...f} />)}
+        {/* ── FEATURE GROUPS ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {GROUPS.map(group => (
+            <div key={group.label}>
+              {/* Section label */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
+                <span style={{
+                  fontSize: '0.62rem', fontWeight: 800, letterSpacing: '0.1em',
+                  textTransform: 'uppercase', color: group.color,
+                }}>{group.label}</span>
+                <div style={{ flex: 1, height: '1px', background: `${group.color}25` }} />
+              </div>
+              {/* Cards */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${group.items.length === 2 ? 2 : 3}, 1fr)`,
+                gap: '0.5rem',
+              }}>
+                {group.items.map(f => <FeatureCard key={f.title} {...f} />)}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* ── TERMIN CARD — highlighted ── */}
+        <Link href="/termin" style={{ textDecoration: 'none', display: 'block' }}>
+          <div style={{
+            position: 'relative', overflow: 'hidden',
+            background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.04) 100%)',
+            border: '1.5px solid rgba(34,197,94,0.5)',
+            borderRadius: '1.25rem', padding: '1.1rem 1.2rem',
+            display: 'flex', alignItems: 'center', gap: '1rem',
+            animation: 'terminGlow 2.8s ease-in-out infinite',
+          }}>
+            {/* shimmer sweep */}
+            <div style={{
+              position: 'absolute', top: 0, bottom: 0, width: '60%',
+              background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.07), transparent)',
+              animation: 'terminShimmer 2.8s linear infinite',
+              pointerEvents: 'none',
+            }} />
+            {/* icon */}
+            <div style={{
+              width: '50px', height: '50px', borderRadius: '14px', flexShrink: 0,
+              background: 'rgba(34,197,94,0.14)', border: '1.5px solid rgba(34,197,94,0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.5rem',
+              filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.4))',
+            }}>📅</div>
+            {/* text */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
+                <p style={{ margin: 0, fontWeight: 900, fontSize: '0.95rem', color: 'var(--text)' }}>
+                  Termin wählen
+                </p>
+                <span style={{
+                  fontSize: '0.53rem', fontWeight: 800, letterSpacing: '0.06em',
+                  background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)',
+                  color: '#22c55e', padding: '2px 8px', borderRadius: '100px',
+                }}>✦ FAHRSTUNDE</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                Fahrstunde buchen · Montag – Samstag
+              </p>
+            </div>
+            {/* arrow */}
+            <span style={{
+              fontSize: '1.2rem', color: '#22c55e', flexShrink: 0,
+              filter: 'drop-shadow(0 0 6px rgba(34,197,94,0.55))',
+            }}>→</span>
+          </div>
+        </Link>
 
         {/* ── PREMIUM BANNER ── */}
         <div style={{
@@ -489,7 +574,17 @@ export default function Dashboard() {
       {/* ── BOTTOM NAV ── */}
       <BottomNav />
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes terminGlow {
+          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.5); }
+          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.35); border-color: rgba(34,197,94,0.8); }
+        }
+        @keyframes terminShimmer {
+          0%   { left: -60%; }
+          100% { left: 160%; }
+        }
+      `}</style>
     </div>
   )
 }
@@ -1308,9 +1403,7 @@ function AdminSettings({ token }: { token: string }) {
 
 /* ── Feature Card ───────────────────────────────────────── */
 
-function FeatureCard({ icon, title, desc, href, soon, color, badge }: {
-  icon: string; title: string; desc: string; href: string; soon: boolean; color: string; badge: string
-}) {
+function FeatureCard({ icon, title, desc, href, soon, color, badge }: FeatureItem) {
   const [hovered, setHovered] = useState(false)
 
   const inner = (
