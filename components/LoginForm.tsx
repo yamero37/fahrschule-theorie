@@ -101,7 +101,7 @@ export default function LoginForm() {
     try {
       const loginPromise = loginUser(form.email.trim(), form.password)
       const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), 10000)
+        setTimeout(() => reject(new Error('timeout')), 12000)
       )
       const data = await Promise.race([loginPromise, timeout])
 
@@ -123,16 +123,20 @@ export default function LoginForm() {
       } else if (err && typeof err === 'object' && 'message' in err) {
         msg = String((err as { message: unknown }).message)
       }
+
       if (msg === 'timeout') {
-        setError('Verbindung fehlgeschlagen – prüfe deine Internetverbindung oder deaktiviere Browser-Erweiterungen (Adblocker etc.).')
-      } else if (msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email')) {
+        // Supabase-Projekt pausiert oder nicht erreichbar?
+        setError('Server nicht erreichbar – möglicherweise ist das Supabase-Projekt pausiert. Bitte auf supabase.com prüfen und „Restore" klicken, oder Seite neu laden.')
+      } else if (msg.includes('Invalid login') || msg.includes('invalid_credentials') || msg.includes('Invalid email') || msg.includes('invalid') || msg.includes('credentials')) {
         setError('E-Mail oder Passwort falsch.')
       } else if (msg.includes('Email not confirmed')) {
         setError('E-Mail-Adresse noch nicht bestätigt. Bitte prüfe dein Postfach.')
-      } else if (msg.includes('rate limit') || msg.includes('too many')) {
-        setError('Zu viele Versuche. Bitte warte kurz und versuche es erneut.')
+      } else if (msg.includes('rate limit') || msg.includes('too many') || msg.includes('429')) {
+        setError('Zu viele Versuche – bitte 5 Minuten warten und dann erneut versuchen.')
+      } else if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
+        setError('Netzwerkfehler – prüfe deine Internetverbindung.')
       } else {
-        setError(msg || 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.')
+        setError(`Fehler: ${msg}`)
       }
     } finally {
       setLoading(false)

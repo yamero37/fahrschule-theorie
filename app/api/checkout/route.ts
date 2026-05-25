@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     ).replace(/\/$/, '')
 
     const session = await stripe.checkout.sessions.create({
-      // Alle gängigen Zahlungsmethoden für Deutschland
-      payment_method_types: ['card', 'paypal', 'sepa_debit', 'klarna', 'sofort'],
+      // Zahlungsmethoden — card + paypal + sepa für Deutschland
+      payment_method_types: ['card', 'paypal', 'sepa_debit'],
       line_items: [{
         price_data: {
           currency: 'eur',
