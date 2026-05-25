@@ -268,7 +268,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── HERO CARD ── */}
+        {/* ── BIG HERO CARD (Hero + Stats + Daily Goal) ── */}
         <div style={{
           background: 'transparent',
           border: '1px solid rgba(var(--gold-rgb),0.3)',
@@ -337,6 +337,63 @@ export default function Dashboard() {
             {/* Circular progress */}
             <CircularProgress value={progressVal} color="var(--gold)" />
           </div>
+
+          {/* ── divider ── */}
+          <div style={{ height: '1px', background: 'rgba(var(--gold-rgb),0.12)', margin: '1.1rem 0 1rem' }} />
+
+          {/* ── STAT TILES ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem' }}>
+            {[
+              { icon: '📖', value: '14',             label: 'Lektionen', color: '#8b5cf6', barPct: 40  },
+              { icon: '🎯', value: `${points}`,       label: 'Punkte',    color: '#ec4899', barPct: Math.min(100, (points / 300) * 100) },
+              { icon: '🏆', value: rank.id,           label: rank.name,   color: rank.color, barPct: progress },
+              { icon: '📈', value: `${progressVal}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Max', color: '#22c55e', barPct: progress },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: 'rgba(var(--gold-rgb),0.04)',
+                borderRadius: '0.9rem', padding: '0.75rem 0.6rem',
+                display: 'flex', flexDirection: 'column', gap: '0.15rem',
+              }}>
+                <span style={{ fontSize: '1rem', marginBottom: '0.2rem' }}>{s.icon}</span>
+                <span style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1 }}>{s.value}</span>
+                <span style={{ fontSize: '0.55rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>{s.label}</span>
+                <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(var(--gold-rgb),0.1)', overflow: 'hidden', marginTop: '0.4rem' }}>
+                  <div style={{ width: `${s.barPct}%`, height: '100%', background: s.color, borderRadius: '2px', transition: 'width 1.2s ease' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── divider ── */}
+          <div style={{ height: '1px', background: 'rgba(var(--gold-rgb),0.12)', margin: '1rem 0' }} />
+
+          {/* ── DAILY GOAL ── */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🔄 Dein heutiges Ziel
+              </p>
+              <button style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}>
+                Ziel bearbeiten ✏️
+              </button>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+              <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
+                <svg width="46" height="46" viewBox="0 0 46 46">
+                  <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
+                  <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
+                    strokeDasharray={`${(2 / 5) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
+                    strokeLinecap="round" transform="rotate(-90 23 23)" />
+                </svg>
+                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.52rem', fontWeight: 900, color: '#3b82f6' }}>2/5</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Lektion abschließen</p>
+                <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>5 Lektionen pro Tag</p>
+              </div>
+              <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>40%</span>
+            </div>
+          </div>
         </div>
 
         {/* ── TUTORIAL BANNER ── */}
@@ -359,28 +416,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── STAT CARDS row ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-          {[
-            { icon: '📖', value: '14',             label: 'Lektionen', color: '#8b5cf6', barPct: 40  },
-            { icon: '🎯', value: `${points}`,       label: 'Punkte',    color: '#ec4899', barPct: Math.min(100, (points / 300) * 100) },
-            { icon: '🏆', value: rank.id,           label: rank.name,   color: rank.color, barPct: progress },
-            { icon: '📈', value: `${progressVal}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Max', color: '#22c55e', barPct: progress },
-          ].map(s => (
-            <div key={s.label} style={{
-              background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)',
-              borderRadius: '1rem', padding: '0.8rem 0.65rem',
-              display: 'flex', flexDirection: 'column', gap: '0.15rem',
-            }}>
-              <span style={{ fontSize: '1rem', marginBottom: '0.2rem' }}>{s.icon}</span>
-              <span style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1 }}>{s.value}</span>
-              <span style={{ fontSize: '0.55rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>{s.label}</span>
-              <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(var(--gold-rgb),0.1)', overflow: 'hidden', marginTop: '0.4rem' }}>
-                <div style={{ width: `${s.barPct}%`, height: '100%', background: s.color, borderRadius: '2px', transition: 'width 1.2s ease' }} />
-              </div>
-            </div>
-          ))}
-        </div>
 
         {/* ── FEATURE GROUPS ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -517,33 +552,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* ── DAILY GOAL ── */}
-        <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
-            <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              🔄 Dein heutiges Ziel
-            </p>
-            <button style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}>
-              Ziel bearbeiten ✏️
-            </button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-            <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
-              <svg width="46" height="46" viewBox="0 0 46 46">
-                <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
-                <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
-                  strokeDasharray={`${(2 / 5) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
-                  strokeLinecap="round" transform="rotate(-90 23 23)" />
-              </svg>
-              <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.52rem', fontWeight: 900, color: '#3b82f6' }}>2/5</span>
-            </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Lektion abschließen</p>
-              <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>5 Lektionen pro Tag</p>
-            </div>
-            <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>40%</span>
-          </div>
-        </div>
 
         {/* ── LEADERBOARD (compact) ── */}
         {topEntries.length > 0 && (
