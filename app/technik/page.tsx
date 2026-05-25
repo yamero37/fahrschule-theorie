@@ -1,44 +1,65 @@
 import Link from 'next/link'
 import AuthGuard from '@/components/AuthGuard'
+import dynamic from 'next/dynamic'
+
+const CarViewer = dynamic(() => import('@/components/CarViewer'), {
+  ssr: false,
+  loading: () => (
+    <div style={{
+      width: '100%',
+      height: '520px',
+      borderRadius: '1.25rem',
+      background: 'linear-gradient(160deg, #05050e 0%, #0b0b1d 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: '0.75rem',
+      color: 'rgba(255,255,255,0.35)',
+      fontSize: '0.85rem',
+    }}>
+      <div style={{
+        width: '32px', height: '32px', borderRadius: '50%',
+        border: '3px solid rgba(255,255,255,0.08)',
+        borderTop: '3px solid rgba(255,255,255,0.45)',
+        animation: 'spin 0.9s linear infinite',
+      }} />
+      3D-Modell wird geladen…
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  ),
+})
 
 export const metadata = { title: 'Technik – TolDrive' }
 
-const TOPICS = [
+const CARS = [
   {
-    icon: '🔧', title: 'Motor & Antrieb', color: '#06b6d4',
-    desc: 'Verbrennungsmotor, Getriebe, Kupplung und Antriebsarten – Benzin, Diesel, Elektro, Hybrid.',
-    items: ['4-Takt-Motor', 'Automatik vs. Schaltgetriebe', 'Elektroantrieb', 'Hybridtechnologie'],
-    soon: false,
+    name: 'Tesla Model 3',
+    badge: '⚡ Elektro',
+    color: '#3b82f6',
+    year: '2024',
+    specs: [
+      { label: 'Antrieb',        value: 'Elektro (RWD / AWD)' },
+      { label: 'Reichweite',     value: 'bis 629 km' },
+      { label: 'Leistung',       value: '208 – 358 PS' },
+      { label: '0 – 100 km/h',   value: '3,1 – 5,8 s' },
+      { label: 'Ladung (DC)',     value: 'bis 250 kW' },
+      { label: 'Länge',          value: '4.720 mm' },
+    ],
   },
   {
-    icon: '🛞', title: 'Reifen & Räder', color: '#f97316',
-    desc: 'Reifentypen, Profiltiefen, Luftdruck und saisonale Bereifung – alles was du wissen musst.',
-    items: ['Mindestprofiltiefe', 'Reifendruck', 'Sommer- & Winterreifen', 'Reifenbezeichnung'],
-    soon: false,
-  },
-  {
-    icon: '🛑', title: 'Bremsen & Sicherheit', color: '#ef4444',
-    desc: 'ABS, ESP, Bremsweg-Berechnung und aktive Sicherheitssysteme moderner Fahrzeuge.',
-    items: ['ABS & ESP', 'Bremsweg berechnen', 'Scheiben- vs. Trommelbremse', 'Fahrerassistenz'],
-    soon: false,
-  },
-  {
-    icon: '💡', title: 'Elektrik & Beleuchtung', color: '#fbbf24',
-    desc: 'Fahrzeugbeleuchtung, Batterie, Lichtpflicht und elektrische Systeme im Überblick.',
-    items: ['Lichtpflicht', 'Abblend- & Fernlicht', 'Batterie & Lichtmaschine', 'Nebelscheinwerfer'],
-    soon: false,
-  },
-  {
-    icon: '⛽', title: 'Kraftstoff & Umwelt', color: '#22c55e',
-    desc: 'Kraftstoffarten, Umweltzonen, Abgasklassen und umweltbewusstes Fahren.',
-    items: ['Euro-Norm', 'Umweltzonen', 'Kraftstoffverbrauch', 'Schadstoffklassen'],
-    soon: false,
-  },
-  {
-    icon: '🔍', title: 'Fahrzeugkontrolle', color: '#a78bfa',
-    desc: 'Pflichtprüfungen, Hauptuntersuchung, Ölstand, Kühlwasser und tägliche Kontrollen.',
-    items: ['HU & AU', 'Ölstand prüfen', 'Kühlwasser', 'Scheibenwischer & Flüssigkeiten'],
-    soon: false,
+    name: 'VW T-Roc 2025',
+    badge: '🚙 SUV / Crossover',
+    color: '#22c55e',
+    year: '2025',
+    specs: [
+      { label: 'Antrieb',        value: 'Benzin / mild-Hybrid' },
+      { label: 'Hubraum',        value: '1.0 TSI – 2.0 TSI' },
+      { label: 'Leistung',       value: '110 – 190 PS' },
+      { label: '0 – 100 km/h',   value: '7,2 – 9,9 s' },
+      { label: 'Getriebe',       value: '6-Gang / DSG' },
+      { label: 'Länge',          value: '4.234 mm' },
+    ],
   },
 ]
 
@@ -46,10 +67,10 @@ export default function TechnikPage() {
   return (
     <AuthGuard>
       <div style={{ minHeight: '100vh', paddingBottom: '84px' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '1.5rem 1rem' }}>
 
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '1.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '1.4rem' }}>
             <Link href="/dashboard" style={{
               width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
               background: 'var(--input-bg)', border: '1px solid var(--input-border)',
@@ -58,95 +79,89 @@ export default function TechnikPage() {
             }}>←</Link>
             <div>
               <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: 'var(--text)' }}>
-                🔧 Fahrzeugtechnik
+                🚗 3D Fahrzeug-Viewer
               </h1>
               <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>
-                Technik für die Theorieprüfung
+                Interaktive 3D-Modelle · Drehen, Zoomen & Erkunden
               </p>
             </div>
           </div>
 
-          {/* Intro card */}
+          {/* 3D Viewer */}
+          <CarViewer />
+
+          {/* Interaktions-Hinweise */}
           <div style={{
-            background: 'transparent', border: '1px solid rgba(6,182,212,0.3)',
-            borderRadius: '1.25rem', padding: '1.1rem 1.2rem', marginBottom: '1.25rem',
-            display: 'flex', gap: '1rem', alignItems: 'flex-start',
+            display: 'flex', gap: '0.6rem', margin: '0.75rem 0',
+            justifyContent: 'center', flexWrap: 'wrap',
           }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
-              background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem',
-            }}>🔧</div>
-            <div>
-              <p style={{ margin: '0 0 0.3rem', fontWeight: 800, fontSize: '0.88rem', color: 'var(--text)' }}>
-                Technik im Theorietest
-              </p>
-              <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                Etwa <strong style={{ color: '#06b6d4' }}>15–20 %</strong> der Prüfungsfragen behandeln Fahrzeugtechnik.
-                Hier lernst du alles Wichtige kompakt und verständlich.
-              </p>
-            </div>
-          </div>
-
-          {/* Topic grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {TOPICS.map(t => (
-              <div key={t.title} style={{
-                background: 'transparent',
-                border: `1px solid ${t.color}35`,
-                borderRadius: '1.1rem', padding: '1rem 1.1rem',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
+            {[
+              { icon: '🖱', text: 'Klicken & Ziehen zum Drehen' },
+              { icon: '🔍', text: 'Scrollen zum Zoomen' },
+              { icon: '📱', text: 'Touch-Gesten auf Handy' },
+            ].map(h => (
+              <span key={h.text} style={{
+                fontSize: '0.62rem', color: 'var(--text-dim)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                padding: '3px 10px', borderRadius: '100px',
+                display: 'flex', alignItems: 'center', gap: '5px',
               }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                  <div style={{
-                    width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0,
-                    background: `${t.color}15`, border: `1px solid ${t.color}30`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
-                  }}>{t.icon}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: '0 0 0.3rem', fontWeight: 800, fontSize: '0.88rem', color: 'var(--text)' }}>
-                      {t.title}
-                    </p>
-                    <p style={{ margin: '0 0 0.65rem', fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
-                      {t.desc}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                      {t.items.map(item => (
-                        <span key={item} style={{
-                          fontSize: '0.6rem', fontWeight: 600, padding: '2px 8px', borderRadius: '6px',
-                          background: `${t.color}12`, border: `1px solid ${t.color}25`, color: t.color,
-                        }}>
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                {h.icon} {h.text}
+              </span>
             ))}
           </div>
 
-          {/* CTA */}
-          <div style={{
-            marginTop: '1.5rem', padding: '1rem 1.2rem', borderRadius: '1.1rem',
-            background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
-          }}>
-            <div>
-              <p style={{ margin: '0 0 2px', fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)' }}>
-                Technik-Fragen üben
-              </p>
-              <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                Direkt in den Theoriefragen nach Technik filtern
-              </p>
-            </div>
-            <Link href="/fragen" style={{
-              padding: '0.55rem 1rem', borderRadius: '100px', textDecoration: 'none',
-              background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
-              color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0,
-            }}>
-              Zu den Fragen →
-            </Link>
+          {/* Fahrzeug-Specs nebeneinander */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.5rem' }}>
+            {CARS.map(car => (
+              <div key={car.name} style={{
+                background: 'transparent',
+                border: `1px solid ${car.color}28`,
+                borderRadius: '1.1rem',
+                padding: '1rem',
+                transition: 'border-color 0.2s',
+              }}>
+                {/* Fahrzeug-Titel */}
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <span style={{
+                    fontSize: '0.52rem', fontWeight: 800,
+                    padding: '2px 7px', borderRadius: '6px',
+                    background: `${car.color}15`,
+                    border: `1px solid ${car.color}28`,
+                    color: car.color,
+                    display: 'inline-block',
+                    marginBottom: '0.35rem',
+                  }}>{car.badge}</span>
+                  <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 900, color: 'var(--text)' }}>
+                    {car.name}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--text-dim)' }}>Modelljahr {car.year}</p>
+                </div>
+
+                {/* Daten */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {car.specs.map(s => (
+                    <div key={s.label} style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}>
+                      <span style={{ fontSize: '0.6rem', color: 'var(--text-dim)', flexShrink: 0 }}>
+                        {s.label}
+                      </span>
+                      <span style={{
+                        fontSize: '0.62rem', fontWeight: 700,
+                        color: 'var(--text)', textAlign: 'right',
+                      }}>
+                        {s.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
