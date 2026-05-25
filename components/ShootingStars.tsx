@@ -41,7 +41,7 @@ export default function ShootingStars() {
               left: s.left,
               width: `${s.len}px`,
               height: '1.5px',
-              background: 'linear-gradient(90deg, transparent 0%, rgba(201,139,122,0.45) 40%, rgba(232,190,175,0.22) 72%, transparent 100%)',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(212,160,23,0.5) 40%, rgba(240,192,64,0.22) 72%, transparent 100%)',
               filter: 'blur(3px)',
               borderRadius: '2px',
               animation: `star${i} ${s.dur} ${s.delay} linear infinite`,

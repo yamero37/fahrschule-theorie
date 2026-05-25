@@ -9,28 +9,28 @@
   --green:        #22c55e;
   --green-dark:   #16a34a;
   --green-glow:   rgba(34,197,94,0.1);
-  --gold:         #c9907a;
-  --gold-light:   #e8b4a0;
-  --gold-dark:    #8b5a47;
-  --gold-glow:    rgba(201,144,122,0.18);
-  --text:         #f5e8e0;
-  --text-muted:   #a88070;
-  --text-dim:     #5a3a30;
+  --gold:         #d4a017;
+  --gold-light:   #f0c040;
+  --gold-dark:    #a07a0a;
+  --gold-glow:    rgba(212,160,23,0.18);
+  --text:         #faf5e8;
+  --text-muted:   #c4a85e;
+  --text-dim:     #6b5222;
 
   /* Theme-adaptive semantic variables */
-  --gold-rgb:      201, 144, 122;
-  --text-h:        #f5ead0;
-  --text-body:     #e8d5c5;
-  --card-bg:       rgba(15,15,18,0.97);
-  --card-border:   rgba(201,144,122,0.14);
-  --card-shadow:   0 30px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04);
+  --gold-rgb:      212, 160, 23;
+  --text-h:        #fff8e8;
+  --text-body:     #f0e5cc;
+  --card-bg:       rgba(12,10,6,0.97);
+  --card-border:   rgba(212,160,23,0.14);
+  --card-shadow:   0 30px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,220,80,0.04);
   --input-bg:      rgba(255,255,255,0.04);
-  --input-border:  rgba(255,255,255,0.08);
-  --input-color:   #e8d5c5;
-  --divider-color: rgba(255,255,255,0.05);
-  --nav-bg:        rgba(8,8,8,0.95);
-  --nav-border:    rgba(201,144,122,0.2);
-  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(201,144,122,0.15) 0%, rgba(140,90,75,0.06) 45%, transparent 70%);
+  --input-border:  rgba(255,220,80,0.1);
+  --input-color:   #f0e5cc;
+  --divider-color: rgba(255,220,80,0.06);
+  --nav-bg:        rgba(6,5,2,0.96);
+  --nav-border:    rgba(212,160,23,0.22);
+  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,160,23,0.13) 0%, rgba(140,100,10,0.05) 45%, transparent 70%);
 }
 
 @theme inline {
@@ -92,10 +92,10 @@
 }
 
 /* ── Leaf decorations (LoginForm) ─────────────────────── */
-.leaf-main   { fill: #c9907a; }
-.leaf-dark   { fill: #a06050; }
-.leaf-darker { fill: #8b5040; }
-.leaf-light  { fill: #d49070; }
+.leaf-main   { fill: #d4a017; }
+.leaf-dark   { fill: #a07a0a; }
+.leaf-darker { fill: #7a5a05; }
+.leaf-light  { fill: #f0c040; }
 [data-theme="light"] .leaf-main   { fill: #0d9488; }
 [data-theme="light"] .leaf-dark   { fill: #0f766e; }
 [data-theme="light"] .leaf-darker { fill: #115e59; }

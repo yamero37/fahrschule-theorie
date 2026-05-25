@@ -68,18 +68,17 @@ export default function Navigation() {
         {/* Logo */}
         <Link href={loggedIn ? '/dashboard' : '/'} style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/Toldrive.jpeg" alt="TolDrive" style={{
-            width: '30px', height: '30px',
-            objectFit: 'cover', borderRadius: '6px',
-            border: '1px solid rgba(var(--gold-rgb),0.35)',
+          <img src="/avatar.jpeg" alt="TolDrive" style={{
+            width: '32px', height: '32px',
+            objectFit: 'cover', borderRadius: '8px',
+            border: '1.5px solid rgba(var(--gold-rgb),0.45)',
+            boxShadow: '0 0 10px rgba(var(--gold-rgb),0.15)',
           }} />
-          <span className="nav-title" style={{
-            fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.01em',
-            background: 'linear-gradient(90deg, var(--gold-dark), var(--gold-light))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            TolDrive
+          <span className="nav-title" style={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.01em' }}>
+            <span style={{ color: 'var(--text-h)' }}>Tol</span><span style={{
+              background: 'linear-gradient(135deg, var(--gold-dark), var(--gold-light))',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>Drive</span>
           </span>
         </Link>
 
