@@ -93,6 +93,12 @@ export default function Dashboard() {
   const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteUserId = useRef('')
 
+  // Daily goal (Theoriefragen)
+  const [dailyGoal, setDailyGoal]     = useState(10)
+  const [dailyCount, setDailyCount]   = useState(0)
+  const [editGoal, setEditGoal]       = useState(false)
+  const [editGoalVal, setEditGoalVal] = useState('10')
+
   // Admin
   const [isAdmin, setIsAdmin] = useState(false)
   const [adminToken, setAdminToken] = useState('')
@@ -120,6 +126,17 @@ export default function Dashboard() {
 
         // ↓ Show dashboard now — everything below loads in background
         setLoading(false)
+
+        // Daily goal — read from localStorage
+        try {
+          const g = parseInt(localStorage.getItem('fragenDailyGoal') ?? '10', 10)
+          const goal = isNaN(g) ? 10 : Math.min(700, Math.max(1, g))
+          setDailyGoal(goal)
+          setEditGoalVal(String(goal))
+          const today = new Date().toISOString().slice(0, 10)
+          const c = parseInt(localStorage.getItem(`fragenDaily_${today}`) ?? '0', 10)
+          setDailyCount(isNaN(c) ? 0 : c)
+        } catch {}
 
         if (admin) {
           const tok = session.access_token ?? ''
@@ -199,6 +216,14 @@ export default function Dashboard() {
     await supabase.from('appointments').update({ status }).eq('id', id)
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
     setActingAppt(null)
+  }
+
+  function saveGoal() {
+    const n = Math.min(700, Math.max(1, parseInt(editGoalVal, 10) || 10))
+    setDailyGoal(n)
+    setEditGoalVal(String(n))
+    try { localStorage.setItem('fragenDailyGoal', String(n)) } catch {}
+    setEditGoal(false)
   }
 
   const rank = getRank(points)
@@ -378,30 +403,95 @@ export default function Dashboard() {
 
           {/* ── DAILY GOAL ── */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
               <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🔄 Dein heutiges Ziel
+                🎯 Dein heutiges Ziel
               </p>
-              <button style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}>
-                Ziel bearbeiten ✏️
-              </button>
+              {!editGoal && (
+                <button
+                  onClick={() => { setEditGoal(true); setEditGoalVal(String(dailyGoal)) }}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}
+                >
+                  Ziel bearbeiten ✏️
+                </button>
+              )}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-              <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
-                <svg width="46" height="46" viewBox="0 0 46 46">
-                  <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
-                  <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
-                    strokeDasharray={`${(2 / 5) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
-                    strokeLinecap="round" transform="rotate(-90 23 23)" />
-                </svg>
-                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.52rem', fontWeight: 900, color: '#3b82f6' }}>2/5</span>
+
+            {/* Inline goal editor */}
+            {editGoal && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                <input
+                  type="number" min={1} max={700}
+                  value={editGoalVal}
+                  onChange={e => setEditGoalVal(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && saveGoal()}
+                  placeholder="1–700"
+                  style={{
+                    width: '80px', padding: '0.35rem 0.6rem', borderRadius: '0.5rem',
+                    background: 'var(--input-bg)', border: '1px solid rgba(var(--gold-rgb),0.35)',
+                    color: 'var(--text)', fontSize: '0.82rem', fontFamily: 'inherit', outline: 'none',
+                  }}
+                  autoFocus
+                />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>Fragen pro Tag</span>
+                <button onClick={saveGoal} style={{
+                  padding: '0.3rem 0.65rem', borderRadius: '0.45rem', fontSize: '0.72rem', fontWeight: 700,
+                  background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)',
+                  color: '#22c55e', cursor: 'pointer',
+                }}>✓</button>
+                <button onClick={() => setEditGoal(false)} style={{
+                  padding: '0.3rem 0.6rem', borderRadius: '0.45rem', fontSize: '0.72rem',
+                  background: 'rgba(var(--gold-rgb),0.06)', border: '1px solid rgba(var(--gold-rgb),0.18)',
+                  color: 'var(--text-dim)', cursor: 'pointer',
+                }}>✕</button>
               </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Lektion abschließen</p>
-                <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>5 Lektionen pro Tag</p>
+            )}
+
+            {/* Goal reached — celebration */}
+            {dailyCount >= dailyGoal ? (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '0.9rem',
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.04))',
+                border: '1px solid rgba(34,197,94,0.35)', borderRadius: '0.9rem',
+                padding: '0.75rem 1rem',
+                animation: 'terminGlow 2.8s ease-in-out infinite',
+              }}>
+                <span style={{ fontSize: '2rem', flexShrink: 0, filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.5))' }}>👍</span>
+                <div>
+                  <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 900, color: '#22c55e' }}>
+                    Dein heutiges Lernziel erreicht!
+                  </p>
+                  <p style={{ margin: '0.1rem 0 0', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                    Süpeeer! {dailyCount} Fragen heute beantwortet 🎉
+                  </p>
+                </div>
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>40%</span>
-            </div>
+            ) : (
+              /* Progress ring */
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
+                  <svg width="46" height="46" viewBox="0 0 46 46">
+                    <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
+                    <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
+                      strokeDasharray={`${Math.min(dailyCount / dailyGoal, 1) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
+                      strokeLinecap="round" transform="rotate(-90 23 23)"
+                      style={{ transition: 'stroke-dasharray 0.6s ease' }}
+                    />
+                  </svg>
+                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.5rem', fontWeight: 900, color: '#3b82f6', lineHeight: 1.1, textAlign: 'center' }}>
+                    {dailyCount}/{dailyGoal}
+                  </span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Theoriefragen üben</p>
+                  <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{dailyGoal} Fragen pro Tag · 700 verfügbar</p>
+                </div>
+                <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>
+                  {dailyGoal > 0 ? Math.round((dailyCount / dailyGoal) * 100) : 0}%
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

@@ -85,6 +85,14 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
     const isRight = answerId === correct.id
     setResults(r => [...r, { qId: q.id, correct: isRight }])
 
+    // Tages-Zähler erhöhen (jede Antwort zählt)
+    try {
+      const today = new Date().toISOString().slice(0, 10)
+      const dayKey = `fragenDaily_${today}`
+      const n = parseInt(localStorage.getItem(dayKey) ?? '0', 10)
+      localStorage.setItem(dayKey, String(n + 1))
+    } catch {}
+
     if (isRight) {
       const firstTime = !correctIds.has(q.id)
       if (firstTime) {
