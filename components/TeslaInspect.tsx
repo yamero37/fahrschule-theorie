@@ -17,6 +17,7 @@ type CarPart = {
   tip?: string    // Alleine prüfen – Tipp
   law?: string
   sticker?: boolean  // TÜV-Plaketten-Diagram anzeigen
+  tire?: boolean     // Reifen-Infopanel anzeigen
 }
 
 const VIEWS = ['Heck', 'Front', 'Seite', 'Innenraum'] as const
@@ -130,7 +131,23 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
     },
   ],
   Front: [],
-  Seite: [],
+  Seite: [
+    {
+      id: 'reifen',
+      cx: 308, cy: 162,
+      title: 'Reifen',
+      subtitle: 'Alle 4 Reifen prüfen vor Fahrtantritt',
+      color: '#22c55e',
+      checks: [
+        { label: 'Profiltiefe mind. 1,6 mm (TWI-Anzeige)' },
+        { label: 'Luftdruck korrekt (laut Betriebsanleitung)' },
+        { label: 'Keine sichtbare Beschädigung (Nägel, Scherben)' },
+        { label: 'Reifenart passt zur Saison (Sommer / Winter / Allwetter)' },
+      ],
+      info: 'Reifen sind das einzige Verbindungsstück zwischen Fahrzeug und Fahrbahn. Schlechte Reifen verlängern den Bremsweg erheblich und können zu Kontrollverlust führen.',
+      tire: true,
+    },
+  ],
   Innenraum: [],
 }
 
@@ -470,6 +487,369 @@ function TeslaRearSVG({
   )
 }
 
+/* ── Tesla Seite SVG ────────────────────────────────────── */
+function TeslaSideSVG({
+  parts, selectedId, onSelect,
+}: {
+  parts: CarPart[]; selectedId: string | null; onSelect: (id: string) => void
+}) {
+  return (
+    <svg viewBox="0 0 400 210" style={{ width: '100%', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="sideBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#2a2a2e" />
+          <stop offset="60%" stopColor="#1a1a1c" />
+          <stop offset="100%" stopColor="#111113" />
+        </linearGradient>
+        <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0d1f2d" />
+          <stop offset="100%" stopColor="#071018" />
+        </linearGradient>
+        <radialGradient id="wheelGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#2a2a2e" />
+          <stop offset="60%" stopColor="#111" />
+          <stop offset="100%" stopColor="#050505" />
+        </radialGradient>
+        <radialGradient id="tireGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1a1a1a" />
+          <stop offset="100%" stopColor="#080808" />
+        </radialGradient>
+        <filter id="shadowBlur">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+
+      {/* ── Bodenschatten ── */}
+      <ellipse cx="200" cy="198" rx="175" ry="8" fill="rgba(0,0,0,0.5)" />
+
+      {/* ── Karosserie ── */}
+      {/* Unterboden */}
+      <rect x="48" y="148" width="306" height="24" rx="4" fill="#0d0d0f" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+      {/* Hauptkörper */}
+      <path
+        d="M 58 148 L 58 92 Q 58 70 78 62 L 128 46 Q 158 38 188 37 L 240 37 Q 268 37 284 44 L 318 68 Q 344 82 348 108 L 348 148 Z"
+        fill="url(#sideBodyGrad)"
+        stroke="rgba(255,255,255,0.09)"
+        strokeWidth="1.5"
+      />
+      {/* Seitenlinie (Charakterlinie) */}
+      <path
+        d="M 62 118 Q 150 110 220 108 Q 280 108 346 116"
+        fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1"
+      />
+      {/* Türspalt vorne */}
+      <line x1="182" y1="60" x2="178" y2="148" stroke="rgba(0,0,0,0.55)" strokeWidth="1.5" />
+      <line x1="183" y1="60" x2="179" y2="148" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      {/* Türspalt hinten */}
+      <line x1="268" y1="57" x2="272" y2="148" stroke="rgba(0,0,0,0.55)" strokeWidth="1.5" />
+      <line x1="269" y1="57" x2="273" y2="148" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+
+      {/* ── Windschutzscheibe ── */}
+      <path
+        d="M 128 46 Q 158 38 188 37 L 182 60 Q 158 54 130 62 Z"
+        fill="url(#glassGrad)"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth="1"
+      />
+      {/* Reflex Windschutzscheibe */}
+      <path
+        d="M 134 50 L 182 40 L 180 47 L 136 56 Z"
+        fill="rgba(255,255,255,0.04)"
+      />
+
+      {/* ── Heckscheibe ── */}
+      <path
+        d="M 240 37 Q 268 37 284 44 L 318 68 Q 300 62 268 58 Z"
+        fill="url(#glassGrad)"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth="1"
+      />
+      {/* Reflex Heckscheibe */}
+      <path
+        d="M 248 40 L 280 46 L 314 66 L 306 64 L 272 48 L 246 44 Z"
+        fill="rgba(255,255,255,0.035)"
+      />
+
+      {/* ── Dach (Glasdach) ── */}
+      <path
+        d="M 188 37 L 240 37 L 268 58 L 182 60 Z"
+        fill="#08121c"
+        stroke="rgba(255,255,255,0.07)"
+        strokeWidth="0.75"
+      />
+      {/* Glasdach-Reflex */}
+      <path
+        d="M 195 39 L 235 39 L 255 52 L 200 54 Z"
+        fill="rgba(255,255,255,0.025)"
+      />
+
+      {/* ── A-Säule ── */}
+      <line x1="128" y1="46" x2="130" y2="62" stroke="rgba(255,255,255,0.12)" strokeWidth="2.5" />
+
+      {/* ── Außenspiegel ── */}
+      <path
+        d="M 156 72 L 170 68 L 172 75 L 158 78 Z"
+        fill="#1a1a1c" stroke="rgba(255,255,255,0.08)" strokeWidth="1"
+      />
+
+      {/* ── Türgriffe ── */}
+      {/* Vorderer Türgriff */}
+      <rect x="145" y="97" width="22" height="5" rx="2.5" fill="#111" stroke="rgba(255,255,255,0.12)" strokeWidth="0.75" />
+      {/* Hinterer Türgriff */}
+      <rect x="233" y="97" width="22" height="5" rx="2.5" fill="#111" stroke="rgba(255,255,255,0.12)" strokeWidth="0.75" />
+
+      {/* ── Rücklicht (Seite) ── */}
+      <rect x="338" y="110" width="10" height="30" rx="2" fill="#2a0000" stroke="rgba(220,38,38,0.6)" strokeWidth="1" />
+      <rect x="340" y="113" width="6" height="24" rx="1.5" fill="rgba(220,38,38,0.35)" />
+
+      {/* ── Scheinwerfer (Seite) ── */}
+      <path d="M 56 90 Q 48 100 48 110 L 62 108 Q 60 100 62 92 Z"
+        fill="#081828" stroke="rgba(147,197,253,0.4)" strokeWidth="1" />
+
+      {/* ── Vorderes Rad ── */}
+      <circle cx="100" cy="172" r="30" fill="url(#tireGrad)" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+      {/* Reifenprofil-Ring */}
+      <circle cx="100" cy="172" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
+      {/* Felge */}
+      <circle cx="100" cy="172" r="20" fill="url(#wheelGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+      {/* Felgenspeichen */}
+      {[0,36,72,108,144,180,216,252,288,324].map(deg => {
+        const rad = (deg * Math.PI) / 180
+        return <line key={deg}
+          x1={100 + 8 * Math.cos(rad)} y1={172 + 8 * Math.sin(rad)}
+          x2={100 + 18 * Math.cos(rad)} y2={172 + 18 * Math.sin(rad)}
+          stroke="rgba(255,255,255,0.18)" strokeWidth="2.5" strokeLinecap="round"
+        />
+      })}
+      {/* Nabenkappe */}
+      <circle cx="100" cy="172" r="8" fill="#0f0f11" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+      <circle cx="100" cy="172" r="4" fill="#1a1a1c" />
+
+      {/* ── Hinteres Rad ── */}
+      <circle cx="308" cy="172" r="30" fill="url(#tireGrad)" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+      <circle cx="308" cy="172" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
+      <circle cx="308" cy="172" r="20" fill="url(#wheelGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+      {[0,36,72,108,144,180,216,252,288,324].map(deg => {
+        const rad = (deg * Math.PI) / 180
+        return <line key={deg}
+          x1={308 + 8 * Math.cos(rad)} y1={172 + 8 * Math.sin(rad)}
+          x2={308 + 18 * Math.cos(rad)} y2={172 + 18 * Math.sin(rad)}
+          stroke="rgba(255,255,255,0.18)" strokeWidth="2.5" strokeLinecap="round"
+        />
+      })}
+      <circle cx="308" cy="172" r="8" fill="#0f0f11" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+      <circle cx="308" cy="172" r="4" fill="#1a1a1c" />
+
+      {/* ── Interaktive Hotspots ── */}
+      {parts.map((p, i) => (
+        <Hotspot
+          key={p.id}
+          cx={p.cx} cy={p.cy}
+          color={p.color}
+          selected={selectedId === p.id}
+          onClick={() => onSelect(p.id)}
+          index={i}
+        />
+      ))}
+    </svg>
+  )
+}
+
+/* ── Reifen Info-Panel ──────────────────────────────────── */
+function TireInfoPanel() {
+  return (
+    <div style={{ margin: '0.85rem 0 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+      <p style={{
+        margin: '0 0 0.2rem', fontSize: '0.6rem', fontWeight: 800,
+        letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22c55e',
+      }}>Reifen-Check im Detail</p>
+
+      {/* ── 1. Profiltiefe ── */}
+      <div style={{
+        padding: '0.75rem 0.9rem', borderRadius: '0.75rem',
+        background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.22)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+          <span style={{
+            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.65rem', color: '#22c55e', fontWeight: 900,
+          }}>1</span>
+          <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
+            Profiltiefe — mind. <span style={{ color: '#22c55e' }}>1,6 mm</span>
+          </p>
+        </div>
+        {/* TWI Diagramm */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.75rem',
+          padding: '0.5rem 0.65rem', borderRadius: '0.6rem',
+          background: 'rgba(0,0,0,0.25)', marginBottom: '0.45rem',
+        }}>
+          {/* Mini-SVG Reifenprofil */}
+          <svg viewBox="0 0 60 50" width="60" height="50" style={{ flexShrink: 0 }}>
+            {/* Reifen-Querschnitt */}
+            <rect x="2" y="2" width="56" height="46" rx="4" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+            {/* Profilrillen */}
+            <rect x="8"  y="2" width="7" height="32" rx="1" fill="#2a2a2a" />
+            <rect x="20" y="2" width="7" height="32" rx="1" fill="#2a2a2a" />
+            <rect x="32" y="2" width="7" height="32" rx="1" fill="#2a2a2a" />
+            <rect x="44" y="2" width="7" height="32" rx="1" fill="#2a2a2a" />
+            {/* Lauffläche (oben) */}
+            <rect x="2" y="34" width="56" height="10" rx="0" fill="#111" />
+            {/* TWI-Indikator in einer Rille */}
+            <rect x="20" y="26" width="7" height="6" rx="1" fill="#22c55e" opacity="0.9" />
+            {/* Pfeil / TWI-Markierung am Rand */}
+            <text x="3" y="22" fontSize="5" fill="#22c55e" fontWeight="900">TWI</text>
+            {/* Maßpfeil */}
+            <line x1="15" y1="2" x2="15" y2="34" stroke="rgba(34,197,94,0.6)" strokeWidth="0.75" strokeDasharray="2,2" />
+            <text x="2" y="20" fontSize="4.5" fill="rgba(34,197,94,0.8)" transform="rotate(-90,8,20)">1,6mm</text>
+          </svg>
+          <div>
+            <p style={{ margin: '0 0 3px', fontSize: '0.68rem', fontWeight: 700, color: 'var(--text)' }}>
+              TWI — Verschleißanzeige nutzen
+            </p>
+            <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.55 }}>
+              Am Reifenrand einen kleinen <strong style={{ color: '#22c55e' }}>Pfeil ▸ oder „TWI"</strong> suchen. Genau dort liegt im Profil ein 1,6 mm hoher Steg. Ragt der Steg über die Lauffläche hinaus → Reifen muss getauscht werden.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2. Luftdruck ── */}
+      <div style={{
+        padding: '0.75rem 0.9rem', borderRadius: '0.75rem',
+        background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.22)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+          <span style={{
+            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.65rem', color: '#60a5fa', fontWeight: 900,
+          }}>2</span>
+          <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
+            Luftdruck — laut Herstellerangabe
+          </p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          {[
+            { icon: '📖', text: 'Betriebsanleitung des Fahrzeugs' },
+            { icon: '🚪', text: 'Sticker an der Fahrertür (Türrahmen innen)' },
+            { icon: '⛽', text: 'Sticker am Tankdeckel' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '0.4rem 0.6rem', borderRadius: '0.5rem',
+              background: 'rgba(59,130,246,0.05)',
+            }}>
+              <span style={{ fontSize: '0.85rem', flexShrink: 0 }}>{item.icon}</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{item.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 3. Beschädigung ── */}
+      <div style={{
+        padding: '0.75rem 0.9rem', borderRadius: '0.75rem',
+        background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.22)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+          <span style={{
+            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.65rem', color: '#f87171', fontWeight: 900,
+          }}>3</span>
+          <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
+            Beschädigungen — Sichtprüfung
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {[
+            { icon: '🔩', label: 'Nägel', desc: 'Im Profil eingedrungen → sofort tauschen' },
+            { icon: '🪟', label: 'Glasscherben', desc: 'Im Profil oder in der Flanke' },
+          ].map(item => (
+            <div key={item.label} style={{
+              flex: 1, minWidth: '120px',
+              padding: '0.5rem 0.65rem', borderRadius: '0.6rem',
+              background: 'rgba(239,68,68,0.07)',
+              display: 'flex', alignItems: 'flex-start', gap: '7px',
+            }}>
+              <span style={{ fontSize: '1rem', flexShrink: 0 }}>{item.icon}</span>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 800, color: '#fca5a5' }}>{item.label}</p>
+                <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--text-dim)', lineHeight: 1.4 }}>{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 4. Reifenart ── */}
+      <div style={{
+        padding: '0.75rem 0.9rem', borderRadius: '0.75rem',
+        background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.22)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+          <span style={{
+            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(251,191,36,0.2)', border: '1px solid rgba(251,191,36,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.65rem', color: '#fbbf24', fontWeight: 900,
+          }}>4</span>
+          <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)' }}>
+            Reifenart — Saison beachten
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Sommerreifen', icon: '☀️', desc: 'Kein Symbol am Reifen (Standard)', color: 'rgba(251,191,36,0.12)' },
+            { label: 'Winterreifen', icon: '❄️', desc: '3PMSF-Symbol: Berg mit Schneeflocke', color: 'rgba(147,197,253,0.1)' },
+            { label: 'Allwetter', icon: '🌦️', desc: 'Ebenfalls 3PMSF-Symbol, ganzjährig', color: 'rgba(34,197,94,0.08)' },
+          ].map(item => (
+            <div key={item.label} style={{
+              flex: 1, minWidth: '100px',
+              padding: '0.5rem 0.65rem', borderRadius: '0.6rem',
+              background: item.color,
+              display: 'flex', flexDirection: 'column', gap: '3px',
+            }}>
+              <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+              <p style={{ margin: 0, fontSize: '0.68rem', fontWeight: 800, color: 'var(--text)' }}>{item.label}</p>
+              <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--text-dim)', lineHeight: 1.4 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+        {/* 3PMSF Symbol Erklärung */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.65rem',
+          marginTop: '0.55rem', padding: '0.5rem 0.7rem', borderRadius: '0.55rem',
+          background: 'rgba(147,197,253,0.07)', border: '1px solid rgba(147,197,253,0.2)',
+        }}>
+          {/* Mini 3PMSF Symbol */}
+          <svg viewBox="0 0 32 36" width="28" height="32" style={{ flexShrink: 0 }}>
+            {/* Berg */}
+            <polygon points="16,2 30,30 2,30" fill="none" stroke="#93c5fd" strokeWidth="2" strokeLinejoin="round" />
+            {/* 3 Bergspitzen-Linien */}
+            <line x1="8" y1="20" x2="16" y2="8" stroke="#93c5fd" strokeWidth="1.5" />
+            <line x1="24" y1="20" x2="16" y2="8" stroke="#93c5fd" strokeWidth="1.5" />
+            {/* Schneeflocke */}
+            <text x="16" y="26" textAnchor="middle" fontSize="10" fill="#93c5fd" fontWeight="900">*</text>
+          </svg>
+          <div>
+            <p style={{ margin: 0, fontSize: '0.68rem', fontWeight: 800, color: '#93c5fd' }}>3PMSF-Symbol</p>
+            <p style={{ margin: 0, fontSize: '0.6rem', color: 'var(--text-dim)', lineHeight: 1.45 }}>
+              Steht für „Three Peak Mountain Snow Flake" — zertifiziert für Winterbetrieb. Am Reifen auf der Flanke eingestanzt.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Hauptkomponente ────────────────────────────────────── */
 export default function TeslaInspect() {
   const [activeView, setActiveView] = useState<ViewName>('Heck')
@@ -592,7 +972,15 @@ export default function TeslaInspect() {
           />
         )}
 
-        {activeView !== 'Heck' && (
+        {activeView === 'Seite' && (
+          <TeslaSideSVG
+            parts={parts}
+            selectedId={selectedId}
+            onSelect={togglePart}
+          />
+        )}
+
+        {activeView !== 'Heck' && activeView !== 'Seite' && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: '180px', flexDirection: 'column', gap: '0.5rem',
@@ -693,6 +1081,9 @@ export default function TeslaInspect() {
 
           {/* TÜV-Plaketten-Diagram */}
           {selected.sticker && <TuvStickerDiagram />}
+
+          {/* Reifen-Infopanel */}
+          {selected.tire && <TireInfoPanel />}
 
           {/* Erklärungstext */}
           <div style={{
