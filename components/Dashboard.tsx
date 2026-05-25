@@ -321,7 +321,16 @@ export default function Dashboard() {
                   Statistik
                 </Link>
                 <button
-                  onClick={async () => { await signOut(); window.location.href = '/' }}
+                  onClick={async () => {
+                    try { await signOut() } catch {}
+                    // Supabase-Session manuell aus localStorage entfernen (Failsafe)
+                    try {
+                      Object.keys(localStorage).forEach(k => {
+                        if (k.startsWith('sb-') || k.startsWith('supabase')) localStorage.removeItem(k)
+                      })
+                    } catch {}
+                    window.location.replace('/')
+                  }}
                   style={{
                     display: 'inline-flex', alignItems: 'center',
                     padding: '0.6rem 1rem', borderRadius: '100px',
