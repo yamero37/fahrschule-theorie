@@ -5,7 +5,8 @@ import Link from 'next/link'
 /* ─── Types ────────────────────────────────────────────────── */
 type P1Phase   = 'scene' | 'approaching' | 'stopped' | 'speaking' | 'ready'
 type MainPhase = 'phase1' | 'phase2'
-type P2Phase   = 'intro' | 'intro_typing' | 'question' | 'feedback' | 'complete'
+type P2Phase   = 'intro_seq' | 'question' | 'feedback' | 'complete'
+type IntroStep = 'speaking' | 'name_input' | 'id_check' | 'ready_input'
 type InputMode = 'text' | 'voice'
 type CarPos    = 'front' | 'side' | 'rear'
 
@@ -187,8 +188,12 @@ const ALL_QUESTIONS: Question[] = [
 const QUESTIONS_PER_ROUND = 3
 
 /* ─── Texts ────────────────────────────────────────────────── */
-const GREETING = 'Hallo, ich heiße Tars und ich bin dein heutiger Prüfer.'
-const P2_INTRO  = 'Sehr gut! Dann gehen wir jetzt zum Fahrzeug. Ich werde dir einige technische Fragen stellen.'
+const INTRO_GREETING = 'Guten Tag! Mein Name ist Tars und ich bin Ihr heutiger Fahrprüfer. Darf ich fragen, wie Ihr Name ist?'
+const INTRO_ID       = (name: string) => `Schön Sie kennenzulernen, ${name}. Dann brauche ich bitte einmal Ihren Ausweis.`
+const INTRO_ID_OK    = 'Alles in Ordnung, vielen Dank.'
+const INTRO_READY    = 'Na, ein bisschen aufgeregt? Das ist ganz normal. Sind Sie bereit für die Prüfung?'
+const INTRO_YES      = 'Sehr gut! Na gut, dann starten wir mal mit den technischen Fragen.'
+const INTRO_NO       = 'Kein Problem, kurz Luft holen. Na gut, dann starten wir jetzt trotzdem mit den technischen Fragen.'
 
 /* ─── Static stars ─────────────────────────────────────────── */
 const STARS = [
@@ -241,7 +246,7 @@ export default function SimulationClient() {
   const [mainPhase, setMainPhase] = useState<MainPhase>('phase1')
 
   /* ── Phase 2 state ── */
-  const [p2Phase,     setP2Phase]     = useState<P2Phase>('intro')
+  const [p2Phase,     setP2Phase]     = useState<P2Phase>('intro_seq')
   const [p2Typed,     setP2Typed]     = useState(0)
   const [questions,   setQuestions]   = useState<Question[]>([])
   const [currentQ,    setCurrentQ]    = useState(0)
@@ -256,8 +261,12 @@ export default function SimulationClient() {
   const [ttsOn,       setTtsOn]       = useState(true)
   const [voiceError,  setVoiceError]  = useState('')
   const [started,     setStarted]     = useState(false)
+  const [introStep,   setIntroStep]   = useState<IntroStep>('speaking')
+  const [userName,    setUserName]    = useState('')
+  const [introInput,  setIntroInput]  = useState('')
 
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef  = useRef<any>(null)
+  const inputResolveRef = useRef<((v: string) => void) | null>(null)
   const panelRef       = useRef<HTMLDivElement>(null)
   const audioRef       = useRef<HTMLAudioElement | null>(null)
 
@@ -339,17 +348,6 @@ export default function SimulationClient() {
     return () => clearTimeout(t)
   }, [phase, typed, ttsOn])
 
-  /* ─── Phase 2 intro typewriter ────────────────────────── */
-  useEffect(() => {
-    if (mainPhase !== 'phase2' || p2Phase !== 'intro_typing') return
-    if (ttsOn) { setP2Phase('intro'); return }
-    if (p2Typed >= P2_INTRO.length) { setP2Phase('intro'); return }
-    const ch = P2_INTRO[p2Typed]
-    const delay = ch === '.' ? 300 : ch === ',' ? 150 : 38
-    const t = setTimeout(() => setP2Typed(i => i + 1), delay)
-    return () => clearTimeout(t)
-  }, [mainPhase, p2Phase, p2Typed, ttsOn])
-
   /* ─── Phase 2 feedback typewriter ────────────────────── */
   useEffect(() => {
     if (p2Phase !== 'feedback' || !aiFeedback || loadingFb) return
@@ -368,32 +366,70 @@ export default function SimulationClient() {
     }
   }, [currentQ, p2Phase])
 
+  /* ─── Intro-Input Helpers ──────────────────────────────── */
+  const waitForIntroInput = useCallback((): Promise<string> =>
+    new Promise(resolve => { inputResolveRef.current = resolve }), [])
+
+  const submitIntroInput = useCallback((value: string) => {
+    if (!value.trim() || !inputResolveRef.current) return
+    inputResolveRef.current(value.trim())
+    inputResolveRef.current = null
+    setIntroInput('')
+    setVoiceError('')
+  }, [])
+
+  /* ─── Voice recognition für Intro ──────────────────────── */
+  useEffect(() => {
+    if (p2Phase !== 'intro_seq') return
+    if (introStep !== 'name_input' && introStep !== 'ready_input') return
+    if (inputMode !== 'voice') return
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) { setVoiceError('Spracherkennung nicht verfügbar.'); return }
+    const rec = new SR()
+    rec.lang = 'de-DE'; rec.interimResults = false; rec.maxAlternatives = 1
+    recognitionRef.current = rec
+    rec.onstart  = () => setIsListening(true)
+    rec.onend    = () => setIsListening(false)
+    rec.onerror  = (e: any) => { setIsListening(false); setVoiceError(e.error === 'not-allowed' ? 'Mikrofon-Zugriff verweigert.' : 'Fehler bei der Aufnahme.') }
+    rec.onresult = (e: any) => { submitIntroInput(e.results[0][0].transcript) }
+    const t = setTimeout(() => rec.start(), 400)
+    return () => { clearTimeout(t); try { rec.stop() } catch {} }
+  }, [p2Phase, introStep, inputMode, submitIntroInput])
+
   /* ─── Start Simulation (Start-Button) ─────────────────── */
   const handleStart = async () => {
     setStarted(true)
-    if (ttsOn) {
-      await new Promise<void>(r => setTimeout(r, 600))
-      await speakText(GREETING)
-      setMainPhase('phase2')
-      setP2Phase('intro_typing')
-      await speakText(P2_INTRO)   // warten bis Intro fertig gesprochen
-      startQuestions()             // dann automatisch Fragen starten
-    } else {
-      setMainPhase('phase2')
-      setP2Phase('intro_typing')
-      setP2Typed(0)
-    }
-  }
-
-  /* ─── Start Phase 2 ────────────────────────────────────── */
-  const startPhase2 = async () => {
-    // Erst GREETING vorlesen (während Phase-1-Panel noch sichtbar ist)
-    await speakText(GREETING)
-    // Dann Phase 2 einblenden + P2_INTRO sprechen
     setMainPhase('phase2')
-    setP2Phase('intro_typing')
-    setP2Typed(0)
-    speakText(P2_INTRO)
+    setP2Phase('intro_seq')
+    setIntroStep('speaking')
+
+    await new Promise<void>(r => setTimeout(r, 500))
+
+    // 1. Vorstellung + Name-Frage
+    await speakText(INTRO_GREETING)
+    setIntroStep('name_input')
+    const name = await waitForIntroInput()
+    setUserName(name)
+
+    // 2. Ausweis
+    setIntroStep('speaking')
+    await speakText(INTRO_ID(name))
+    setIntroStep('id_check')
+    await new Promise<void>(r => setTimeout(r, 2800))
+    await speakText(INTRO_ID_OK)
+
+    // 3. Bereit-Frage
+    setIntroStep('speaking')
+    await speakText(INTRO_READY)
+    setIntroStep('ready_input')
+    const readyAnswer = await waitForIntroInput()
+
+    // 4. Reaktion + Start
+    setIntroStep('speaking')
+    const isReady = /^(ja|yes|klar|bereit|los|okay|ok|natürlich|sicher|auf jeden)/i.test(readyAnswer.trim())
+    await speakText(isReady ? INTRO_YES : INTRO_NO)
+
+    startQuestions()
   }
 
   /* ─── Start questions ──────────────────────────────────── */
@@ -507,9 +543,6 @@ export default function SimulationClient() {
 
   /* ─── Restart ──────────────────────────────────────────── */
   const restart = () => {
-    setMainPhase('phase2')
-    setP2Phase('intro_typing')
-    setP2Typed(0)
     setCurrentQ(0)
     setScore(0)
     setAnswers([])
@@ -518,6 +551,7 @@ export default function SimulationClient() {
     setLoadingFb(false)
     setUserInput('')
     setVoiceError('')
+    startQuestions()
   }
 
   /* ── Derived values ── */
@@ -744,36 +778,30 @@ export default function SimulationClient() {
       </svg>
 
       {/* ═══ TARS CHARACTER ═══ */}
-      {mainPhase === 'phase1' && (
+      {mainPhase === 'phase2' && p2Phase === 'intro_seq' && (
         <div style={p1TarsStyle}>
-          <div style={{ animation: (phase==='stopped'||phase==='speaking'||phase==='ready') ? 'tarsIdle 3s ease-in-out infinite' : 'none' }}>
+          <div style={{ animation: 'tarsIdle 3s ease-in-out infinite' }}>
             <TarsCharacter />
           </div>
         </div>
       )}
-      {mainPhase === 'phase2' && p2Phase !== 'complete' && q && (
+      {mainPhase === 'phase2' && (p2Phase === 'question' || p2Phase === 'feedback') && q && (
         <div style={tarsP2Style(q.pos)}>
           <div style={{ animation: 'tarsIdle 3s ease-in-out infinite' }}>
             <TarsCharacter />
           </div>
         </div>
       )}
-      {mainPhase === 'phase2' && (p2Phase === 'intro' || p2Phase === 'intro_typing') && (
-        <div style={p1TarsStyle}>
-          <div style={{ animation: 'tarsIdle 3s ease-in-out infinite' }}>
-            <TarsCharacter />
-          </div>
-        </div>
-      )}
 
-      {/* ═══ PHASE 1 DIALOGUE ═══ */}
-      {mainPhase === 'phase1' && showDialogue && (
+      {/* ═══ INTRO SEQUENCE PANEL ═══ */}
+      {mainPhase === 'phase2' && p2Phase === 'intro_seq' && (
         <div style={{
           position:'absolute', bottom:0, left:0, right:0, zIndex:100,
           background:'linear-gradient(to top,rgba(4,10,22,0.99) 0%,rgba(4,10,22,0.97) 65%,transparent 100%)',
           padding:'1.25rem 1.25rem 2.75rem',
           animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
         }}>
+          {/* Tars Header */}
           <div style={{ display:'flex', alignItems:'center', gap:'0.7rem', marginBottom:'0.8rem' }}>
             <div style={{
               width:'42px', height:'42px', borderRadius:'50%', flexShrink:0,
@@ -787,91 +815,122 @@ export default function SimulationClient() {
                 TÜV · Amtlich bestellter Fahrprüfer
               </p>
             </div>
-            {phase === 'speaking' && (
+            {introStep === 'speaking' && (
               <div style={{ marginLeft:'auto', display:'flex', gap:'4px', alignItems:'center' }}>
                 {[0,1,2].map(i => (
-                  <div key={i} style={{
-                    width:'6px', height:'6px', borderRadius:'50%', background:'#1464be',
-                    animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite`,
-                  }}/>
+                  <div key={i} style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#1464be',
+                    animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite` }}/>
                 ))}
               </div>
             )}
           </div>
-          <div style={{
-            background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
-            border:'1px solid rgba(20,100,190,0.25)',
-            padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
-          }}>
-            <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
-              {ttsOn ? GREETING : GREETING.slice(0, typed)}
-              {phase === 'speaking' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>}
-            </p>
-          </div>
-          {phase === 'ready' && !ttsOn && (
-            <button onClick={startPhase2} style={{
-              width:'100%', padding:'0.9rem',
-              background:'linear-gradient(135deg,#1055b0,#082856)',
-              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
-              color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
-              boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
-              animation:'simFadeIn 0.5s ease', letterSpacing:'0.02em',
-            }}>Weiter →</button>
-          )}
-        </div>
-      )}
 
-      {/* ═══ PHASE 2 INTRO ═══ */}
-      {mainPhase === 'phase2' && (p2Phase === 'intro' || p2Phase === 'intro_typing') && (
-        <div style={{
-          position:'absolute', bottom:0, left:0, right:0, zIndex:100,
-          background:'linear-gradient(to top,rgba(4,10,22,0.99) 0%,rgba(4,10,22,0.97) 65%,transparent 100%)',
-          padding:'1.25rem 1.25rem 2.75rem',
-          animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
-        }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'0.7rem', marginBottom:'0.8rem' }}>
+          {/* Tars spricht – Punkte */}
+          {introStep === 'speaking' && (
             <div style={{
-              width:'42px', height:'42px', borderRadius:'50%', flexShrink:0,
-              background:'linear-gradient(135deg,#1464be 0%,#082856 100%)',
-              border:'2px solid rgba(96,180,255,0.5)',
-              display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem',
-            }}>🎓</div>
-            <div>
-              <p style={{ margin:0, fontSize:'0.78rem', fontWeight:900, color:'#60b4ff' }}>Tars</p>
-              <p style={{ margin:0, fontSize:'0.58rem', color:'rgba(255,255,255,0.38)' }}>
-                Fahrzeug-Rundgang
-              </p>
+              background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
+              border:'1px solid rgba(20,100,190,0.25)',
+              padding:'1.1rem', minHeight:'60px',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:'8px',
+            }}>
+              {[0,1,2].map(i => (
+                <div key={i} style={{ width:'9px', height:'9px', borderRadius:'50%', background:'#1464be',
+                  animation:`tarsDot 1.2s ${i*0.25}s ease-in-out infinite` }}/>
+              ))}
             </div>
-            {p2Phase === 'intro_typing' && (
-              <div style={{ marginLeft:'auto', display:'flex', gap:'4px', alignItems:'center' }}>
+          )}
+
+          {/* Name-Eingabe */}
+          {introStep === 'name_input' && (
+            <>
+              <div style={{ background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
+                border:'1px solid rgba(20,100,190,0.25)', padding:'0.85rem 1rem', marginBottom:'0.7rem' }}>
+                <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.6 }}>
+                  Wie ist Ihr Name?
+                </p>
+              </div>
+              {inputMode === 'text' ? (
+                <div style={{ display:'flex', gap:'0.5rem' }}>
+                  <input autoFocus value={introInput}
+                    onChange={e => setIntroInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && submitIntroInput(introInput)}
+                    placeholder="Ihr Name …"
+                    style={{ flex:1, padding:'0.7rem 0.9rem',
+                      background:'rgba(10,24,50,0.7)', border:'1px solid rgba(20,100,190,0.35)',
+                      borderRadius:'0.65rem', color:'white', fontSize:'0.92rem', outline:'none' }}
+                  />
+                  <button onClick={() => submitIntroInput(introInput)} disabled={!introInput.trim()}
+                    style={{ padding:'0.7rem 1.1rem', borderRadius:'0.65rem',
+                      background: introInput.trim() ? 'linear-gradient(135deg,#1055b0,#082856)' : 'rgba(255,255,255,0.05)',
+                      border:'1px solid rgba(96,180,255,0.35)', color:'white',
+                      fontWeight:800, fontSize:'1rem', cursor: introInput.trim() ? 'pointer' : 'default',
+                      opacity: introInput.trim() ? 1 : 0.4 }}>→</button>
+                </div>
+              ) : (
+                <div style={{ padding:'0.9rem', borderRadius:'0.75rem', textAlign:'center',
+                  background: isListening ? 'rgba(239,68,68,0.12)' : 'rgba(20,100,190,0.12)',
+                  border: `1px solid ${isListening ? 'rgba(239,68,68,0.35)' : 'rgba(96,180,255,0.25)'}`,
+                  color: isListening ? '#f87171' : '#60b4ff', fontSize:'0.88rem', fontWeight:600,
+                  animation: isListening ? 'micPulse 1.2s ease-in-out infinite' : 'none' }}>
+                  {isListening ? '🎤 Ich höre zu …' : '🎤 Warte auf Mikrofon …'}
+                </div>
+              )}
+              {voiceError && <p style={{ margin:'0.4rem 0 0', fontSize:'0.72rem', color:'#f87171', textAlign:'center' }}>{voiceError}</p>}
+            </>
+          )}
+
+          {/* Ausweis-Check */}
+          {introStep === 'id_check' && (
+            <div style={{ background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
+              border:'1px solid rgba(20,100,190,0.25)', padding:'1.5rem 1rem', textAlign:'center' }}>
+              <div style={{ fontSize:'2rem', marginBottom:'0.5rem' }}>🪪</div>
+              <p style={{ margin:'0 0 0.7rem', fontSize:'0.88rem', color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>
+                Tars überprüft Ihren Ausweis …
+              </p>
+              <div style={{ display:'flex', gap:'5px', justifyContent:'center' }}>
                 {[0,1,2].map(i => (
-                  <div key={i} style={{
-                    width:'6px', height:'6px', borderRadius:'50%', background:'#1464be',
-                    animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite`,
-                  }}/>
+                  <div key={i} style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#1464be',
+                    animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite` }}/>
                 ))}
               </div>
-            )}
-          </div>
-          <div style={{
-            background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
-            border:'1px solid rgba(20,100,190,0.25)',
-            padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
-          }}>
-            <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
-              {ttsOn ? P2_INTRO : P2_INTRO.slice(0, p2Typed)}
-              {p2Phase === 'intro_typing' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
-            </p>
-          </div>
-          {p2Phase === 'intro' && p2Typed >= P2_INTRO.length && !ttsOn && (
-            <button onClick={startQuestions} style={{
-              width:'100%', padding:'0.9rem',
-              background:'linear-gradient(135deg,#1055b0,#082856)',
-              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
-              color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
-              boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
-              animation:'simFadeIn 0.5s ease',
-            }}>Los geht&apos;s →</button>
+            </div>
+          )}
+
+          {/* Bereit-Frage */}
+          {introStep === 'ready_input' && (
+            <>
+              <div style={{ background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
+                border:'1px solid rgba(20,100,190,0.25)', padding:'0.85rem 1rem', marginBottom:'0.7rem' }}>
+                <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.6 }}>
+                  Sind Sie bereit für die Prüfung?
+                </p>
+              </div>
+              {inputMode === 'text' ? (
+                <div style={{ display:'flex', gap:'0.6rem' }}>
+                  <button onClick={() => submitIntroInput('Ja')} style={{
+                    flex:1, padding:'0.85rem',
+                    background:'linear-gradient(135deg,rgba(34,197,94,0.22),rgba(34,197,94,0.08))',
+                    border:'1px solid rgba(34,197,94,0.4)', borderRadius:'100px',
+                    color:'#4ade80', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
+                  }}>✅ Ja, bereit!</button>
+                  <button onClick={() => submitIntroInput('Nein')} style={{
+                    flex:1, padding:'0.85rem',
+                    background:'rgba(255,255,255,0.05)',
+                    border:'1px solid rgba(255,255,255,0.15)', borderRadius:'100px',
+                    color:'rgba(255,255,255,0.5)', fontWeight:700, fontSize:'0.92rem', cursor:'pointer',
+                  }}>😅 Nicht ganz</button>
+                </div>
+              ) : (
+                <div style={{ padding:'0.9rem', borderRadius:'0.75rem', textAlign:'center',
+                  background: isListening ? 'rgba(239,68,68,0.12)' : 'rgba(20,100,190,0.12)',
+                  border: `1px solid ${isListening ? 'rgba(239,68,68,0.35)' : 'rgba(96,180,255,0.25)'}`,
+                  color: isListening ? '#f87171' : '#60b4ff', fontSize:'0.88rem', fontWeight:600,
+                  animation: isListening ? 'micPulse 1.2s ease-in-out infinite' : 'none' }}>
+                  {isListening ? '🎤 Antworte mit Ja oder Nein …' : '🎤 Warte auf Antwort …'}
+                </div>
+              )}
+              {voiceError && <p style={{ margin:'0.4rem 0 0', fontSize:'0.72rem', color:'#f87171', textAlign:'center' }}>{voiceError}</p>}
+            </>
           )}
         </div>
       )}
