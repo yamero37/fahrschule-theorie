@@ -341,7 +341,7 @@ export default function SimulationClient() {
   }, [phase])
   useEffect(() => {
     if (phase !== 'speaking') return
-    if (typed >= GREETING.length) { setPhase('ready'); speakText(GREETING); return }
+    if (typed >= GREETING.length) { setPhase('ready'); return }
     const ch = GREETING[typed]
     const delay = ch === '.' ? 320 : ch === ',' ? 160 : 42
     const t = setTimeout(() => setTyped(i => i + 1), delay)
@@ -351,7 +351,6 @@ export default function SimulationClient() {
   /* ─── Phase 2 intro typewriter ────────────────────────── */
   useEffect(() => {
     if (mainPhase !== 'phase2' || p2Phase !== 'intro_typing') return
-    if (p2Typed === 0) speakText(P2_INTRO)
     if (p2Typed >= P2_INTRO.length) { setP2Phase('intro'); return }
     const ch = P2_INTRO[p2Typed]
     const delay = ch === '.' ? 300 : ch === ',' ? 150 : 38
@@ -378,6 +377,8 @@ export default function SimulationClient() {
 
   /* ─── Start Phase 2 ────────────────────────────────────── */
   const startPhase2 = () => {
+    // Begrüßung + Intro-Satz erst nach User-Klick abspielen (kein Autoplay-Block)
+    speakText(GREETING + ' ' + P2_INTRO)
     setMainPhase('phase2')
     setP2Phase('intro_typing')
     setP2Typed(0)
