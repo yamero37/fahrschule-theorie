@@ -367,11 +367,14 @@ export default function SimulationClient() {
   }, [currentQ, p2Phase])
 
   /* ─── Start Phase 2 ────────────────────────────────────── */
-  const startPhase2 = () => {
-    speakText(P2_INTRO)
+  const startPhase2 = async () => {
+    // Erst GREETING vorlesen (während Phase-1-Panel noch sichtbar ist)
+    await speakText(GREETING)
+    // Dann Phase 2 einblenden + P2_INTRO sprechen
     setMainPhase('phase2')
     setP2Phase('intro_typing')
     setP2Typed(0)
+    speakText(P2_INTRO)
   }
 
   /* ─── Start questions ──────────────────────────────────── */
