@@ -18,6 +18,7 @@ type CarPart = {
   law?: string
   sticker?: boolean  // TÜV-Plaketten-Diagram anzeigen
   tire?: boolean     // Reifen-Infopanel anzeigen
+  washer?: boolean   // Scheibenwischwasser-Panel anzeigen
 }
 
 const VIEWS = ['Heck', 'Front', 'Seite', 'Innenraum'] as const
@@ -130,7 +131,22 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       sticker: true,
     },
   ],
-  Front: [],
+  Front: [
+    {
+      id: 'frunk-wasser',
+      cx: 200, cy: 82,
+      title: 'Scheibenwischwasser',
+      subtitle: 'Vorderer Kofferraum (Frunk) · Behälter unter der Motorhaube',
+      color: '#38bdf8',
+      checks: [
+        { label: 'Behälter mind. auf MIN-Markierung befüllt' },
+        { label: 'Wasser + Reinigungsmittel mischen' },
+        { label: 'Im Winter: zusätzlich Frostschutz beimischen' },
+      ],
+      info: 'Beim Tesla Model 3 befindet sich der Scheibenwischwasser-Behälter im vorderen Kofferraum (Frunk). Da es keinen Verbrennungsmotor gibt, ist der gesamte Vorderwagen Stauraum — der Behälter liegt gut zugänglich ganz vorne.',
+      washer: true,
+    },
+  ],
   Seite: [
     {
       id: 'reifen',
@@ -484,6 +500,329 @@ function TeslaRearSVG({
         />
       ))}
     </svg>
+  )
+}
+
+/* ── Tesla Front SVG ────────────────────────────────────── */
+function TeslaFrontSVG({
+  parts, selectedId, onSelect,
+}: {
+  parts: CarPart[]; selectedId: string | null; onSelect: (id: string) => void
+}) {
+  return (
+    <svg viewBox="0 0 400 220" style={{ width: '100%', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="frontBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#2e2e32" />
+          <stop offset="55%" stopColor="#1c1c1e" />
+          <stop offset="100%" stopColor="#0e0e10" />
+        </linearGradient>
+        <linearGradient id="frontBumperGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#181818" />
+          <stop offset="100%" stopColor="#0a0a0c" />
+        </linearGradient>
+        <linearGradient id="lightBarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#e0f2fe" stopOpacity="0.9" />
+          <stop offset="18%"  stopColor="#bae6fd" stopOpacity="1"   />
+          <stop offset="50%"  stopColor="#f0f9ff" stopOpacity="0.95"/>
+          <stop offset="82%"  stopColor="#bae6fd" stopOpacity="1"   />
+          <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0.9" />
+        </linearGradient>
+        <filter id="lightGlow">
+          <feGaussianBlur stdDeviation="3.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="softShadow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      {/* ── Bodenschatten ── */}
+      <ellipse cx="200" cy="208" rx="168" ry="8" fill="rgba(0,0,0,0.55)" />
+
+      {/* ── Hauptkarosserie ── */}
+      <path
+        d="M 38 198 L 362 198 Q 376 198 376 184 L 376 150 Q 374 124 356 110 L 352 106
+           L 350 80 Q 346 58 322 50 L 200 44 L 78 50 Q 54 58 50 80 L 48 106
+           L 44 110 Q 26 124 24 150 L 24 184 Q 24 198 38 198 Z"
+        fill="url(#frontBodyGrad)"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="1.5"
+      />
+
+      {/* ── Motorhauben-Kontur (Frunk-Bereich) ── */}
+      <path
+        d="M 78 50 Q 200 42 322 50 L 350 80 Q 280 74 200 72 Q 120 74 50 80 Z"
+        fill="rgba(255,255,255,0.03)"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="1"
+      />
+      {/* Hauben-Mittellinie */}
+      <line x1="200" y1="44" x2="200" y2="106" stroke="rgba(255,255,255,0.04)" strokeWidth="0.75" />
+      {/* Hauben-Seitenfalten */}
+      <path d="M 110 55 Q 145 65 155 106" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+      <path d="M 290 55 Q 255 65 245 106" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+
+      {/* ── Frontschürze / oberer Abschluss ── */}
+      <rect x="24" y="106" width="352" height="8" rx="1"
+        fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+
+      {/* ── Voll-LED Lichtband (Tesla-typisch) ── */}
+      {/* Glow-Effekt darunter */}
+      <rect x="36" y="108" width="328" height="7" rx="3"
+        fill="rgba(186,230,253,0.3)" filter="url(#lightGlow)" />
+      {/* Äußere Lichtleiste */}
+      <rect x="36" y="109" width="328" height="6" rx="3"
+        fill="url(#lightBarGrad)" />
+      {/* Innerer Glanzstreifen */}
+      <rect x="38" y="109.5" width="324" height="2" rx="1"
+        fill="rgba(255,255,255,0.6)" />
+      {/* Mittlere Unterbrechung (Tesla-Logo-Bereich) */}
+      <rect x="182" y="109" width="36" height="6" rx="0"
+        fill="#0e0e10" />
+
+      {/* ── Scheinwerfer links ── */}
+      {/* Gehäuse */}
+      <path d="M 28 110 L 36 110 L 182 110 L 178 134 Q 160 148 120 152 Q 70 154 36 144 Q 24 138 24 128 Z"
+        fill="#04080f" stroke="rgba(147,197,253,0.25)" strokeWidth="1" />
+      {/* DRL / Tagfahrlicht-Kontur */}
+      <path d="M 36 112 L 160 112 L 157 128 Q 140 140 108 142 Q 66 143 38 136 Q 28 132 28 126 Z"
+        fill="rgba(8,24,40,0.9)" />
+      {/* Innere Lichteinheiten */}
+      <ellipse cx="80" cy="132" rx="22" ry="12" fill="#060e18" stroke="rgba(147,197,253,0.3)" strokeWidth="1" />
+      <ellipse cx="80" cy="132" rx="14" ry="8" fill="#04080f" stroke="rgba(147,197,253,0.5)" strokeWidth="0.75" />
+      <ellipse cx="80" cy="132" rx="7" ry="4" fill="#0a1828" />
+      {/* Projektorreflex */}
+      <ellipse cx="78" cy="131" rx="3" ry="2" fill="rgba(186,230,253,0.15)" />
+      {/* Abblendlicht */}
+      <ellipse cx="130" cy="135" rx="16" ry="8" fill="#060e18" stroke="rgba(147,197,253,0.2)" strokeWidth="0.75" />
+      <ellipse cx="130" cy="135" rx="9" ry="5" fill="rgba(186,230,253,0.08)" />
+      {/* Obere Abschlussnaht */}
+      <line x1="36" y1="115" x2="174" y2="115" stroke="rgba(147,197,253,0.12)" strokeWidth="0.75" />
+
+      {/* ── Scheinwerfer rechts (gespiegelt) ── */}
+      <path d="M 372 110 L 364 110 L 218 110 L 222 134 Q 240 148 280 152 Q 330 154 364 144 Q 376 138 376 128 Z"
+        fill="#04080f" stroke="rgba(147,197,253,0.25)" strokeWidth="1" />
+      <path d="M 364 112 L 240 112 L 243 128 Q 260 140 292 142 Q 334 143 362 136 Q 372 132 372 126 Z"
+        fill="rgba(8,24,40,0.9)" />
+      <ellipse cx="320" cy="132" rx="22" ry="12" fill="#060e18" stroke="rgba(147,197,253,0.3)" strokeWidth="1" />
+      <ellipse cx="320" cy="132" rx="14" ry="8" fill="#04080f" stroke="rgba(147,197,253,0.5)" strokeWidth="0.75" />
+      <ellipse cx="320" cy="132" rx="7" ry="4" fill="#0a1828" />
+      <ellipse cx="318" cy="131" rx="3" ry="2" fill="rgba(186,230,253,0.15)" />
+      <ellipse cx="270" cy="135" rx="16" ry="8" fill="#060e18" stroke="rgba(147,197,253,0.2)" strokeWidth="0.75" />
+      <ellipse cx="270" cy="135" rx="9" ry="5" fill="rgba(186,230,253,0.08)" />
+      <line x1="364" y1="115" x2="226" y2="115" stroke="rgba(147,197,253,0.12)" strokeWidth="0.75" />
+
+      {/* ── Stoßstange ── */}
+      <path
+        d="M 24 152 L 376 152 L 374 196 Q 372 200 362 200 L 38 200 Q 28 200 26 196 Z"
+        fill="url(#frontBumperGrad)"
+        stroke="rgba(255,255,255,0.05)"
+        strokeWidth="1"
+      />
+      {/* Aerodynamik-Kante */}
+      <line x1="28" y1="164" x2="372" y2="164" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+      {/* Unterer Lufteinlass-Bereich (Attrappe, kein echter Einlass) */}
+      <rect x="44" y="168" width="130" height="20" rx="4"
+        fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.75" />
+      <rect x="226" y="168" width="130" height="20" rx="4"
+        fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.75" />
+      {/* Kleine horizontale Streben im Einlass */}
+      {[172, 177, 182].map(y => (
+        <line key={y} x1="48" y1={y} x2="170" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+      ))}
+      {[172, 177, 182].map(y => (
+        <line key={y} x1="230" y1={y} x2="352" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+      ))}
+
+      {/* ── Tesla T-Logo ── */}
+      {/* T-Querbalken */}
+      <rect x="189" y="80" width="22" height="3.5" rx="1.5" fill="rgba(255,255,255,0.28)" />
+      {/* T-Senkrechter */}
+      <rect x="198.5" y="80" width="3" height="14" rx="1" fill="rgba(255,255,255,0.28)" />
+
+      {/* ── Kennzeichen ── */}
+      <rect x="158" y="170" width="84" height="22" rx="3" fill="#ece8de" stroke="rgba(150,150,150,0.3)" strokeWidth="0.75" />
+      <text x="200" y="185" textAnchor="middle" fill="#1a1a1a" fontSize="8.5" fontWeight="800" fontFamily="monospace" letterSpacing="1">WH · TD 2026</text>
+
+      {/* ── Frontkamera (oben Windschutzscheibe) ── */}
+      <rect x="196" y="44" width="8" height="5" rx="1.5" fill="#080808" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+
+      {/* ── Hauben-Öffnungs-Hinweis (gestrichelter Frunk-Rahmen) ── */}
+      <path
+        d="M 78 52 Q 200 44 322 52 L 350 82 Q 280 75 200 73 Q 120 75 50 82 Z"
+        fill="none"
+        stroke="rgba(56,189,248,0.2)"
+        strokeWidth="1"
+        strokeDasharray="5,4"
+      />
+
+      {/* ── Interaktive Hotspots ── */}
+      {parts.map((p, i) => (
+        <Hotspot
+          key={p.id}
+          cx={p.cx} cy={p.cy}
+          color={p.color}
+          selected={selectedId === p.id}
+          onClick={() => onSelect(p.id)}
+          index={i}
+        />
+      ))}
+    </svg>
+  )
+}
+
+/* ── Scheibenwischwasser-Panel ──────────────────────────── */
+function WasherFluidPanel() {
+  return (
+    <div style={{ margin: '0.85rem 0 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+      <p style={{
+        margin: '0 0 0.2rem', fontSize: '0.6rem', fontWeight: 800,
+        letterSpacing: '0.08em', textTransform: 'uppercase', color: '#38bdf8',
+      }}>Scheibenwischwasser — Zusammensetzung</p>
+
+      {/* Behälter-Visualisierung */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '1rem',
+        padding: '0.75rem 0.9rem', borderRadius: '0.75rem',
+        background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.2)',
+      }}>
+        {/* Behälter SVG */}
+        <svg viewBox="0 0 48 72" width="44" height="66" style={{ flexShrink: 0 }}>
+          {/* Behälter-Körper */}
+          <rect x="8" y="18" width="32" height="46" rx="4" fill="#0c1a28" stroke="rgba(56,189,248,0.4)" strokeWidth="1.5" />
+          {/* Einfüllstutzen */}
+          <rect x="16" y="10" width="16" height="10" rx="2" fill="#0c1a28" stroke="rgba(56,189,248,0.35)" strokeWidth="1.2" />
+          <rect x="18" y="8" width="12" height="5" rx="2" fill="#0c1a28" stroke="rgba(56,189,248,0.3)" strokeWidth="1" />
+          {/* Flüssigkeitsstand (ca. 70% voll) */}
+          <rect x="10" y="36" width="28" height="26" rx="2" fill="rgba(56,189,248,0.35)" />
+          {/* Welleneffekt */}
+          <path d="M 10 37 Q 18 34 24 37 Q 30 40 38 37" fill="none" stroke="rgba(56,189,248,0.6)" strokeWidth="1" />
+          {/* MIN-Linie */}
+          <line x1="8" y1="56" x2="13" y2="56" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+          <text x="5" y="59" fontSize="4.5" fill="rgba(255,255,255,0.4)" fontWeight="700">MIN</text>
+          {/* MAX-Linie */}
+          <line x1="8" y1="24" x2="13" y2="24" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+          <text x="4" y="27" fontSize="4.5" fill="rgba(255,255,255,0.4)" fontWeight="700">MAX</text>
+          {/* Scheibenwischer-Symbol */}
+          <text x="24" y="52" textAnchor="middle" fontSize="10" fill="rgba(56,189,248,0.5)">💧</text>
+        </svg>
+        <div>
+          <p style={{ margin: '0 0 3px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text)' }}>
+            Frunk → Behälter öffnen
+          </p>
+          <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.55 }}>
+            Haube öffnen → Behälter mit Windschutzscheiben-Symbol suchen → Deckel öffnen und befüllen.
+            Immer <strong style={{ color: '#38bdf8' }}>gemischte Lösung</strong> verwenden, nie nur reines Wasser.
+          </p>
+        </div>
+      </div>
+
+      {/* ── 3 Komponenten ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+
+        {/* Komponente 1: Wasser */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.75rem',
+          padding: '0.65rem 0.9rem', borderRadius: '0.65rem',
+          background: 'rgba(56,189,248,0.07)', border: '1px solid rgba(56,189,248,0.22)',
+        }}>
+          <span style={{
+            width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(56,189,248,0.2)', border: '1px solid rgba(56,189,248,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.95rem',
+          }}>💧</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#7dd3fc' }}>
+              Komponente 1 — Wasser
+            </p>
+            <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.45 }}>
+              Basis der Mischung. Normales Leitungswasser ist geeignet.
+            </p>
+          </div>
+          <span style={{
+            fontSize: '0.55rem', fontWeight: 800, padding: '2px 8px', borderRadius: '100px',
+            background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)',
+            color: '#38bdf8', flexShrink: 0,
+          }}>immer</span>
+        </div>
+
+        {/* Komponente 2: Reinigungsmittel */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.75rem',
+          padding: '0.65rem 0.9rem', borderRadius: '0.65rem',
+          background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.22)',
+        }}>
+          <span style={{
+            width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.95rem',
+          }}>🧴</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#86efac' }}>
+              Komponente 2 — Reinigungsmittel
+            </p>
+            <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.45 }}>
+              Löst Insekten, Fett und Straßenschmutz. Dosierung laut Hersteller auf der Flasche.
+            </p>
+          </div>
+          <span style={{
+            fontSize: '0.55rem', fontWeight: 800, padding: '2px 8px', borderRadius: '100px',
+            background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)',
+            color: '#22c55e', flexShrink: 0,
+          }}>immer</span>
+        </div>
+
+        {/* Komponente 3: Frostschutz (nur Winter) */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.75rem',
+          padding: '0.65rem 0.9rem', borderRadius: '0.65rem',
+          background: 'rgba(147,197,253,0.07)', border: '1px solid rgba(147,197,253,0.28)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Winter-Hintergrund-Akzent */}
+          <div style={{
+            position: 'absolute', right: '-8px', top: '-8px',
+            fontSize: '2.5rem', opacity: 0.07, userSelect: 'none', pointerEvents: 'none',
+          }}>❄️</div>
+          <span style={{
+            width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(147,197,253,0.2)', border: '1px solid rgba(147,197,253,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.95rem',
+          }}>❄️</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#bae6fd' }}>
+              Komponente 3 — Frostschutz
+            </p>
+            <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.45 }}>
+              Verhindert Einfrieren der Düsen und Leitungen. Schützt bis ca. −20 °C (je nach Dosierung).
+              Ohne Frostschutz können Leitungen und Düsen reißen!
+            </p>
+          </div>
+          <span style={{
+            fontSize: '0.55rem', fontWeight: 800, padding: '2px 8px', borderRadius: '100px',
+            background: 'rgba(147,197,253,0.18)', border: '1px solid rgba(147,197,253,0.4)',
+            color: '#93c5fd', flexShrink: 0,
+          }}>❄️ Winter</span>
+        </div>
+      </div>
+
+      {/* Hinweis-Box */}
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: '0.55rem',
+        padding: '0.6rem 0.8rem', borderRadius: '0.65rem',
+        background: 'rgba(234,179,8,0.06)', border: '1px solid rgba(234,179,8,0.22)',
+      }}>
+        <span style={{ fontSize: '0.85rem', flexShrink: 0 }}>⚠️</span>
+        <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          <strong style={{ color: '#fbbf24' }}>Nie nur Wasser verwenden!</strong> Im Sommer verdunstet es schnell und reinigt schlecht. Im Winter friert es ein und beschädigt die Anlage.
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -972,6 +1311,14 @@ export default function TeslaInspect() {
           />
         )}
 
+        {activeView === 'Front' && (
+          <TeslaFrontSVG
+            parts={parts}
+            selectedId={selectedId}
+            onSelect={togglePart}
+          />
+        )}
+
         {activeView === 'Seite' && (
           <TeslaSideSVG
             parts={parts}
@@ -980,7 +1327,7 @@ export default function TeslaInspect() {
           />
         )}
 
-        {activeView !== 'Heck' && activeView !== 'Seite' && (
+        {activeView !== 'Heck' && activeView !== 'Front' && activeView !== 'Seite' && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: '180px', flexDirection: 'column', gap: '0.5rem',
@@ -1084,6 +1431,9 @@ export default function TeslaInspect() {
 
           {/* Reifen-Infopanel */}
           {selected.tire && <TireInfoPanel />}
+
+          {/* Scheibenwischwasser-Panel */}
+          {selected.washer && <WasherFluidPanel />}
 
           {/* Erklärungstext */}
           <div style={{
