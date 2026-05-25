@@ -1,13 +1,116 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
-/* ─── Phase Flow ─────────────────────────────────────────── */
-type Phase = 'scene' | 'approaching' | 'stopped' | 'speaking' | 'ready'
+/* ─── Types ────────────────────────────────────────────────── */
+type P1Phase   = 'scene' | 'approaching' | 'stopped' | 'speaking' | 'ready'
+type MainPhase = 'phase1' | 'phase2'
+type P2Phase   = 'intro' | 'intro_typing' | 'question' | 'answered' | 'feedback' | 'complete'
+type InputMode = 'choice' | 'voice' | 'text'
+type CarPos    = 'front' | 'side' | 'rear'
 
+interface Question {
+  id:          string
+  category:    string
+  question:    string
+  options:     string[]
+  correctIdx:  number
+  hint:        string
+  pos:         CarPos
+  posLabel:    string
+}
+
+/* ─── Question Bank ────────────────────────────────────────── */
+const ALL_QUESTIONS: Question[] = [
+  {
+    id: 'reifen_profil', category: 'Reifen',
+    question: 'Was ist die gesetzliche Mindestprofiltiefe für Pkw-Reifen?',
+    options: ['0,8 mm', '1,6 mm', '2,4 mm', '3,2 mm'],
+    correctIdx: 1,
+    hint: 'Mindestprofiltiefe: 1,6 mm. Empfohlen: min. 3–4 mm.',
+    pos: 'side', posLabel: 'SEITE • Reifen',
+  },
+  {
+    id: 'reifendruck', category: 'Reifen',
+    question: 'Wann sollte der Reifendruck kontrolliert werden?',
+    options: ['Nur im Winter', 'Nur beim TÜV', 'Monatlich bei kalten Reifen', 'Einmal jährlich'],
+    correctIdx: 2,
+    hint: 'Reifendruck monatlich bei kalten Reifen prüfen – Wärme verändert den Druck.',
+    pos: 'side', posLabel: 'SEITE • Reifendruck',
+  },
+  {
+    id: 'motoroel', category: 'Motoröl',
+    question: 'Wie oft sollte der Motorölstand kontrolliert werden?',
+    options: ['Nur beim Werkstattbesuch', 'Täglich', 'Alle 1.000 km / monatlich', 'Einmal im Jahr'],
+    correctIdx: 2,
+    hint: 'Ölstand alle 1.000 km oder monatlich prüfen – auf ebenem Untergrund, Motor kalt.',
+    pos: 'front', posLabel: 'FRONT • Motoröl',
+  },
+  {
+    id: 'kuehlwasser', category: 'Kühlwasser',
+    question: 'Was passiert wenn das Kühlwasser zu niedrig ist?',
+    options: ['Das Auto fährt schneller', 'Motor überhitzt und wird beschädigt', 'Besserer Verbrauch', 'Scheibenwischer versagen'],
+    correctIdx: 1,
+    hint: 'Zu wenig Kühlwasser → Motorüberhitzung → schwerer Motorschaden möglich.',
+    pos: 'front', posLabel: 'FRONT • Kühlwasser',
+  },
+  {
+    id: 'scheinwerfer', category: 'Beleuchtung',
+    question: 'Was müssen Sie tun wenn ein Scheinwerfer defekt ist?',
+    options: ['Erst beim nächsten TÜV', 'Mit Warnblinker weiterfahren', 'Unverzüglich reparieren lassen', 'Nur nachts reparieren'],
+    correctIdx: 2,
+    hint: 'Defekte Beleuchtung ist ein Pflichtverstoß – unverzügliche Reparatur ist vorgeschrieben.',
+    pos: 'front', posLabel: 'FRONT • Beleuchtung',
+  },
+  {
+    id: 'bremsen', category: 'Bremsen',
+    question: 'Warum muss Bremsflüssigkeit regelmäßig gewechselt werden?',
+    options: ['Sie verfärbt sich', 'Sie zieht Wasser an und verliert Siedepunkt', 'Sie wird zu kalt', 'Sie wird zu dünn'],
+    correctIdx: 1,
+    hint: 'Bremsflüssigkeit zieht Wasser an → Siedepunkt sinkt → Dampfblasen bei Hitze.',
+    pos: 'rear', posLabel: 'HECK • Bremsen',
+  },
+  {
+    id: 'hu_intervall', category: 'HU / TÜV',
+    question: 'In welchem Intervall findet die Hauptuntersuchung (TÜV) statt?',
+    options: ['Jedes Jahr', 'Alle 2 Jahre', 'Alle 3 Jahre', 'Alle 5 Jahre'],
+    correctIdx: 1,
+    hint: 'HU alle 2 Jahre (Erstzulassung: nach 3 Jahren). Abgelaufene HU = Bußgeld.',
+    pos: 'rear', posLabel: 'HECK • TÜV-Sticker',
+  },
+  {
+    id: 'winterreifen', category: 'Reifen',
+    question: 'Ab welcher Temperatur sind Winterreifen empfohlen?',
+    options: ['Unter 0°C', 'Unter +4°C', 'Unter +7°C', 'Erst bei Schnee und Eis'],
+    correctIdx: 2,
+    hint: 'Winterreifen ab +7°C – Gummimischung ist auf Kälte optimiert.',
+    pos: 'side', posLabel: 'SEITE • Winterreifen',
+  },
+  {
+    id: 'wischer', category: 'Scheibenwischer',
+    question: 'Wann müssen Scheibenwischer ersetzt werden?',
+    options: ['Nur wenn komplett kaputt', 'Bei Schlieren oder Quietschen', 'Alle 10 Jahre', 'Nur im Winter'],
+    correctIdx: 1,
+    hint: 'Wischer bei Schlieren oder Quietschen wechseln – gute Sicht ist entscheidend.',
+    pos: 'front', posLabel: 'FRONT • Scheibenwischer',
+  },
+  {
+    id: 'nebel', category: 'Beleuchtung',
+    question: 'Wann darf die Nebelschlussleuchte eingeschaltet werden?',
+    options: ['Bei jedem Regen', 'Immer bei Dunkelheit', 'Bei Sichtweite unter 50 m', 'Nur auf der Autobahn'],
+    correctIdx: 2,
+    hint: 'Nebelschlussleuchte nur bei Sichtweite unter 50 m – sonst blendet sie andere.',
+    pos: 'rear', posLabel: 'HECK • Nebelschluss',
+  },
+]
+
+const QUESTIONS_PER_ROUND = 5
+
+/* ─── Texts ────────────────────────────────────────────────── */
 const GREETING = 'Hallo, ich heiße Tars und ich bin dein heutiger Prüfer.'
+const P2_INTRO  = 'Sehr gut! Dann gehen wir jetzt zum Fahrzeug. Ich werde dir einige technische Fragen stellen.'
 
-/* ─── Static star positions (no Math.random on server) ─── */
+/* ─── Static stars ─────────────────────────────────────────── */
 const STARS = [
   {x:14,y:6,r:1,o:0.5},{x:38,y:14,r:1.5,o:0.7},{x:62,y:4,r:1,o:0.45},{x:90,y:18,r:1,o:0.6},
   {x:118,y:8,r:2,o:0.8},{x:145,y:22,r:1,o:0.4},{x:170,y:11,r:1.5,o:0.65},{x:198,y:5,r:1,o:0.5},
@@ -15,57 +118,330 @@ const STARS = [
   {x:338,y:16,r:1,o:0.5},{x:365,y:8,r:1.5,o:0.6},{x:385,y:20,r:1,o:0.4},
   {x:22,y:38,r:1,o:0.35},{x:58,y:44,r:1.5,o:0.6},{x:96,y:32,r:1,o:0.5},{x:134,y:48,r:1,o:0.45},
   {x:172,y:36,r:1.5,o:0.65},{x:210,y:42,r:1,o:0.4},{x:248,y:30,r:2,o:0.7},{x:286,y:46,r:1,o:0.5},
-  {x:324,y:38,r:1.5,o:0.55},{x:362,y:44,r:1,o:0.4},{x:44,y:58,r:1,o:0.35},{x:88,y:52,r:1.5,o:0.6},
-  {x:132,y:62,r:1,o:0.45},{x:176,y:54,r:1,o:0.5},{x:220,y:60,r:1.5,o:0.65},{x:264,y:50,r:1,o:0.4},
-  {x:308,y:58,r:2,o:0.7},{x:352,y:54,r:1,o:0.5},
+  {x:324,y:38,r:1.5,o:0.55},{x:362,y:44,r:1,o:0.4},
 ]
 
+/* ─── Helpers ──────────────────────────────────────────────── */
+function shufflePick<T>(arr: T[], n: number): T[] {
+  const copy = [...arr]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy.slice(0, n)
+}
+
+function matchTextToOption(text: string, options: string[]): number {
+  const t = text.toLowerCase().trim()
+  // letter A/B/C/D
+  const letters = ['a','b','c','d']
+  for (let i = 0; i < 4; i++) {
+    if (t === letters[i] || t.startsWith(letters[i]+' ') || t.startsWith(letters[i]+',')) return i
+  }
+  // number words
+  const numMap: [string, number][] = [
+    ['eins',0],['erste',0],['ersten',0],
+    ['zwei',1],['zweite',1],['zweiten',1],
+    ['drei',2],['dritte',2],['dritten',2],
+    ['vier',3],['vierte',3],['vierten',3],
+  ]
+  for (const [word, idx] of numMap) if (t.includes(word)) return idx
+  // best word overlap
+  let best = -1, bestScore = 0
+  options.forEach((opt, i) => {
+    const words = opt.toLowerCase().split(/\s+/)
+    const score = words.filter(w => w.length > 2 && t.includes(w)).length
+    if (score > bestScore) { bestScore = score; best = i }
+  })
+  return best
+}
+
+/* ─── TarsPosition for Phase 2 ────────────────────────────── */
+function tarsP2Style(pos: CarPos): React.CSSProperties {
+  const leftMap: Record<CarPos, string> = { front: '60%', side: '70%', rear: '80%' }
+  return {
+    position: 'absolute',
+    left: leftMap[pos],
+    bottom: '55%',
+    width: '90px',
+    transformOrigin: 'bottom center',
+    transform: 'translateX(-50%) scale(0.55)',
+    opacity: 1,
+    transition: 'left 0.6s cubic-bezier(0.4,0,0.2,1)',
+    pointerEvents: 'none',
+    zIndex: 50,
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Main Component
+══════════════════════════════════════════════════════════════ */
 export default function SimulationClient() {
-  const [phase, setPhase] = useState<Phase>('scene')
+  /* ── Phase 1 state ── */
+  const [phase,  setPhase]  = useState<P1Phase>('scene')
   const [typed,  setTyped]  = useState(0)
 
-  /* Phase sequence */
+  /* ── Main phase ── */
+  const [mainPhase, setMainPhase] = useState<MainPhase>('phase1')
+
+  /* ── Phase 2 state ── */
+  const [p2Phase,     setP2Phase]     = useState<P2Phase>('intro')
+  const [p2Typed,     setP2Typed]     = useState(0)
+  const [questions,   setQuestions]   = useState<Question[]>([])
+  const [currentQ,    setCurrentQ]    = useState(0)
+  const [selectedAns, setSelectedAns] = useState<number | null>(null)
+  const [score,       setScore]       = useState(0)
+  const [inputMode,   setInputMode]   = useState<InputMode>('choice')
+  const [textInput,   setTextInput]   = useState('')
+  const [isListening, setIsListening] = useState(false)
+  const [aiFeedback,  setAiFeedback]  = useState('')
+  const [fbTyped,     setFbTyped]     = useState(0)
+  const [loadingFb,   setLoadingFb]   = useState(false)
+  const [ttsOn,       setTtsOn]       = useState(true)
+  const [voiceError,  setVoiceError]  = useState('')
+
+  const recognitionRef = useRef<any>(null)
+  const panelRef       = useRef<HTMLDivElement>(null)
+
+  /* ─── TTS ──────────────────────────────────────────────── */
+  const speakText = useCallback((text: string) => {
+    if (!ttsOn || typeof window === 'undefined' || !window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const utt = new SpeechSynthesisUtterance(text)
+    utt.lang  = 'de-DE'
+    utt.rate  = 0.88
+    utt.pitch = 0.95
+    // prefer German voice
+    const voices = window.speechSynthesis.getVoices()
+    const de = voices.find(v => v.lang.startsWith('de'))
+    if (de) utt.voice = de
+    window.speechSynthesis.speak(utt)
+  }, [ttsOn])
+
+  /* ─── Phase 1 timers ──────────────────────────────────── */
   useEffect(() => {
     const t = setTimeout(() => setPhase('approaching'), 900)
     return () => clearTimeout(t)
   }, [])
-
   useEffect(() => {
     if (phase !== 'approaching') return
     const t = setTimeout(() => setPhase('stopped'), 3200)
     return () => clearTimeout(t)
   }, [phase])
-
   useEffect(() => {
     if (phase !== 'stopped') return
     const t = setTimeout(() => setPhase('speaking'), 500)
     return () => clearTimeout(t)
   }, [phase])
-
-  /* Typewriter */
   useEffect(() => {
     if (phase !== 'speaking') return
-    if (typed >= GREETING.length) { setPhase('ready'); return }
+    if (typed >= GREETING.length) { setPhase('ready'); speakText(GREETING); return }
     const ch = GREETING[typed]
     const delay = ch === '.' ? 320 : ch === ',' ? 160 : 42
     const t = setTimeout(() => setTyped(i => i + 1), delay)
     return () => clearTimeout(t)
-  }, [phase, typed])
+  }, [phase, typed, speakText])
 
-  const charVisible    = phase !== 'scene'
-  const isApproaching  = phase === 'approaching'
-  const showDialogue   = phase === 'speaking' || phase === 'ready'
-  const showContinue   = phase === 'ready'
+  /* ─── Phase 2 intro typewriter ────────────────────────── */
+  useEffect(() => {
+    if (mainPhase !== 'phase2' || p2Phase !== 'intro_typing') return
+    if (p2Typed === 0) speakText(P2_INTRO)
+    if (p2Typed >= P2_INTRO.length) { setP2Phase('intro'); return }
+    const ch = P2_INTRO[p2Typed]
+    const delay = ch === '.' ? 300 : ch === ',' ? 150 : 38
+    const t = setTimeout(() => setP2Typed(i => i + 1), delay)
+    return () => clearTimeout(t)
+  }, [mainPhase, p2Phase, p2Typed, speakText])
 
+  /* ─── Phase 2 feedback typewriter ────────────────────── */
+  useEffect(() => {
+    if (p2Phase !== 'feedback' || !aiFeedback || loadingFb) return
+    if (fbTyped >= aiFeedback.length) return
+    const ch = aiFeedback[fbTyped]
+    const delay = ch === '.' ? 220 : ch === ',' ? 120 : 30
+    const t = setTimeout(() => setFbTyped(i => i + 1), delay)
+    return () => clearTimeout(t)
+  }, [p2Phase, aiFeedback, fbTyped, loadingFb])
+
+  /* ─── Scroll panel into view when question changes ────── */
+  useEffect(() => {
+    if (p2Phase === 'question' || p2Phase === 'feedback') {
+      setTimeout(() => panelRef.current?.scrollTo({ top: 0, behavior: 'smooth' }), 100)
+    }
+  }, [currentQ, p2Phase])
+
+  /* ─── Start Phase 2 ────────────────────────────────────── */
+  const startPhase2 = () => {
+    setMainPhase('phase2')
+    setP2Phase('intro_typing')
+    setP2Typed(0)
+  }
+
+  /* ─── Start questions ──────────────────────────────────── */
+  const startQuestions = () => {
+    const picked = shufflePick(ALL_QUESTIONS, QUESTIONS_PER_ROUND)
+    setQuestions(picked)
+    setCurrentQ(0)
+    setScore(0)
+    setSelectedAns(null)
+    setAiFeedback('')
+    setFbTyped(0)
+    setP2Phase('question')
+    setTimeout(() => speakText(picked[0].question), 400)
+  }
+
+  /* ─── Handle answer ────────────────────────────────────── */
+  const handleAnswer = async (optIdx: number) => {
+    if (p2Phase !== 'question' || selectedAns !== null) return
+    const q = questions[currentQ]
+    const correct = optIdx === q.correctIdx
+
+    setSelectedAns(optIdx)
+    setP2Phase('answered')
+    if (correct) setScore(s => s + 1)
+    setLoadingFb(true)
+    setAiFeedback('')
+    setFbTyped(0)
+
+    try {
+      const res  = await fetch('/api/tars', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          question:      q.question,
+          correctAnswer: q.options[q.correctIdx],
+          userAnswer:    q.options[optIdx],
+          isCorrect:     correct,
+          category:      q.category,
+        }),
+      })
+      const data = await res.json()
+      setAiFeedback(data.feedback)
+      setLoadingFb(false)
+      setP2Phase('feedback')
+      setTimeout(() => speakText(data.feedback), 200)
+    } catch {
+      const fallback = correct
+        ? 'Richtig! Sehr gut gemacht.'
+        : `Leider falsch. Korrekt: „${q.options[q.correctIdx]}"`
+      setAiFeedback(fallback)
+      setLoadingFb(false)
+      setP2Phase('feedback')
+      setTimeout(() => speakText(fallback), 200)
+    }
+    setTextInput('')
+  }
+
+  /* ─── Next question ────────────────────────────────────── */
+  const nextQuestion = () => {
+    const next = currentQ + 1
+    if (next >= questions.length) {
+      setP2Phase('complete')
+      window.speechSynthesis?.cancel()
+    } else {
+      setCurrentQ(next)
+      setSelectedAns(null)
+      setAiFeedback('')
+      setFbTyped(0)
+      setInputMode('choice')
+      setP2Phase('question')
+      setTimeout(() => speakText(questions[next].question), 400)
+    }
+  }
+
+  /* ─── Voice input ──────────────────────────────────────── */
+  const startVoice = () => {
+    setVoiceError('')
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) { setVoiceError('Spracherkennung wird von diesem Browser nicht unterstützt.'); return }
+    const rec = new SR()
+    rec.lang            = 'de-DE'
+    rec.interimResults  = false
+    rec.maxAlternatives = 3
+    recognitionRef.current = rec
+
+    rec.onstart  = () => setIsListening(true)
+    rec.onend    = () => setIsListening(false)
+    rec.onerror  = (e: any) => {
+      setIsListening(false)
+      setVoiceError(e.error === 'not-allowed' ? 'Mikrofon-Zugriff verweigert.' : 'Fehler bei der Aufnahme.')
+    }
+    rec.onresult = (e: any) => {
+      const transcript = e.results[0][0].transcript
+      setTextInput(transcript)
+      const idx = matchTextToOption(transcript, questions[currentQ]?.options ?? [])
+      if (idx >= 0) {
+        setInputMode('choice')
+        handleAnswer(idx)
+      } else {
+        setVoiceError(`Konnte „${transcript}" keiner Antwort zuordnen. Bitte auswählen.`)
+      }
+    }
+    rec.start()
+  }
+  const stopVoice = () => { recognitionRef.current?.stop() }
+
+  /* ─── Submit text answer ───────────────────────────────── */
+  const submitText = () => {
+    if (!textInput.trim()) return
+    const idx = matchTextToOption(textInput, questions[currentQ]?.options ?? [])
+    if (idx >= 0) {
+      setInputMode('choice')
+      handleAnswer(idx)
+    } else {
+      setVoiceError(`Keine passende Antwort für „${textInput}" gefunden. Bitte auswählen.`)
+    }
+  }
+
+  /* ─── Restart ──────────────────────────────────────────── */
+  const restart = () => {
+    setMainPhase('phase2')
+    setP2Phase('intro_typing')
+    setP2Typed(0)
+    setCurrentQ(0)
+    setScore(0)
+    setSelectedAns(null)
+    setAiFeedback('')
+    setFbTyped(0)
+    setLoadingFb(false)
+    setTextInput('')
+    setVoiceError('')
+  }
+
+  /* ── Derived values ── */
+  const charVisible   = phase !== 'scene'
+  const isApproaching = phase === 'approaching'
+  const showDialogue  = phase === 'speaking' || phase === 'ready'
+  const q = questions[currentQ]
+
+  const p1TarsStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: '50%',
+    bottom: '20%',
+    width: '90px',
+    transformOrigin: 'bottom center',
+    transform: charVisible
+      ? 'translateX(-50%) scale(1) translateY(0px)'
+      : 'translateX(-50%) scale(0.07) translateY(-120px)',
+    opacity: charVisible ? 1 : 0,
+    transition: isApproaching
+      ? 'transform 3.2s cubic-bezier(0.15,0,0.35,1), opacity 0.3s ease'
+      : 'none',
+    pointerEvents: 'none',
+    zIndex: 50,
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     RENDER
+  ══════════════════════════════════════════════════════════ */
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'linear-gradient(180deg, #020810 0%, #060e1e 30%, #0a1628 60%, #0d2035 100%)',
-      overflow: 'hidden',
-      fontFamily: 'inherit',
+      background: 'linear-gradient(180deg,#020810 0%,#060e1e 30%,#0a1628 60%,#0d2035 100%)',
+      overflow: 'hidden', fontFamily: 'inherit',
     }}>
 
-      {/* ── Back button ── */}
+      {/* Back */}
       <Link href="/dashboard" style={{
         position: 'absolute', top: '1rem', left: '1rem', zIndex: 200,
         width: '36px', height: '36px', borderRadius: '10px',
@@ -74,50 +450,73 @@ export default function SimulationClient() {
         display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
       }}>←</Link>
 
-      {/* ── Label top-right ── */}
-      <div style={{
-        position: 'absolute', top: '1rem', right: '1rem', zIndex: 200,
-        padding: '4px 10px', borderRadius: '8px',
-        background: 'rgba(20,100,190,0.2)', border: '1px solid rgba(20,100,190,0.35)',
-        fontSize: '0.58rem', fontWeight: 800, color: '#60b4ff', letterSpacing: '0.1em',
-      }}>⚠ PRÜFUNGSMODUS</div>
+      {/* TTS toggle */}
+      <button onClick={() => setTtsOn(v => !v)} title={ttsOn ? 'Ton aus' : 'Ton an'} style={{
+        position: 'absolute', top: '1rem', right: mainPhase === 'phase2' ? '1rem' : '8rem', zIndex: 200,
+        width: '36px', height: '36px', borderRadius: '10px',
+        background: ttsOn ? 'rgba(20,100,190,0.2)' : 'rgba(255,255,255,0.07)',
+        border: `1px solid ${ttsOn ? 'rgba(96,180,255,0.3)' : 'rgba(255,255,255,0.1)'}`,
+        color: ttsOn ? '#60b4ff' : 'rgba(255,255,255,0.3)', fontSize: '1rem', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {ttsOn ? '🔊' : '🔇'}
+      </button>
 
-      {/* ── Stars SVG ── */}
+      {/* Label */}
+      {mainPhase === 'phase1' && (
+        <div style={{
+          position: 'absolute', top: '1rem', right: '1rem', zIndex: 200,
+          padding: '4px 10px', borderRadius: '8px',
+          background: 'rgba(20,100,190,0.2)', border: '1px solid rgba(20,100,190,0.35)',
+          fontSize: '0.58rem', fontWeight: 800, color: '#60b4ff', letterSpacing: '0.1em',
+        }}>⚠ PRÜFUNGSMODUS</div>
+      )}
+
+      {/* Phase 2: score counter */}
+      {mainPhase === 'phase2' && p2Phase !== 'complete' && questions.length > 0 && (
+        <div style={{
+          position: 'absolute', top: '1rem', left: '50%', transform: 'translateX(-50%)', zIndex: 200,
+          padding: '4px 12px', borderRadius: '8px',
+          background: 'rgba(20,100,190,0.2)', border: '1px solid rgba(20,100,190,0.35)',
+          fontSize: '0.62rem', fontWeight: 800, color: '#60b4ff', letterSpacing: '0.06em',
+          whiteSpace: 'nowrap',
+        }}>
+          {score} / {Math.min(currentQ, questions.length)} richtig · Frage {Math.min(currentQ+1, questions.length)}/{questions.length}
+        </div>
+      )}
+
+      {/* Stars */}
       <svg style={{ position:'absolute', inset:0, width:'100%', height:'55%', pointerEvents:'none' }}>
         {STARS.map((s,i) => (
           <circle key={i} cx={`${(s.x/390)*100}%`} cy={`${(s.y/160)*100}%`} r={s.r} fill="white" opacity={s.o}>
-            <animate attributeName="opacity"
-              values={`${s.o};${s.o*0.25};${s.o}`}
-              dur={`${2.2 + (i%6)*0.55}s`} repeatCount="indefinite"/>
+            <animate attributeName="opacity" values={`${s.o};${s.o*0.25};${s.o}`}
+              dur={`${2.2+(i%6)*0.55}s`} repeatCount="indefinite"/>
           </circle>
         ))}
       </svg>
 
-      {/* ── Moon ── */}
+      {/* Moon */}
       <div style={{
         position:'absolute', top:'6%', right:'10%',
         width:'44px', height:'44px', borderRadius:'50%',
-        background:'radial-gradient(circle at 35% 35%, #f2eacc, #c8b840)',
+        background:'radial-gradient(circle at 35% 35%,#f2eacc,#c8b840)',
         boxShadow:'0 0 36px 10px rgba(235,220,140,0.22)',
       }}/>
 
-      {/* ── Main scene SVG ── */}
-      <svg
-        viewBox="0 0 390 420"
-        preserveAspectRatio="xMidYMax meet"
-        style={{ position:'absolute', bottom:'6%', left:0, width:'100%', pointerEvents:'none' }}
-      >
+      {/* Scene SVG */}
+      <svg viewBox="0 0 390 420" preserveAspectRatio="xMidYMax meet"
+        style={{ position:'absolute', bottom:'6%', left:0, width:'100%', pointerEvents:'none' }}>
         <defs>
-          <linearGradient id="simGround" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#10202e"/>
+          <linearGradient id="sg"  x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="#10202e"/>
             <stop offset="100%" stopColor="#080f1a"/>
           </linearGradient>
-          <linearGradient id="simRoad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#18263a"/>
+          <linearGradient id="sr" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="#18263a"/>
             <stop offset="100%" stopColor="#0c1828"/>
           </linearGradient>
-          <radialGradient id="buildLight" cx="50%" cy="0%" r="80%">
-            <stop offset="0%" stopColor="rgba(20,100,190,0.12)"/>
+          <radialGradient id="bl" cx="50%" cy="0%" r="80%">
+            <stop offset="0%"   stopColor="rgba(20,100,190,0.12)"/>
             <stop offset="100%" stopColor="transparent"/>
           </radialGradient>
           <filter id="glow2">
@@ -126,225 +525,147 @@ export default function SimulationClient() {
           </filter>
         </defs>
 
-        {/* Distant city silhouette */}
+        {/* City silhouette */}
         <path d="M0,200 L0,230 L20,230 L20,210 L35,210 L35,195 L50,195 L50,220 L70,220 L70,205
                  L80,205 L80,180 L90,180 L90,215 L105,215 L105,200 L120,200 L120,225 L140,225
                  L140,190 L150,190 L150,175 L160,175 L160,195 L175,195 L175,210 L190,210
                  L190,185 L200,185 L200,230 L390,230 L390,200 L370,200 L370,215 L355,215
                  L355,195 L340,195 L340,210 L325,210 L325,180 L310,180 L310,210 L295,210
                  L295,195 L280,195 L280,215 L265,215 L265,200 L250,200 L250,220 L235,220
-                 L235,205 L220,205 L220,190 Z"
-          fill="#0a1625" stroke="none"/>
+                 L235,205 L220,205 L220,190 Z" fill="#0a1625"/>
 
-        {/* Ground plane */}
-        <rect x="0" y="295" width="390" height="130" fill="url(#simGround)"/>
-        {/* Road */}
-        <rect x="0" y="335" width="390" height="65" fill="url(#simRoad)"/>
+        <rect x="0" y="295" width="390" height="130" fill="url(#sg)"/>
+        <rect x="0" y="335" width="390" height="65"  fill="url(#sr)"/>
         <line x1="0" y1="335" x2="390" y2="335" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
-        {/* Dashed lane markings */}
         {[15,55,95,135,175,215,255,295,335,375].map(x => (
           <rect key={x} x={x} y="364" width="30" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
         ))}
-        {/* Curb */}
         <rect x="0" y="395" width="390" height="3" rx="1" fill="rgba(255,255,255,0.07)"/>
-
-        {/* Parking lot lines */}
         {[50,100,150,200,250,300,350].map(x => (
           <line key={x} x1={x} y1="295" x2={x} y2="335" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
         ))}
 
-        {/* ═══ TARS-STATION BUILDING ═══ */}
-        {/* Ground light under building */}
-        <ellipse cx="128" cy="300" rx="90" ry="10" fill="url(#buildLight)"/>
-
-        {/* Building main structure */}
+        {/* Building */}
+        <ellipse cx="128" cy="300" rx="90" ry="10" fill="url(#bl)"/>
         <rect x="28" y="62" width="196" height="240" rx="4" fill="#0c1c32" stroke="#1a3254" strokeWidth="1.5"/>
-        {/* Glass facade overlay */}
         <rect x="32" y="66" width="188" height="232" rx="2" fill="#0d1e30"/>
-        {/* Facade reflection */}
         <path d="M32,66 L32,220 L85,66 Z" fill="rgba(255,255,255,0.015)"/>
-
-        {/* Structural columns */}
         {[40,72,104,136,168,196].map((x,i) => (
           <rect key={i} x={x} y="66" width="3" height="232" rx="1" fill="rgba(255,255,255,0.04)"/>
         ))}
-
-        {/* Windows - 8 rows × 5 cols */}
-        {Array.from({length:8}, (_,row) =>
-          [40,70,100,130,170].map((x, col) => {
-            const skip = (row*5+col) % 9 === 0 || (row*5+col) % 13 === 0
-            const warm = (row + col) % 3 === 0
+        {Array.from({length:8},(_,row) =>
+          [40,70,100,130,170].map((x,col) => {
+            const skip = (row*5+col)%9===0||(row*5+col)%13===0
+            const warm = (row+col)%3===0
             return !skip && (
-              <rect key={`${row}-${col}`}
-                x={x} y={72 + row*28} width={20} height={20} rx="2"
-                fill={warm ? `rgba(255,200,90,${0.45 + (row+col)*0.025})` : `rgba(140,200,255,${0.35 + row*0.03})`}/>
+              <rect key={`${row}-${col}`} x={x} y={72+row*28} width={20} height={20} rx="2"
+                fill={warm?`rgba(255,200,90,${0.45+(row+col)*0.025})`:`rgba(140,200,255,${0.35+row*0.03})`}/>
             )
           })
         )}
-
-        {/* Rooftop ── */}
-        <rect x="28" y="58" width="196" height="8" rx="3" fill="#1a3060" stroke="#2a4a80" strokeWidth="1"/>
+        <rect x="28" y="58" width="196" height="8"  rx="3" fill="#1a3060" stroke="#2a4a80" strokeWidth="1"/>
         <rect x="55" y="40" width="142" height="22" rx="3" fill="#0e1c34" stroke="#1a3254" strokeWidth="1"/>
-        {/* Roof antenna */}
         <line x1="126" y1="40" x2="126" y2="8" stroke="#1e3a60" strokeWidth="2.5"/>
         <circle cx="126" cy="6" r="4" fill="#f97316" filter="url(#glow2)">
           <animate attributeName="opacity" values="1;0.15;1" dur="1.4s" repeatCount="indefinite"/>
         </circle>
-        {/* Secondary antenna */}
         <line x1="145" y1="40" x2="145" y2="15" stroke="#1e3a60" strokeWidth="1.5"/>
         <circle cx="145" cy="13" r="3" fill="#22c55e" filter="url(#glow2)" opacity="0.7">
           <animate attributeName="opacity" values="0.7;0.1;0.7" dur="1.9s" repeatCount="indefinite"/>
         </circle>
-
-        {/* Entrance door */}
         <rect x="96" y="256" width="60" height="44" rx="3" fill="#08101e" stroke="#1a3050" strokeWidth="1.2"/>
-        {/* Door panels */}
         <rect x="99" y="259" width="26" height="41" rx="2" fill="#0d2040" stroke="#1a4060" strokeWidth="0.8"/>
         <rect x="127" y="259" width="26" height="41" rx="2" fill="#0d2040" stroke="#1a4060" strokeWidth="0.8"/>
-        {/* Door reflections */}
         <line x1="103" y1="263" x2="103" y2="296" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>
         <line x1="131" y1="263" x2="131" y2="296" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>
-
-        {/* ═══ TARS-STATION SIGN ═══ */}
         <rect x="36" y="236" width="180" height="22" rx="4" fill="#082856" stroke="#1464be" strokeWidth="1.8"/>
         <rect x="38" y="238" width="176" height="18" rx="3" fill="#0a3572"/>
-        {/* Sign glow */}
-        <rect x="36" y="236" width="180" height="22" rx="4" fill="url(#buildLight)" opacity="0.5"/>
         <text x="127" y="251" textAnchor="middle" fontSize="10" fontWeight="900"
           fill="#60b4ff" fontFamily="monospace" letterSpacing="2.5">TARS-STATION</text>
 
-        {/* ═══ FLAGPOLE ═══ */}
+        {/* Flagpole */}
         <line x1="228" y1="300" x2="228" y2="42" stroke="#2a3a50" strokeWidth="2.5"/>
         <circle cx="228" cy="39" r="5" fill="#4a6080" stroke="#3a5070" strokeWidth="1"/>
-
-        {/* Tars Flag – animated wave */}
         <rect x="230" y="46" width="52" height="34" rx="3" fill="#1055b0">
-          <animateTransform attributeName="transform" type="skewX"
-            values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="skewX" values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
         </rect>
-        {/* Flag stripe */}
         <rect x="230" y="65" width="52" height="8" rx="0" fill="#0a3a8a">
-          <animateTransform attributeName="transform" type="skewX"
-            values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="skewX" values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
         </rect>
-        {/* Flag text */}
-        <text x="256" y="60" textAnchor="middle" fontSize="10" fontWeight="900"
-          fill="white" fontFamily="monospace" letterSpacing="1">
+        <text x="256" y="60" textAnchor="middle" fontSize="10" fontWeight="900" fill="white" fontFamily="monospace" letterSpacing="1">
           TARS
-          <animateTransform attributeName="transform" type="skewX"
-            values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
-        </text>
-        {/* Flag emblem - T in circle */}
-        <circle cx="256" cy="73" r="5" fill="rgba(255,255,255,0.15)">
-          <animateTransform attributeName="transform" type="skewX"
-            values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
-        </circle>
-        <text x="256" y="76" textAnchor="middle" fontSize="7" fontWeight="900" fill="white">
-          T
-          <animateTransform attributeName="transform" type="skewX"
-            values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="skewX" values="0;3;0;-2;0" dur="2.4s" repeatCount="indefinite"/>
         </text>
 
-        {/* ═══ FAHRSCHULE CAR ═══ */}
-        {/* Car shadow */}
+        {/* Fahrschule car */}
         <ellipse cx="322" cy="316" rx="60" ry="7" fill="rgba(0,0,0,0.5)"/>
-
-        {/* Car body */}
         <path d="M262,308 L262,285 Q264,270 278,266 L308,258 L342,258 Q360,258 372,268 L378,285 L378,308 Z"
           fill="#18283e" stroke="#2a3e5a" strokeWidth="1.5"/>
-
-        {/* Roof line */}
         <path d="M278,266 L308,254 L342,254 L368,268" fill="none" stroke="#3a5070" strokeWidth="1"/>
-
-        {/* Windshield */}
         <path d="M278,266 L286,258 L314,256 L314,270 L275,272 Z" fill="#1a3a60" stroke="#2a5080" strokeWidth="0.8" opacity="0.9"/>
-        {/* Rear window */}
         <path d="M342,256 L366,268 L365,272 L342,270 Z" fill="#1a3a60" stroke="#2a5080" strokeWidth="0.8" opacity="0.9"/>
-        {/* Side window */}
         <rect x="318" y="258" width="22" height="10" rx="2" fill="#1a3a60" stroke="#2a5080" strokeWidth="0.5" opacity="0.9"/>
-
-        {/* Door line */}
         <line x1="318" y1="258" x2="318" y2="307" stroke="#243450" strokeWidth="0.8"/>
-        {/* Door handle */}
         <rect x="295" y="285" width="18" height="4" rx="2" fill="#2a3e5a" stroke="#3a5070" strokeWidth="0.5"/>
-
-        {/* Front lights */}
         <rect x="265" y="283" width="10" height="7" rx="2" fill="#fef08a" opacity="0.5" filter="url(#glow2)"/>
-        {/* Rear lights */}
-        <rect x="376" y="283" width="5" height="7" rx="1" fill="#ef4444" opacity="0.6"/>
-
+        <rect x="376" y="283" width="5"  height="7" rx="1" fill="#ef4444" opacity="0.6"/>
         {/* Wheels */}
-        <circle cx="285" cy="308" r="12" fill="#0e1520" stroke="#374151" strokeWidth="1.5"/>
-        <circle cx="285" cy="308" r="8"  fill="#18243a" stroke="#4b5563" strokeWidth="1"/>
-        <circle cx="285" cy="308" r="3"  fill="#374151"/>
-        {[0,45,90,135,180,225,270,315].map((a,i) => (
-          <line key={i}
-            x1={285 + 4*Math.cos(a*Math.PI/180)} y1={308 + 4*Math.sin(a*Math.PI/180)}
-            x2={285 + 7*Math.cos(a*Math.PI/180)} y2={308 + 7*Math.sin(a*Math.PI/180)}
-            stroke="#4b5563" strokeWidth="1.5"/>
+        {[285,358].map(cx => (
+          <g key={cx}>
+            <circle cx={cx} cy="308" r="12" fill="#0e1520" stroke="#374151" strokeWidth="1.5"/>
+            <circle cx={cx} cy="308" r="8"  fill="#18243a" stroke="#4b5563" strokeWidth="1"/>
+            <circle cx={cx} cy="308" r="3"  fill="#374151"/>
+            {[0,45,90,135,180,225,270,315].map((a,i) => (
+              <line key={i}
+                x1={cx+4*Math.cos(a*Math.PI/180)} y1={308+4*Math.sin(a*Math.PI/180)}
+                x2={cx+7*Math.cos(a*Math.PI/180)} y2={308+7*Math.sin(a*Math.PI/180)}
+                stroke="#4b5563" strokeWidth="1.5"/>
+            ))}
+          </g>
         ))}
-
-        <circle cx="358" cy="308" r="12" fill="#0e1520" stroke="#374151" strokeWidth="1.5"/>
-        <circle cx="358" cy="308" r="8"  fill="#18243a" stroke="#4b5563" strokeWidth="1"/>
-        <circle cx="358" cy="308" r="3"  fill="#374151"/>
-        {[0,45,90,135,180,225,270,315].map((a,i) => (
-          <line key={i}
-            x1={358 + 4*Math.cos(a*Math.PI/180)} y1={308 + 4*Math.sin(a*Math.PI/180)}
-            x2={358 + 7*Math.cos(a*Math.PI/180)} y2={308 + 7*Math.sin(a*Math.PI/180)}
-            stroke="#4b5563" strokeWidth="1.5"/>
-        ))}
-
-        {/* Fahrschule roof sign */}
         <rect x="290" y="246" width="66" height="14" rx="3" fill="#f59e0b" stroke="#d97706" strokeWidth="1.2"/>
         <text x="323" y="256" textAnchor="middle" fontSize="7" fontWeight="900" fill="#78350f" letterSpacing="0.5">FAHRSCHULE</text>
-        {/* Sign supports */}
         <line x1="305" y1="256" x2="305" y2="260" stroke="#d97706" strokeWidth="1.5"/>
         <line x1="341" y1="256" x2="341" y2="260" stroke="#d97706" strokeWidth="1.5"/>
       </svg>
 
       {/* ═══ TARS CHARACTER ═══ */}
-      <div style={{
-        position: 'absolute',
-        left: '50%',
-        bottom: '20%',
-        width: '90px',
-        transformOrigin: 'bottom center',
-        transform: charVisible
-          ? 'translateX(-50%) scale(1) translateY(0px)'
-          : 'translateX(-50%) scale(0.07) translateY(-120px)',
-        opacity: charVisible ? 1 : 0,
-        transition: isApproaching
-          ? 'transform 3.2s cubic-bezier(0.15, 0.0, 0.35, 1), opacity 0.3s ease'
-          : 'none',
-        pointerEvents: 'none',
-        zIndex: 50,
-      }}>
-        {/* Bob animation when stopped */}
-        <div style={{
-          animation: (phase === 'stopped' || phase === 'speaking' || phase === 'ready')
-            ? 'tarsIdle 3s ease-in-out infinite' : 'none',
-        }}>
-          <TarsCharacter />
+      {mainPhase === 'phase1' && (
+        <div style={p1TarsStyle}>
+          <div style={{ animation: (phase==='stopped'||phase==='speaking'||phase==='ready') ? 'tarsIdle 3s ease-in-out infinite' : 'none' }}>
+            <TarsCharacter />
+          </div>
         </div>
-      </div>
+      )}
+      {mainPhase === 'phase2' && p2Phase !== 'complete' && q && (
+        <div style={tarsP2Style(q.pos)}>
+          <div style={{ animation: 'tarsIdle 3s ease-in-out infinite' }}>
+            <TarsCharacter />
+          </div>
+        </div>
+      )}
+      {mainPhase === 'phase2' && (p2Phase === 'intro' || p2Phase === 'intro_typing') && (
+        <div style={p1TarsStyle}>
+          <div style={{ animation: 'tarsIdle 3s ease-in-out infinite' }}>
+            <TarsCharacter />
+          </div>
+        </div>
+      )}
 
-      {/* ═══ DIALOGUE BOX ═══ */}
-      {showDialogue && (
+      {/* ═══ PHASE 1 DIALOGUE ═══ */}
+      {mainPhase === 'phase1' && showDialogue && (
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 100,
-          background: 'linear-gradient(to top, rgba(4,10,22,0.99) 0%, rgba(4,10,22,0.97) 65%, transparent 100%)',
-          padding: '1.25rem 1.25rem 2.75rem',
-          animation: 'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
+          position:'absolute', bottom:0, left:0, right:0, zIndex:100,
+          background:'linear-gradient(to top,rgba(4,10,22,0.99) 0%,rgba(4,10,22,0.97) 65%,transparent 100%)',
+          padding:'1.25rem 1.25rem 2.75rem',
+          animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
         }}>
-          {/* Speaker header */}
           <div style={{ display:'flex', alignItems:'center', gap:'0.7rem', marginBottom:'0.8rem' }}>
-            {/* Avatar */}
             <div style={{
               width:'42px', height:'42px', borderRadius:'50%', flexShrink:0,
-              background:'linear-gradient(135deg, #1464be 0%, #082856 100%)',
+              background:'linear-gradient(135deg,#1464be 0%,#082856 100%)',
               border:'2px solid rgba(96,180,255,0.5)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:'1.25rem',
+              display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem',
             }}>🎓</div>
             <div>
               <p style={{ margin:0, fontSize:'0.78rem', fontWeight:900, color:'#60b4ff' }}>Tars</p>
@@ -352,7 +673,6 @@ export default function SimulationClient() {
                 TÜV · Amtlich bestellter Fahrprüfer
               </p>
             </div>
-            {/* Speaking dots */}
             {phase === 'speaking' && (
               <div style={{ marginLeft:'auto', display:'flex', gap:'4px', alignItems:'center' }}>
                 {[0,1,2].map(i => (
@@ -364,54 +684,393 @@ export default function SimulationClient() {
               </div>
             )}
           </div>
-
-          {/* Speech text */}
           <div style={{
             background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
             border:'1px solid rgba(20,100,190,0.25)',
-            padding:'0.85rem 1rem', marginBottom:'0.85rem',
-            minHeight:'60px',
+            padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
           }}>
-            <p style={{
-              margin:0, fontSize:'0.96rem', fontWeight:500,
-              color:'rgba(255,255,255,0.92)', lineHeight:1.65,
-              letterSpacing:'0.01em',
-            }}>
+            <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
               {GREETING.slice(0, typed)}
-              {phase === 'speaking' && (
-                <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>
-              )}
+              {phase === 'speaking' && <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>}
+            </p>
+          </div>
+          {phase === 'ready' && (
+            <button onClick={startPhase2} style={{
+              width:'100%', padding:'0.9rem',
+              background:'linear-gradient(135deg,#1055b0,#082856)',
+              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
+              color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
+              boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
+              animation:'simFadeIn 0.5s ease', letterSpacing:'0.02em',
+            }}>Weiter →</button>
+          )}
+        </div>
+      )}
+
+      {/* ═══ PHASE 2 INTRO ═══ */}
+      {mainPhase === 'phase2' && (p2Phase === 'intro' || p2Phase === 'intro_typing') && (
+        <div style={{
+          position:'absolute', bottom:0, left:0, right:0, zIndex:100,
+          background:'linear-gradient(to top,rgba(4,10,22,0.99) 0%,rgba(4,10,22,0.97) 65%,transparent 100%)',
+          padding:'1.25rem 1.25rem 2.75rem',
+          animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
+        }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'0.7rem', marginBottom:'0.8rem' }}>
+            <div style={{
+              width:'42px', height:'42px', borderRadius:'50%', flexShrink:0,
+              background:'linear-gradient(135deg,#1464be 0%,#082856 100%)',
+              border:'2px solid rgba(96,180,255,0.5)',
+              display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem',
+            }}>🎓</div>
+            <div>
+              <p style={{ margin:0, fontSize:'0.78rem', fontWeight:900, color:'#60b4ff' }}>Tars</p>
+              <p style={{ margin:0, fontSize:'0.58rem', color:'rgba(255,255,255,0.38)' }}>
+                Fahrzeug-Rundgang
+              </p>
+            </div>
+            {p2Phase === 'intro_typing' && (
+              <div style={{ marginLeft:'auto', display:'flex', gap:'4px', alignItems:'center' }}>
+                {[0,1,2].map(i => (
+                  <div key={i} style={{
+                    width:'6px', height:'6px', borderRadius:'50%', background:'#1464be',
+                    animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite`,
+                  }}/>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{
+            background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
+            border:'1px solid rgba(20,100,190,0.25)',
+            padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
+          }}>
+            <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
+              {P2_INTRO.slice(0, p2Typed)}
+              {p2Phase === 'intro_typing' && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
+            </p>
+          </div>
+          {p2Phase === 'intro' && p2Typed >= P2_INTRO.length && (
+            <button onClick={startQuestions} style={{
+              width:'100%', padding:'0.9rem',
+              background:'linear-gradient(135deg,#1055b0,#082856)',
+              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
+              color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
+              boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
+              animation:'simFadeIn 0.5s ease',
+            }}>Los geht&apos;s →</button>
+          )}
+        </div>
+      )}
+
+      {/* ═══ PHASE 2 QUESTION PANEL ═══ */}
+      {mainPhase === 'phase2' && (p2Phase === 'question' || p2Phase === 'answered' || p2Phase === 'feedback') && q && (
+        <div ref={panelRef} style={{
+          position:'absolute', bottom:0, left:0, right:0, zIndex:100,
+          background:'linear-gradient(to top,rgba(4,10,22,1) 0%,rgba(4,10,22,0.98) 80%,transparent 100%)',
+          padding:'1rem 1.1rem 2.5rem',
+          maxHeight:'68vh', overflowY:'auto',
+          animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
+        }}>
+          {/* Progress bar */}
+          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'0.75rem' }}>
+            {questions.map((_,i) => (
+              <div key={i} style={{
+                height:'4px', flex:1, borderRadius:'2px',
+                background: i < currentQ ? '#4ade80' : i===currentQ ? '#60b4ff' : 'rgba(255,255,255,0.12)',
+                transition:'background 0.4s ease',
+              }}/>
+            ))}
+          </div>
+
+          {/* Position badge + speak button */}
+          <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.7rem' }}>
+            <span style={{
+              fontSize:'0.58rem', fontWeight:800, padding:'3px 10px', borderRadius:'6px',
+              background:'rgba(96,180,255,0.1)', border:'1px solid rgba(96,180,255,0.25)',
+              color:'#60b4ff', letterSpacing:'0.06em',
+            }}>📍 {q.posLabel}</span>
+            <button onClick={() => speakText(q.question)} title="Frage vorlesen" style={{
+              background:'transparent', border:'none', color:'rgba(255,255,255,0.3)',
+              cursor:'pointer', fontSize:'0.85rem', padding:'2px',
+            }}>🔊</button>
+          </div>
+
+          {/* Question text */}
+          <div style={{
+            background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.25)',
+            borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.75rem',
+          }}>
+            <p style={{ margin:0, fontSize:'0.95rem', fontWeight:600, color:'rgba(255,255,255,0.95)', lineHeight:1.6 }}>
+              {q.question}
             </p>
           </div>
 
-          {/* Continue button */}
-          {showContinue && (
-            <button
-              onClick={() => {/* next phase coming soon */}}
-              style={{
-                width:'100%', padding:'0.9rem',
-                background:'linear-gradient(135deg, #1055b0, #082856)',
-                border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
-                color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
-                boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
-                animation:'simFadeIn 0.5s ease',
-                letterSpacing:'0.02em',
-              }}
-            >
-              Weiter →
+          {/* Options */}
+          <div style={{ display:'flex', flexDirection:'column', gap:'0.45rem', marginBottom:'0.75rem' }}>
+            {q.options.map((opt, i) => {
+              const isSelected = selectedAns === i
+              const isCorrect  = i === q.correctIdx
+              const show       = p2Phase === 'feedback' || p2Phase === 'answered'
+              let bg     = 'rgba(10,24,50,0.4)'
+              let border = '1px solid rgba(255,255,255,0.09)'
+              let color  = 'rgba(255,255,255,0.82)'
+              let icon   = ''
+              if (show && isSelected && isCorrect)  { bg='rgba(34,197,94,0.18)';  border='1px solid rgba(34,197,94,0.45)';  color='#4ade80'; icon='✓' }
+              else if (show && isSelected && !isCorrect) { bg='rgba(239,68,68,0.18)'; border='1px solid rgba(239,68,68,0.45)';  color='#f87171'; icon='✗' }
+              else if (show && isCorrect)            { bg='rgba(34,197,94,0.09)';  border='1px solid rgba(34,197,94,0.25)';  color='#4ade80'; icon='✓' }
+              else if (isSelected)                   { bg='rgba(20,100,190,0.25)'; border='1px solid rgba(96,180,255,0.4)';  color='#60b4ff' }
+              return (
+                <button key={i} disabled={p2Phase !== 'question'}
+                  onClick={() => handleAnswer(i)}
+                  style={{
+                    width:'100%', textAlign:'left', padding:'0.65rem 0.85rem',
+                    background:bg, border, borderRadius:'0.65rem',
+                    color, fontWeight:600, fontSize:'0.87rem',
+                    cursor: p2Phase === 'question' ? 'pointer' : 'default',
+                    display:'flex', alignItems:'center', gap:'0.6rem',
+                    transition:'background 0.2s, border 0.2s',
+                  }}>
+                  <span style={{
+                    width:'24px', height:'24px', borderRadius:'6px', flexShrink:0,
+                    background:'rgba(255,255,255,0.07)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:'0.68rem', fontWeight:900,
+                  }}>
+                    {['A','B','C','D'][i]}
+                  </span>
+                  <span style={{ flex:1 }}>{opt}</span>
+                  {icon && <span style={{ fontSize:'0.9rem', marginLeft:'auto' }}>{icon}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Input mode tabs (only when question active) */}
+          {p2Phase === 'question' && (
+            <div style={{ display:'flex', gap:'0.4rem', marginBottom:'0.65rem' }}>
+              {(['choice','voice','text'] as InputMode[]).map(m => (
+                <button key={m} onClick={() => { setInputMode(m); setVoiceError('') }} style={{
+                  flex:1, padding:'0.45rem 0.2rem',
+                  background: inputMode===m ? 'rgba(20,100,190,0.28)' : 'transparent',
+                  border: `1px solid ${inputMode===m ? 'rgba(96,180,255,0.4)' : 'rgba(255,255,255,0.09)'}`,
+                  borderRadius:'0.5rem',
+                  color: inputMode===m ? '#60b4ff' : 'rgba(255,255,255,0.38)',
+                  fontSize:'0.63rem', fontWeight:700, cursor:'pointer',
+                }}>
+                  {m==='choice'?'📋 Auswahl':m==='voice'?'🎤 Sprechen':'✏️ Schreiben'}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Voice mode */}
+          {p2Phase === 'question' && inputMode === 'voice' && (
+            <div style={{ marginBottom:'0.65rem' }}>
+              <button
+                onClick={isListening ? stopVoice : startVoice}
+                style={{
+                  width:'100%', padding:'0.85rem',
+                  background: isListening ? 'rgba(239,68,68,0.2)' : 'rgba(20,100,190,0.2)',
+                  border: `1px solid ${isListening ? 'rgba(239,68,68,0.4)' : 'rgba(96,180,255,0.35)'}`,
+                  borderRadius:'0.65rem',
+                  color: isListening ? '#f87171' : '#60b4ff',
+                  fontWeight:700, fontSize:'0.9rem', cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem',
+                  animation: isListening ? 'micPulse 1.2s ease-in-out infinite' : 'none',
+                }}>
+                {isListening ? (
+                  <><span style={{ width:'10px',height:'10px',borderRadius:'50%',background:'#ef4444',display:'inline-block',animation:'tarsDot 0.8s ease-in-out infinite'}}/>Aufnahme läuft … (klicken zum Stoppen)</>
+                ) : (
+                  <><span>🎤</span> Antwort sprechen</>
+                )}
+              </button>
+              {textInput && <p style={{ margin:'0.4rem 0 0', fontSize:'0.72rem', color:'rgba(255,255,255,0.4)', textAlign:'center' }}>„{textInput}"</p>}
+            </div>
+          )}
+
+          {/* Text mode */}
+          {p2Phase === 'question' && inputMode === 'text' && (
+            <div style={{ display:'flex', gap:'0.5rem', marginBottom:'0.65rem' }}>
+              <input
+                value={textInput}
+                onChange={e => setTextInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && submitText()}
+                placeholder="z.B. B oder 1,6 mm …"
+                style={{
+                  flex:1, padding:'0.65rem 0.85rem',
+                  background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.3)',
+                  borderRadius:'0.65rem', color:'white', fontSize:'0.88rem',
+                  outline:'none',
+                }}
+              />
+              <button onClick={submitText} style={{
+                padding:'0.65rem 1rem', borderRadius:'0.65rem',
+                background:'linear-gradient(135deg,#1055b0,#082856)',
+                border:'1px solid rgba(96,180,255,0.35)', color:'white',
+                fontWeight:800, fontSize:'0.9rem', cursor:'pointer',
+              }}>→</button>
+            </div>
+          )}
+
+          {/* Error message */}
+          {voiceError && (
+            <p style={{ margin:'0 0 0.65rem', fontSize:'0.72rem', color:'#f87171', textAlign:'center' }}>{voiceError}</p>
+          )}
+
+          {/* AI Feedback */}
+          {(p2Phase === 'feedback' || p2Phase === 'answered') && (
+            <div style={{
+              display:'flex', gap:'0.65rem', alignItems:'flex-start',
+              background:'rgba(10,24,50,0.6)', border:'1px solid rgba(20,100,190,0.25)',
+              borderRadius:'0.85rem', padding:'0.85rem 1rem', marginBottom:'0.75rem',
+              animation:'simFadeIn 0.4s ease',
+            }}>
+              <div style={{ fontSize:'1.2rem', flexShrink:0 }}>🎓</div>
+              <div style={{ flex:1 }}>
+                {loadingFb ? (
+                  <div style={{ display:'flex', gap:'4px', alignItems:'center', paddingTop:'4px' }}>
+                    {[0,1,2].map(i => (
+                      <div key={i} style={{
+                        width:'7px', height:'7px', borderRadius:'50%', background:'#1464be',
+                        animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite`,
+                      }}/>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ margin:0, fontSize:'0.88rem', color:'rgba(255,255,255,0.88)', lineHeight:1.55 }}>
+                    {aiFeedback.slice(0, fbTyped)}
+                    {fbTyped < aiFeedback.length && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
+                  </p>
+                )}
+                {/* Hint */}
+                {!loadingFb && (
+                  <p style={{ margin:'0.5rem 0 0', fontSize:'0.72rem', color:'rgba(255,255,255,0.35)', lineHeight:1.45 }}>
+                    💡 {q.hint}
+                  </p>
+                )}
+              </div>
+              <button onClick={() => speakText(aiFeedback)} title="Vorlesen" style={{
+                background:'transparent', border:'none', color:'rgba(255,255,255,0.3)',
+                cursor:'pointer', fontSize:'0.85rem', padding:'2px', flexShrink:0,
+              }}>🔊</button>
+            </div>
+          )}
+
+          {/* Next / finish button */}
+          {p2Phase === 'feedback' && !loadingFb && (
+            <button onClick={nextQuestion} style={{
+              width:'100%', padding:'0.9rem',
+              background:'linear-gradient(135deg,#1055b0,#082856)',
+              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
+              color:'white', fontWeight:800, fontSize:'0.92rem', cursor:'pointer',
+              boxShadow:'0 4px 24px rgba(20,100,190,0.4)',
+              animation:'simFadeIn 0.35s ease',
+            }}>
+              {currentQ + 1 < questions.length ? 'Nächste Frage →' : 'Ergebnis anzeigen →'}
             </button>
           )}
         </div>
       )}
 
-      {/* CSS keyframes */}
+      {/* ═══ PHASE 2 COMPLETE / SCORE ═══ */}
+      {mainPhase === 'phase2' && p2Phase === 'complete' && (
+        <div style={{
+          position:'absolute', bottom:0, left:0, right:0, zIndex:100,
+          background:'linear-gradient(to top,rgba(4,10,22,1) 0%,rgba(4,10,22,0.98) 80%,transparent 100%)',
+          padding:'1.5rem 1.25rem 3rem',
+          animation:'simDialogUp 0.4s cubic-bezier(0.2,0,0.2,1)',
+        }}>
+          {/* Result card */}
+          <div style={{
+            background:'rgba(10,24,50,0.7)', border:'1px solid rgba(20,100,190,0.3)',
+            borderRadius:'1.25rem', padding:'1.5rem', marginBottom:'1rem',
+            textAlign:'center',
+          }}>
+            {/* Score circle */}
+            <div style={{
+              width:'80px', height:'80px', borderRadius:'50%', margin:'0 auto 0.85rem',
+              background: score >= 4
+                ? 'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.05))'
+                : score >= 2
+                  ? 'linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.05))'
+                  : 'linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.05))',
+              border: score >= 4
+                ? '2px solid rgba(34,197,94,0.5)'
+                : score >= 2
+                  ? '2px solid rgba(251,191,36,0.5)'
+                  : '2px solid rgba(239,68,68,0.5)',
+              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            }}>
+              <span style={{
+                fontSize:'1.8rem', fontWeight:900,
+                color: score >= 4 ? '#4ade80' : score >= 2 ? '#fbbf24' : '#f87171',
+              }}>{score}</span>
+              <span style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', marginTop:'-2px' }}>/ {questions.length}</span>
+            </div>
+
+            <p style={{ margin:'0 0 0.25rem', fontSize:'1.1rem', fontWeight:900, color:'white' }}>
+              {score === questions.length ? '🏆 Perfekt!' : score >= 4 ? '🎉 Sehr gut!' : score >= 3 ? '👍 Gut gemacht' : score >= 2 ? '📚 Weiter üben' : '💪 Nicht aufgeben!'}
+            </p>
+            <p style={{ margin:'0 0 1rem', fontSize:'0.8rem', color:'rgba(255,255,255,0.5)' }}>
+              {score} von {questions.length} Fragen korrekt
+            </p>
+
+            {/* Stars */}
+            <div style={{ display:'flex', gap:'0.25rem', justifyContent:'center', marginBottom:'1rem' }}>
+              {Array.from({length:5},(_,i) => (
+                <span key={i} style={{
+                  fontSize:'1.35rem',
+                  opacity: i < Math.round((score/questions.length)*5) ? 1 : 0.2,
+                  filter: i < Math.round((score/questions.length)*5) ? 'drop-shadow(0 0 4px #fbbf24)' : 'none',
+                }}>⭐</span>
+              ))}
+            </div>
+
+            {/* Tars comment */}
+            <div style={{
+              background:'rgba(20,100,190,0.1)', border:'1px solid rgba(96,180,255,0.2)',
+              borderRadius:'0.75rem', padding:'0.75rem 1rem',
+            }}>
+              <p style={{ margin:0, fontSize:'0.85rem', color:'rgba(255,255,255,0.8)', lineHeight:1.5, fontStyle:'italic' }}>
+                {score === questions.length
+                  ? '„Ausgezeichnet! Alle Fragen richtig – das ist das Niveau eines erfahrenen Fahrers."'
+                  : score >= 4
+                    ? '„Sehr gute Leistung! Noch ein bisschen üben und Sie sind bereit für die Prüfung."'
+                    : score >= 3
+                      ? '„Guter Ansatz! Wiederholen Sie die Technik-Kapitel für bessere Ergebnisse."'
+                      : '„Keine Sorge – mit etwas Übung werden Sie das schaffen. Weiter so!"'}
+              </p>
+              <p style={{ margin:'0.4rem 0 0', fontSize:'0.65rem', color:'rgba(255,255,255,0.35)' }}>— Tars, Fahrprüfer</p>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display:'flex', gap:'0.6rem' }}>
+            <button onClick={restart} style={{
+              flex:1, padding:'0.85rem',
+              background:'transparent',
+              border:'1px solid rgba(96,180,255,0.3)', borderRadius:'100px',
+              color:'#60b4ff', fontWeight:700, fontSize:'0.88rem', cursor:'pointer',
+            }}>🔄 Nochmal</button>
+            <Link href="/dashboard" style={{
+              flex:1, padding:'0.85rem',
+              background:'linear-gradient(135deg,#1055b0,#082856)',
+              border:'1px solid rgba(96,180,255,0.35)', borderRadius:'100px',
+              color:'white', fontWeight:800, fontSize:'0.88rem',
+              display:'flex', alignItems:'center', justifyContent:'center', textDecoration:'none',
+            }}>🏠 Dashboard</Link>
+          </div>
+        </div>
+      )}
+
+      {/* CSS */}
       <style>{`
         @keyframes simDialogUp {
           from { transform: translateY(24px); opacity: 0 }
           to   { transform: translateY(0);    opacity: 1 }
         }
         @keyframes simFadeIn {
-          from { opacity: 0; transform: translateY(10px) }
+          from { opacity: 0; transform: translateY(8px) }
           to   { opacity: 1; transform: translateY(0) }
         }
         @keyframes tarsIdle {
@@ -426,6 +1085,12 @@ export default function SimulationClient() {
           0%,100% { opacity: 1 }
           50%     { opacity: 0 }
         }
+        @keyframes micPulse {
+          0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3) }
+          50%     { box-shadow: 0 0 0 8px rgba(239,68,68,0) }
+        }
+        input::placeholder { color: rgba(255,255,255,0.25) }
+        input:focus { border-color: rgba(96,180,255,0.5) !important; box-shadow: 0 0 0 2px rgba(96,180,255,0.1) }
       `}</style>
     </div>
   )
@@ -435,98 +1100,51 @@ export default function SimulationClient() {
 function TarsCharacter() {
   return (
     <svg viewBox="0 0 90 172" width="90" height="172">
-      {/* ── Shadow ── */}
       <ellipse cx="45" cy="168" rx="22" ry="5" fill="rgba(0,0,0,0.45)"/>
-
-      {/* ── Legs ── */}
       <rect x="28" y="118" width="13" height="42" rx="5" fill="#0a1e40"/>
       <rect x="47" y="118" width="13" height="42" rx="5" fill="#0a1e40"/>
-
-      {/* ── Shoes ── */}
       <rect x="24" y="156" width="20" height="9" rx="4" fill="#111820"/>
       <rect x="44" y="156" width="20" height="9" rx="4" fill="#111820"/>
-
-      {/* ── Uniform body ── */}
       <path d="M18,60 Q16,57 22,54 L34,52 L45,56 L56,52 L68,54 Q74,57 72,60 L74,118 L16,118 Z"
         fill="#1055b0" stroke="#0a3a8a" strokeWidth="1"/>
-
-      {/* ── Shirt collar & tie ── */}
       <path d="M37,53 L45,58 L53,53" fill="white"/>
       <path d="M42,55 L45,72 L48,55" fill="#c0392b" stroke="#922b21" strokeWidth="0.5"/>
-
-      {/* ── Belt ── */}
       <rect x="18" y="104" width="54" height="6" rx="3" fill="#08142a"/>
       <rect x="39" y="104" width="12" height="6" rx="2" fill="#c8a020"/>
-
-      {/* ── Official Badge ── */}
       <rect x="48" y="64" width="18" height="24" rx="3" fill="#0a3060" stroke="#1464be" strokeWidth="1"/>
       <rect x="50" y="66" width="14" height="20" rx="2" fill="#d4a020" opacity="0.9"/>
       <text x="57" y="78" textAnchor="middle" fontSize="6" fontWeight="900" fill="#0a1e40">TÜV</text>
       <line x1="51" y1="80" x2="63" y2="80" stroke="#0a1e40" strokeWidth="0.8"/>
       <text x="57" y="84" textAnchor="middle" fontSize="4.5" fontWeight="700" fill="#0a1e40">PRÜFER</text>
-
-      {/* ── Left arm ── */}
-      <path d="M18,60 Q9,72 11,90 L18,88 Q20,72 24,62 Z"
-        fill="#1055b0" stroke="#0a3a8a" strokeWidth="0.8"/>
-      {/* Left hand */}
+      <path d="M18,60 Q9,72 11,90 L18,88 Q20,72 24,62 Z" fill="#1055b0" stroke="#0a3a8a" strokeWidth="0.8"/>
       <circle cx="13" cy="93" r="6" fill="#f0c8a0" stroke="#ddb880" strokeWidth="0.5"/>
-
-      {/* ── Right arm + clipboard ── */}
-      <path d="M72,60 Q81,72 79,90 L72,88 Q70,72 66,62 Z"
-        fill="#1055b0" stroke="#0a3a8a" strokeWidth="0.8"/>
-
-      {/* ── Clipboard ── */}
+      <path d="M72,60 Q81,72 79,90 L72,88 Q70,72 66,62 Z" fill="#1055b0" stroke="#0a3a8a" strokeWidth="0.8"/>
       <rect x="68" y="68" width="20" height="30" rx="3" fill="#e8c870" stroke="#b89820" strokeWidth="1"/>
-      {/* Clip */}
-      <rect x="72" y="63" width="12" height="8" rx="2" fill="#8b6818" stroke="#6b4e10" strokeWidth="0.8"/>
-      {/* Paper lines */}
+      <rect x="72" y="63" width="12" height="8"  rx="2" fill="#8b6818" stroke="#6b4e10" strokeWidth="0.8"/>
       <line x1="70" y1="76" x2="86" y2="76" stroke="#8b6818" strokeWidth="1.2"/>
       <line x1="70" y1="82" x2="86" y2="82" stroke="#8b6818" strokeWidth="1.2"/>
       <line x1="70" y1="88" x2="80" y2="88" stroke="#8b6818" strokeWidth="1.2"/>
-      {/* Right hand */}
       <circle cx="77" cy="100" r="5" fill="#f0c8a0" stroke="#ddb880" strokeWidth="0.5"/>
-
-      {/* ── Neck ── */}
       <rect x="37" y="44" width="16" height="14" rx="5" fill="#f0c8a0" stroke="#ddb880" strokeWidth="0.5"/>
-
-      {/* ── Head ── */}
       <circle cx="45" cy="30" r="20" fill="#f0c8a0" stroke="#ddb880" strokeWidth="0.8"/>
-
-      {/* ── Ears ── */}
       <ellipse cx="25" cy="31" rx="4" ry="5" fill="#ebbf98" stroke="#ddb880" strokeWidth="0.5"/>
       <ellipse cx="65" cy="31" rx="4" ry="5" fill="#ebbf98" stroke="#ddb880" strokeWidth="0.5"/>
-
-      {/* ── Eyes ── */}
       <circle cx="36" cy="28" r="4" fill="white"/>
       <circle cx="54" cy="28" r="4" fill="white"/>
       <circle cx="37" cy="29" r="2.2" fill="#2a3e70"/>
       <circle cx="55" cy="29" r="2.2" fill="#2a3e70"/>
-      {/* Pupils */}
-      <circle cx="37.5" cy="29" r="1" fill="#111"/>
-      <circle cx="55.5" cy="29" r="1" fill="#111"/>
-      {/* Eye shine */}
+      <circle cx="37.5" cy="29" r="1"   fill="#111"/>
+      <circle cx="55.5" cy="29" r="1"   fill="#111"/>
       <circle cx="38.5" cy="27.5" r="0.8" fill="rgba(255,255,255,0.8)"/>
       <circle cx="56.5" cy="27.5" r="0.8" fill="rgba(255,255,255,0.8)"/>
-
-      {/* ── Eyebrows ── */}
       <path d="M31,22 Q36,20 41,22" fill="none" stroke="#7a5535" strokeWidth="1.8" strokeLinecap="round"/>
       <path d="M49,22 Q54,20 59,22" fill="none" stroke="#7a5535" strokeWidth="1.8" strokeLinecap="round"/>
-
-      {/* ── Friendly smile ── */}
       <path d="M35,38 Q45,45 55,38" fill="none" stroke="#7a5535" strokeWidth="1.8" strokeLinecap="round"/>
-
-      {/* ── Nose ── */}
       <path d="M43,32 Q45,35 47,32" fill="none" stroke="#c8956a" strokeWidth="1.2" strokeLinecap="round"/>
-
-      {/* ── Official cap ── */}
       <path d="M24,22 Q24,8 45,8 Q66,8 66,22 Z" fill="#0a2a60" stroke="#1464be" strokeWidth="1"/>
-      {/* Cap brim */}
       <rect x="20" y="22" width="50" height="6" rx="2" fill="#0a2a60" stroke="#1464be" strokeWidth="1"/>
-      {/* Cap badge */}
       <rect x="32" y="11" width="26" height="13" rx="3" fill="#c8a020" stroke="#a07810" strokeWidth="0.8"/>
       <text x="45" y="20" textAnchor="middle" fontSize="6" fontWeight="900" fill="#0a1e40">TÜV</text>
-
-      {/* ── Shoulder stripes ── */}
       <rect x="16" y="56" width="12" height="4" rx="1" fill="#d4a020" opacity="0.8"/>
       <rect x="62" y="56" width="12" height="4" rx="1" fill="#d4a020" opacity="0.8"/>
     </svg>
