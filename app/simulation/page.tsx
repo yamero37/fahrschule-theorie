@@ -1,13 +1,12 @@
 import AuthGuard from '@/components/AuthGuard'
 import SimulationClient from '@/components/SimulationClient'
-import { questions } from '@/data/questions'
 
-export const metadata = { title: 'Prüfungssimulation – TolDrive' }
+export const metadata = { title: 'Fahrprüfungs-Simulation – TolDrive' }
 
 export default function SimulationPage() {
   return (
     <AuthGuard>
-      <SimulationClient questions={questions} />
+      <SimulationClient />
     </AuthGuard>
   )
 }
