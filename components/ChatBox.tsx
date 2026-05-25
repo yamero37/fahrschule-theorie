@@ -14,6 +14,27 @@ type Msg = {
   is_premium?: boolean
 }
 
+/* ── Rank lookup (mirrors Dashboard RANKS) ── */
+const CHAT_RANKS = [
+  { id: 'D',       min: 0,    color: '#6b7280' },
+  { id: 'C',       min: 100,  color: '#3b82f6' },
+  { id: 'B',       min: 300,  color: '#8b5cf6' },
+  { id: 'A',       min: 600,  color: '#c9a227' },
+  { id: 'S',       min: 1000, color: '#f97316' },
+  { id: 'SS',      min: 1500, color: '#ef4444' },
+  { id: 'Legende', min: 2000, color: '#ffd700' },
+]
+
+function getChatRank(pts: number) {
+  for (let i = CHAT_RANKS.length - 1; i >= 0; i--) {
+    if (pts >= CHAT_RANKS[i].min) return CHAT_RANKS[i]
+  }
+  return CHAT_RANKS[0]
+}
+
+type UserRankInfo = { rankId: string; color: string }
+type UserRankMap  = Record<string, UserRankInfo>
+
 type Group = {
   id: string
   name: string
@@ -51,12 +72,24 @@ function RoleBadge({ isAdmin, isPremium }: { isAdmin?: boolean; isPremium?: bool
   return null
 }
 
+/* ── Rank badge ── */
+function RankBadge({ rankId, color }: { rankId: string; color: string }) {
+  return (
+    <span style={{
+      fontSize: '0.44rem', fontWeight: 900, padding: '1px 5px', borderRadius: '4px',
+      background: `${color}18`, border: `1px solid ${color}45`,
+      color, letterSpacing: '0.06em',
+    }}>{rankId}</span>
+  )
+}
+
 /* ── Message list ── */
-function MsgList({ msgs, userId, bottomRef, typingUsers }: {
+function MsgList({ msgs, userId, bottomRef, typingUsers, userRanks }: {
   msgs: Msg[]
   userId: string
   bottomRef: React.RefObject<HTMLDivElement | null>
   typingUsers: string[]
+  userRanks: UserRankMap
 }) {
   return (
     <div style={{ height: '240px', overflowY: 'auto', padding: '0.75rem 1rem 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -69,6 +102,7 @@ function MsgList({ msgs, userId, bottomRef, typingUsers }: {
         const mine = m.user_id === userId
         const adminMsg = !!m.is_admin
         const premiumMsg = !!m.is_premium && !m.is_admin
+        const rankInfo = userRanks[m.user_id]
 
         return (
           <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
@@ -85,6 +119,7 @@ function MsgList({ msgs, userId, bottomRef, typingUsers }: {
                 {adminMsg ? 'Admin' : m.username}
               </span>
               <RoleBadge isAdmin={adminMsg} isPremium={premiumMsg} />
+              {rankInfo && <RankBadge rankId={rankInfo.rankId} color={rankInfo.color} />}
             </div>
 
             {/* Bubble + time */}
@@ -183,6 +218,7 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
   const [sending, setSending] = useState(false)
   const [chatError, setChatError] = useState('')
   const [typingUsers, setTypingUsers] = useState<string[]>([])
+  const [userRanks, setUserRanks] = useState<UserRankMap>({})
 
   const [groups, setGroups] = useState<Group[]>([])
   const [activeGroup, setActiveGroup] = useState<Group | null>(null)
@@ -194,6 +230,25 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const presenceRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  /* ── Fetch ranks for a list of user-ids (merges into state) ── */
+  async function fetchRanksFor(uids: string[]) {
+    if (!uids.length) return
+    try {
+      const { data } = await supabase
+        .from('user_stats').select('user_id, points').in('user_id', uids)
+      if (data) {
+        setUserRanks(prev => {
+          const next = { ...prev }
+          data.forEach((s: { user_id: string; points: number }) => {
+            const r = getChatRank(s.points ?? 0)
+            next[s.user_id] = { rankId: r.id, color: r.color }
+          })
+          return next
+        })
+      }
+    } catch {}
+  }
 
   const activeChannel = tab === 'public' ? 'public' : activeGroup?.id ?? null
 
@@ -215,7 +270,15 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
       .then(({ data, error }) => {
         if (!cancelled) {
           if (error) setChatError(`DB-Fehler: ${error.message}`)
-          else { setChatError(''); if (data) setMsgs(data) }
+          else {
+            setChatError('')
+            if (data) {
+              setMsgs(data)
+              // Batch-fetch ranks for all unique senders
+              const uids = [...new Set((data as Msg[]).map(m => m.user_id))]
+              fetchRanksFor(uids)
+            }
+          }
         }
       })
 
@@ -225,7 +288,15 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
         event: 'INSERT', schema: 'public', table: 'chat_messages',
         filter: `channel=eq.${activeChannel}`,
       }, payload => {
-        if (!cancelled) setMsgs(prev => [...prev, payload.new as Msg])
+        if (!cancelled) {
+          const newMsg = payload.new as Msg
+          setMsgs(prev => [...prev, newMsg])
+          // Fetch rank for new user if not already known
+          setUserRanks(prev => {
+            if (!prev[newMsg.user_id]) fetchRanksFor([newMsg.user_id])
+            return prev
+          })
+        }
       })
       .subscribe()
 
@@ -388,7 +459,7 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
       {/* Public tab */}
       {tab === 'public' && (
         <>
-          <MsgList msgs={msgs} userId={userId} bottomRef={bottomRef} typingUsers={typingUsers} />
+          <MsgList msgs={msgs} userId={userId} bottomRef={bottomRef} typingUsers={typingUsers} userRanks={userRanks} />
           <SendBar input={input} onChange={handleTyping} send={send} sending={sending} />
         </>
       )}
@@ -478,7 +549,7 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
                   ID kopieren
                 </button>
               </div>
-              <MsgList msgs={msgs} userId={userId} bottomRef={bottomRef} typingUsers={typingUsers} />
+              <MsgList msgs={msgs} userId={userId} bottomRef={bottomRef} typingUsers={typingUsers} userRanks={userRanks} />
               <SendBar input={input} onChange={handleTyping} send={send} sending={sending} placeholder="Gruppe schreiben…" />
             </>
           )}
