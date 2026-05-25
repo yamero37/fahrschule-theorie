@@ -21,9 +21,9 @@ export default function Navigation() {
       const isDemo = getDemoExpiry() !== null
       if (isDemo) { setLoggedIn(true); return }
       const { data } = await supabase.auth.getSession()
-      const approved = !!data.session?.user.app_metadata?.approved
-      setLoggedIn(approved)
-      if (approved) setUserId(data.session!.user.id)
+      const loggedIn = !!data.session
+      setLoggedIn(loggedIn)
+      if (loggedIn) setUserId(data.session!.user.id)
     }
     check()
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => check())

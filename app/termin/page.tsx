@@ -14,9 +14,9 @@ export default function TerminPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session?.user.app_metadata?.approved) { router.replace('/'); return }
+      if (!session) { router.replace('/'); return }
       const uid = session.user.id
-      // Check FahrstÃ¼ndler-Freigabe
+      // Nur freigegebene Fahrschüler dürfen Termine buchen
       const { data } = await supabase.from('fahrstundler_approvals').select('user_id').eq('user_id', uid).single()
       if (!data) { setNotAllowed(true); setLoading(false); return }
       setUserId(uid)

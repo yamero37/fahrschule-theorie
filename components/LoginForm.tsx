@@ -110,12 +110,8 @@ export default function LoginForm() {
         return
       }
 
-      const isAdmin = data.session.user.email === 'spieletolga@gmail.com'
-      if (isAdmin || data.session.user.app_metadata?.approved === true) {
-        router.replace('/dashboard')
-      } else {
-        router.replace('/warten')
-      }
+      // Jeder eingeloggte User kommt direkt zum Dashboard
+      router.replace('/dashboard')
     } catch (err: unknown) {
       let msg = 'Anmeldung fehlgeschlagen.'
       if (err instanceof Error) {
