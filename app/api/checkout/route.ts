@@ -32,9 +32,8 @@ export async function POST(req: NextRequest) {
     ).replace(/\/$/, '')
 
     const session = await stripe.checkout.sessions.create({
-      // Automatisch alle aktivierten Zahlungsmethoden anzeigen
-      // (Kreditkarte, PayPal, SEPA, Klarna, giropay, Sofort usw.)
-      automatic_payment_methods: { enabled: true },
+      // Alle gängigen Zahlungsmethoden für Deutschland
+      payment_method_types: ['card', 'paypal', 'sepa_debit', 'klarna', 'sofort'],
       line_items: [{
         price_data: {
           currency: 'eur',
