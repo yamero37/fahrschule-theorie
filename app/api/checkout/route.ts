@@ -32,7 +32,9 @@ export async function POST(req: NextRequest) {
     ).replace(/\/$/, '')
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      // Automatisch alle aktivierten Zahlungsmethoden anzeigen
+      // (Kreditkarte, PayPal, SEPA, Klarna, giropay, Sofort usw.)
+      automatic_payment_methods: { enabled: true },
       line_items: [{
         price_data: {
           currency: 'eur',
@@ -45,7 +47,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       }],
       mode: 'payment',
-      client_reference_id: user.id,   // wird im Webhook genutzt
+      client_reference_id: user.id,
       customer_email: user.email ?? undefined,
       success_url: `${appUrl}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/dashboard`,
