@@ -280,7 +280,7 @@ export default function SimulationClient() {
     else { window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null }; setTimeout(doSpeak, 350) }
   }, [])
 
-  const speakText = useCallback(async (text: string) => {
+  const speakText = useCallback(async (text: string): Promise<void> => {
     if (!ttsOn) return
     // laufendes Audio stoppen
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
@@ -301,8 +301,11 @@ export default function SimulationClient() {
       const url   = URL.createObjectURL(blob)
       const audio = new Audio(url)
       audioRef.current = audio
-      await audio.play()
-      audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null }
+      await new Promise<void>((resolve) => {
+        audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null; resolve() }
+        audio.onerror = () => { URL.revokeObjectURL(url); audioRef.current = null; resolve() }
+        audio.play().catch(() => resolve())
+      })
     } catch (e) {
       console.warn('[TTS] Fallback auf Browser-TTS:', e)
       speakBrowser(text)
@@ -326,32 +329,35 @@ export default function SimulationClient() {
   }, [phase])
   useEffect(() => {
     if (phase !== 'speaking') return
+    if (ttsOn) { setPhase('ready'); return }
     if (typed >= GREETING.length) { setPhase('ready'); return }
     const ch = GREETING[typed]
     const delay = ch === '.' ? 320 : ch === ',' ? 160 : 42
     const t = setTimeout(() => setTyped(i => i + 1), delay)
     return () => clearTimeout(t)
-  }, [phase, typed, speakText])
+  }, [phase, typed, ttsOn])
 
   /* ─── Phase 2 intro typewriter ────────────────────────── */
   useEffect(() => {
     if (mainPhase !== 'phase2' || p2Phase !== 'intro_typing') return
+    if (ttsOn) { setP2Phase('intro'); return }
     if (p2Typed >= P2_INTRO.length) { setP2Phase('intro'); return }
     const ch = P2_INTRO[p2Typed]
     const delay = ch === '.' ? 300 : ch === ',' ? 150 : 38
     const t = setTimeout(() => setP2Typed(i => i + 1), delay)
     return () => clearTimeout(t)
-  }, [mainPhase, p2Phase, p2Typed, speakText])
+  }, [mainPhase, p2Phase, p2Typed, ttsOn])
 
   /* ─── Phase 2 feedback typewriter ────────────────────── */
   useEffect(() => {
     if (p2Phase !== 'feedback' || !aiFeedback || loadingFb) return
+    if (ttsOn) { setFbTyped(aiFeedback.length); return }
     if (fbTyped >= aiFeedback.length) return
     const ch = aiFeedback[fbTyped]
     const delay = ch === '.' ? 220 : ch === ',' ? 120 : 30
     const t = setTimeout(() => setFbTyped(i => i + 1), delay)
     return () => clearTimeout(t)
-  }, [p2Phase, aiFeedback, fbTyped, loadingFb])
+  }, [p2Phase, aiFeedback, fbTyped, loadingFb, ttsOn])
 
   /* ─── Scroll panel into view when question changes ────── */
   useEffect(() => {
@@ -362,8 +368,7 @@ export default function SimulationClient() {
 
   /* ─── Start Phase 2 ────────────────────────────────────── */
   const startPhase2 = () => {
-    // Begrüßung + Intro-Satz erst nach User-Klick abspielen (kein Autoplay-Block)
-    speakText(GREETING + ' ' + P2_INTRO)
+    speakText(P2_INTRO)
     setMainPhase('phase2')
     setP2Phase('intro_typing')
     setP2Typed(0)
@@ -380,7 +385,7 @@ export default function SimulationClient() {
     setFbTyped(0)
     setUserInput('')
     setP2Phase('question')
-    setTimeout(() => speakText(picked[0].question), 400)
+    speakText(picked[0].question)
   }
 
   /* ─── Submit free-text answer ──────────────────────────── */
@@ -419,7 +424,7 @@ export default function SimulationClient() {
       }])
       setAiFeedback(feedback)
       setLoadingFb(false)
-      setTimeout(() => speakText(feedback), 150)
+      speakText(feedback)
     } catch {
       const fallback = `Antwort gespeichert.`
       setAnswers(prev => [...prev, {
@@ -449,7 +454,7 @@ export default function SimulationClient() {
       setUserInput('')
       setVoiceError('')
       setP2Phase('question')
-      setTimeout(() => speakText(questions[next].question), 400)
+      speakText(questions[next].question)
     }
   }
 
@@ -777,8 +782,8 @@ export default function SimulationClient() {
             padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
           }}>
             <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
-              {GREETING.slice(0, typed)}
-              {phase === 'speaking' && <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>}
+              {ttsOn ? GREETING : GREETING.slice(0, typed)}
+              {phase === 'speaking' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite', opacity:1 }}>|</span>}
             </p>
           </div>
           {phase === 'ready' && (
@@ -832,8 +837,8 @@ export default function SimulationClient() {
             padding:'0.85rem 1rem', marginBottom:'0.85rem', minHeight:'60px',
           }}>
             <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
-              {P2_INTRO.slice(0, p2Typed)}
-              {p2Phase === 'intro_typing' && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
+              {ttsOn ? P2_INTRO : P2_INTRO.slice(0, p2Typed)}
+              {p2Phase === 'intro_typing' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
             </p>
           </div>
           {p2Phase === 'intro' && p2Typed >= P2_INTRO.length && (
@@ -978,8 +983,8 @@ export default function SimulationClient() {
                       {[0,1,2].map(i => <div key={i} style={{ width:'7px',height:'7px',borderRadius:'50%',background:'#1464be', animation:`tarsDot 1.1s ${i*0.22}s ease-in-out infinite` }}/>)}
                     </div>
                   : <p style={{ margin:0, fontSize:'0.88rem', color:'rgba(255,255,255,0.88)', lineHeight:1.55 }}>
-                      {aiFeedback.slice(0, fbTyped)}
-                      {fbTyped < aiFeedback.length && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
+                      {ttsOn ? aiFeedback : aiFeedback.slice(0, fbTyped)}
+                      {!ttsOn && fbTyped < aiFeedback.length && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
                     </p>
                 }
               </div>
