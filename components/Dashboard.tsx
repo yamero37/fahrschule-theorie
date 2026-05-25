@@ -83,7 +83,10 @@ export default function Dashboard() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [userId, setUserId] = useState('')
+  const [userToken, setUserToken] = useState('')
   const [points, setPoints] = useState(0)
+  const [isPremium, setIsPremium] = useState(false)
+  const [checkingOut, setCheckingOut] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialDone, setTutorialDone] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -119,6 +122,7 @@ export default function Dashboard() {
         // Populate from session immediately — no extra network round-trip needed
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
+        setUserToken(session.access_token ?? '')
         noteUserId.current = session.user.id
 
         const admin = session.user.email === 'spieletolga@gmail.com'
@@ -161,9 +165,10 @@ export default function Dashboard() {
         ;(async () => {
           try {
             const { data: stats } = await supabase.from('user_stats')
-              .select('points, tutorial_done').eq('user_id', uid).single()
+              .select('points, tutorial_done, is_premium').eq('user_id', uid).single()
             if (stats) {
               setPoints(stats.points ?? 0)
+              setIsPremium(!!stats.is_premium)
               const done = !!stats.tutorial_done || localDone
               setTutorialDone(done)
               if (!done) setShowTutorial(true)
@@ -224,6 +229,30 @@ export default function Dashboard() {
     setEditGoalVal(String(n))
     try { localStorage.setItem('fragenDailyGoal', String(n)) } catch {}
     setEditGoal(false)
+  }
+
+  async function startCheckout() {
+    if (checkingOut || isPremium) return
+    setCheckingOut(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${userToken}` },
+      })
+      const data = await res.json()
+      if (data.error === 'already_premium') {
+        setIsPremium(true); setCheckingOut(false); return
+      }
+      if (data.url) {
+        window.location.href = data.url   // weiterleitung zu Stripe Checkout
+      } else {
+        console.error('Kein Checkout-URL:', data)
+        setCheckingOut(false)
+      }
+    } catch (e) {
+      console.error('Checkout-Fehler:', e)
+      setCheckingOut(false)
+    }
   }
 
   const rank = getRank(points)
@@ -610,7 +639,9 @@ export default function Dashboard() {
         {/* ── PREMIUM BANNER ── */}
         <div style={{
           position: 'relative', overflow: 'hidden',
-          background: 'linear-gradient(135deg, rgba(96,165,250,0.07), rgba(167,139,250,0.06), rgba(244,114,182,0.05))',
+          background: isPremium
+            ? 'linear-gradient(135deg, rgba(96,165,250,0.1), rgba(167,139,250,0.09), rgba(244,114,182,0.07))'
+            : 'linear-gradient(135deg, rgba(96,165,250,0.07), rgba(167,139,250,0.06), rgba(244,114,182,0.05))',
           border: '1.5px solid rgba(147,197,253,0.45)',
           borderRadius: '1.25rem', padding: '1rem 1.1rem',
           display: 'flex', alignItems: 'center', gap: '0.85rem',
@@ -632,23 +663,55 @@ export default function Dashboard() {
             position: 'relative',
           }}>💎</div>
           <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-            <p style={{
-              margin: '0 0 0.15rem', fontSize: '0.88rem', fontWeight: 900,
-              background: 'linear-gradient(90deg, #93c5fd, #c4b5fd, #f9a8d4)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>Hol dir Premium</p>
-            <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>Mehr Funktionen. Mehr Fortschritt.</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
+              <p style={{
+                margin: 0, fontSize: '0.88rem', fontWeight: 900,
+                background: 'linear-gradient(90deg, #93c5fd, #c4b5fd, #f9a8d4)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              }}>{isPremium ? 'Du bist Premium!' : 'Hol dir Premium'}</p>
+              {isPremium && (
+                <span style={{
+                  fontSize: '0.48rem', fontWeight: 900, padding: '1px 6px', borderRadius: '4px',
+                  background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.35)',
+                  color: '#fbbf24', letterSpacing: '0.06em',
+                }}>⭐ AKTIV</span>
+              )}
+            </div>
+            <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>
+              {isPremium ? 'Alle Features sind für dich freigeschaltet.' : 'Mehr Funktionen. Mehr Fortschritt.'}
+            </p>
           </div>
-          <button style={{
-            padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
-            color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px',
-            boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
-            position: 'relative',
-          }}>
-            Jetzt upgraden 💎
-          </button>
+          {isPremium ? (
+            <span style={{
+              fontSize: '1.4rem', flexShrink: 0,
+              filter: 'drop-shadow(0 0 8px rgba(234,179,8,0.6))',
+            }}>✅</span>
+          ) : (
+            <button
+              onClick={startCheckout}
+              disabled={checkingOut}
+              style={{
+                padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
+                background: checkingOut
+                  ? 'rgba(139,92,246,0.3)'
+                  : 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
+                color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
+                cursor: checkingOut ? 'default' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: '5px',
+                boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
+                position: 'relative',
+                transition: 'opacity 0.2s',
+                opacity: checkingOut ? 0.7 : 1,
+              }}
+            >
+              {checkingOut ? (
+                <>
+                  <span style={{ width: '12px', height: '12px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                  Lädt…
+                </>
+              ) : 'Jetzt upgraden 💎'}
+            </button>
+          )}
         </div>
 
 
