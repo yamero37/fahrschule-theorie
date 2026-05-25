@@ -264,6 +264,7 @@ export default function SimulationClient() {
   const [introStep,   setIntroStep]   = useState<IntroStep>('speaking')
   const [userName,    setUserName]    = useState('')
   const [introInput,  setIntroInput]  = useState('')
+  const [tarsMessage, setTarsMessage] = useState('')
 
   const recognitionRef  = useRef<any>(null)
   const inputResolveRef = useRef<((v: string) => void) | null>(null)
@@ -392,32 +393,58 @@ export default function SimulationClient() {
     setMainPhase('phase2')
     setP2Phase('intro_seq')
     setIntroStep('speaking')
+    setTarsMessage('')
+
+    const history: { role: 'user' | 'assistant'; content: string }[] = []
+
+    const tarsSay = async (userMsg: string | null, phase: string): Promise<string> => {
+      if (userMsg) history.push({ role: 'user', content: userMsg })
+      try {
+        const res = await fetch('/api/tars/chat', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: history, phase }),
+        })
+        const data = await res.json()
+        history.push({ role: 'assistant', content: data.message })
+        setTarsMessage(data.message)
+        return data.message
+      } catch {
+        const fb = phase === 'intro' ? 'Guten Tag! Ich bin Tars, Ihr Fahrprüfer. Wie ist Ihr Name?' : 'Verstanden.'
+        history.push({ role: 'assistant', content: fb })
+        setTarsMessage(fb)
+        return fb
+      }
+    }
 
     await new Promise<void>(r => setTimeout(r, 500))
 
-    // 1. Vorstellung + Name-Frage
-    await speakText(INTRO_GREETING)
+    // 1. Vorstellung (KI)
+    const m1 = await tarsSay(null, 'intro')
+    await speakText(m1)
     setIntroStep('name_input')
+
+    // 2. Name → KI reagiert
     const name = await waitForIntroInput()
     setUserName(name)
-
-    // 2. Ausweis
     setIntroStep('speaking')
-    await speakText(INTRO_ID(name))
+    const m2 = await tarsSay(name, 'name')
+    await speakText(m2)
+
+    // 3. Ausweis-Check
     setIntroStep('id_check')
     await new Promise<void>(r => setTimeout(r, 2800))
-    await speakText(INTRO_ID_OK)
 
-    // 3. Bereit-Frage
+    // 4. Bereit-Frage (KI)
     setIntroStep('speaking')
-    await speakText(INTRO_READY)
+    const m3 = await tarsSay(null, 'id_ok')
+    await speakText(m3)
     setIntroStep('ready_input')
-    const readyAnswer = await waitForIntroInput()
 
-    // 4. Reaktion + Start
+    // 5. Antwort → KI reagiert & leitet über
+    const readyAnswer = await waitForIntroInput()
     setIntroStep('speaking')
-    const isReady = /^(ja|yes|klar|bereit|los|okay|ok|natürlich|sicher|auf jeden)/i.test(readyAnswer.trim())
-    await speakText(isReady ? INTRO_YES : INTRO_NO)
+    const m4 = await tarsSay(readyAnswer, 'ready')
+    await speakText(m4)
 
     startQuestions()
   }
@@ -815,18 +842,26 @@ export default function SimulationClient() {
             )}
           </div>
 
-          {/* Tars spricht – Punkte */}
+          {/* Tars spricht */}
           {introStep === 'speaking' && (
             <div style={{
               background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
               border:'1px solid rgba(20,100,190,0.25)',
-              padding:'1.1rem', minHeight:'60px',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:'8px',
+              padding:'0.95rem 1rem', minHeight:'60px',
+              display:'flex', alignItems:'center', gap:'8px',
             }}>
-              {[0,1,2].map(i => (
-                <div key={i} style={{ width:'9px', height:'9px', borderRadius:'50%', background:'#1464be',
-                  animation:`tarsDot 1.2s ${i*0.25}s ease-in-out infinite` }}/>
-              ))}
+              {tarsMessage ? (
+                <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.65 }}>
+                  {tarsMessage}
+                </p>
+              ) : (
+                <div style={{ display:'flex', gap:'6px', margin:'auto' }}>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{ width:'9px', height:'9px', borderRadius:'50%', background:'#1464be',
+                      animation:`tarsDot 1.2s ${i*0.25}s ease-in-out infinite` }}/>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -836,7 +871,7 @@ export default function SimulationClient() {
               <div style={{ background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
                 border:'1px solid rgba(20,100,190,0.25)', padding:'0.85rem 1rem', marginBottom:'0.7rem' }}>
                 <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.6 }}>
-                  Wie ist Ihr Name?
+                  {tarsMessage || 'Wie ist Ihr Name?'}
                 </p>
               </div>
               {inputMode === 'text' ? (
@@ -892,7 +927,7 @@ export default function SimulationClient() {
               <div style={{ background:'rgba(10,24,50,0.6)', borderRadius:'0.85rem',
                 border:'1px solid rgba(20,100,190,0.25)', padding:'0.85rem 1rem', marginBottom:'0.7rem' }}>
                 <p style={{ margin:0, fontSize:'0.96rem', fontWeight:500, color:'rgba(255,255,255,0.92)', lineHeight:1.6 }}>
-                  Sind Sie bereit für die Prüfung?
+                  {tarsMessage || 'Sind Sie bereit für die Prüfung?'}
                 </p>
               </div>
               {inputMode === 'text' ? (
