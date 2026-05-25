@@ -372,12 +372,16 @@ export default function SimulationClient() {
   const handleStart = async () => {
     setStarted(true)
     if (ttsOn) {
-      await new Promise<void>(r => setTimeout(r, 600))   // Animation kurz anlaufen lassen
+      await new Promise<void>(r => setTimeout(r, 600))
       await speakText(GREETING)
       setMainPhase('phase2')
       setP2Phase('intro_typing')
+      await speakText(P2_INTRO)   // warten bis Intro fertig gesprochen
+      startQuestions()             // dann automatisch Fragen starten
+    } else {
+      setMainPhase('phase2')
+      setP2Phase('intro_typing')
       setP2Typed(0)
-      speakText(P2_INTRO)
     }
   }
 
@@ -859,7 +863,7 @@ export default function SimulationClient() {
               {p2Phase === 'intro_typing' && !ttsOn && <span style={{ animation:'tarsCursor 0.75s step-end infinite' }}>|</span>}
             </p>
           </div>
-          {p2Phase === 'intro' && p2Typed >= P2_INTRO.length && (
+          {p2Phase === 'intro' && p2Typed >= P2_INTRO.length && !ttsOn && (
             <button onClick={startQuestions} style={{
               width:'100%', padding:'0.9rem',
               background:'linear-gradient(135deg,#1055b0,#082856)',
@@ -1164,6 +1168,28 @@ export default function SimulationClient() {
               Technische Fahrzeugkontrolle · 3 Fragen
             </p>
           </div>
+          {/* Eingabe-Modus wählen */}
+          <div style={{ width:'100%', maxWidth:'280px' }}>
+            <p style={{ margin:'0 0 0.6rem', fontSize:'0.62rem', fontWeight:800, color:'rgba(255,255,255,0.35)', letterSpacing:'0.1em', textTransform:'uppercase', textAlign:'center' }}>
+              Wie möchtest du antworten?
+            </p>
+            <div style={{ display:'flex', gap:'0.6rem' }}>
+              {(['text','voice'] as InputMode[]).map(m => (
+                <button key={m} onClick={() => setInputMode(m)} style={{
+                  flex:1, padding:'0.75rem 0.5rem',
+                  background: inputMode===m ? 'rgba(20,100,190,0.3)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${inputMode===m ? 'rgba(96,180,255,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                  borderRadius:'0.85rem',
+                  color: inputMode===m ? '#60b4ff' : 'rgba(255,255,255,0.35)',
+                  fontSize:'0.82rem', fontWeight:700, cursor:'pointer',
+                  transition:'all 0.15s',
+                }}>
+                  {m === 'text' ? '✏️ Schreiben' : '🎤 Sprechen'}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <button onClick={handleStart} style={{
             padding:'1rem 2.5rem',
             background:'linear-gradient(135deg,#1055b0,#082856)',
