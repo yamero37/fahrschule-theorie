@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import ShootingStars from '@/components/ShootingStars'
+import Link from 'next/link'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
@@ -22,6 +23,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ShootingStars />
         <Navigation />
         <main className="min-h-screen">{children}</main>
+        <footer style={{
+          borderTop: '1px solid rgba(255,255,255,0.07)',
+          padding: '1.25rem 1.5rem',
+          textAlign: 'center',
+          fontSize: '0.8rem',
+          color: 'rgba(255,255,255,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1.5rem',
+          flexWrap: 'wrap',
+        }}>
+          <span>© {new Date().getFullYear()} TolDrive · Tolga Arslan</span>
+          <Link href="/impressum" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+            Impressum
+          </Link>
+          <Link href="/datenschutz" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+            Datenschutz
+          </Link>
+        </footer>
       </body>
     </html>
   )
