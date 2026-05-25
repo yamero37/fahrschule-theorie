@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
 
-const VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? '4tVWa6JWnwS0ZoCf6ZzP'
+const VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? '78gC8gOZUblsoor482I7'
 const MODEL_ID = 'eleven_multilingual_v2'
 
 export async function POST(req: NextRequest) {
