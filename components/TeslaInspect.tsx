@@ -14,6 +14,7 @@ type CarPart = {
   color: string
   checks: Check[]
   info: string
+  tip?: string    // Alleine prüfen – Tipp
   law?: string
 }
 
@@ -23,6 +24,7 @@ type ViewName = typeof VIEWS[number]
 /* ── Prüfungsdaten ──────────────────────────────────────── */
 const VIEW_PARTS: Record<ViewName, CarPart[]> = {
   Heck: [
+    // ── Rückstrahler ──
     {
       id: 'reflektor-l',
       cx: 60, cy: 175,
@@ -48,6 +50,49 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       ],
       info: 'Rote Rückstrahler reflektieren das Licht anderer Fahrzeuge passiv zurück. Sie funktionieren auch ohne Strom und erhöhen so die Sichtbarkeit des Fahrzeugs.',
       law: '§ 51a StVZO',
+    },
+    // ── Bremslichter ──
+    {
+      id: 'bremslicht-l',
+      cx: 80, cy: 134,
+      title: 'Bremslicht links',
+      subtitle: 'Linke Rücklichtleiste · leuchtet beim Bremsen',
+      color: '#f97316',
+      checks: [
+        { label: 'Leuchtet auf, sobald das Bremspedal betätigt wird' },
+        { label: 'Nicht beschädigt / nicht gebrochen' },
+      ],
+      info: 'Das Bremslicht warnt nachfolgende Fahrzeuge, dass das Fahrzeug abbremst. Es muss sofort und deutlich aufleuchten.',
+      tip: 'Rückwärts an eine Wand stellen → Bremse treten → durch den Innenspiegel schauen ob es leuchtet.',
+      law: '§ 53 StVZO',
+    },
+    {
+      id: 'bremslicht-r',
+      cx: 320, cy: 134,
+      title: 'Bremslicht rechts',
+      subtitle: 'Rechte Rücklichtleiste · leuchtet beim Bremsen',
+      color: '#f97316',
+      checks: [
+        { label: 'Leuchtet auf, sobald das Bremspedal betätigt wird' },
+        { label: 'Nicht beschädigt / nicht gebrochen' },
+      ],
+      info: 'Das Bremslicht warnt nachfolgende Fahrzeuge, dass das Fahrzeug abbremst. Es muss sofort und deutlich aufleuchten.',
+      tip: 'Rückwärts an eine Wand stellen → Bremse treten → durch den Innenspiegel schauen ob es leuchtet.',
+      law: '§ 53 StVZO',
+    },
+    {
+      id: 'bremslicht-mitte',
+      cx: 200, cy: 54,
+      title: '3. Bremsleuchte (oben)',
+      subtitle: 'Obere Mitte · Heckscheibe / Spoilerbereich',
+      color: '#f97316',
+      checks: [
+        { label: 'Leuchtet auf, sobald das Bremspedal betätigt wird' },
+        { label: 'Nicht beschädigt / nicht gebrochen' },
+      ],
+      info: 'Die 3. Bremsleuchte ist in der Mitte oben angebracht und erhöht die Sichtbarkeit für nachfolgende Fahrzeuge erheblich — besonders bei Auffahrunfällen. Seit 1998 Pflicht für alle Neuwagen.',
+      tip: 'Rückwärts an eine Wand stellen → Bremse treten → durch den Innenspiegel schauen ob alle 3 Lichter leuchten.',
+      law: '§ 53 StVZO',
     },
   ],
   Front: [],
@@ -160,6 +205,12 @@ function TeslaRearSVG({
         d="M 118 82 Q 160 77 200 77 Q 240 77 282 82 L 280 90 Q 240 86 200 86 Q 160 86 120 90 Z"
         fill="rgba(255,255,255,0.02)"
       />
+
+      {/* ── 3. Bremsleuchte (oben Mitte, im Heckscheiben-Bereich) ── */}
+      <rect x="158" y="45" width="84" height="7" rx="3.5" fill="#2a0a00" stroke="rgba(249,115,22,0.35)" strokeWidth="1" />
+      <rect x="161" y="46.5" width="78" height="4" rx="2" fill="rgba(249,115,22,0.18)" />
+      {/* Mittige Teilung */}
+      <line x1="200" y1="46" x2="200" y2="52" stroke="rgba(0,0,0,0.4)" strokeWidth="0.5" />
 
       {/* ── Kofferraumdeckel-Kante ── */}
       <line x1="84" y1="122" x2="316" y2="122" stroke="rgba(255,255,255,0.09)" strokeWidth="1.5" />
@@ -381,8 +432,8 @@ export default function TeslaInspect() {
       {selected && (
         <div style={{
           marginTop: '0.75rem',
-          background: 'linear-gradient(135deg, rgba(239,68,68,0.07) 0%, rgba(8,8,10,0.95) 100%)',
-          border: '1px solid rgba(239,68,68,0.35)',
+          background: `linear-gradient(135deg, ${selected.color}12 0%, rgba(8,8,10,0.95) 100%)`,
+          border: `1px solid ${selected.color}55`,
           borderRadius: '1rem',
           padding: '1rem 1.1rem',
           animation: 'fadeUp 0.2s ease both',
@@ -416,8 +467,9 @@ export default function TeslaInspect() {
                 <span style={{
                   fontSize: '0.55rem', fontWeight: 700,
                   padding: '2px 8px', borderRadius: '6px',
-                  background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-                  color: '#fca5a5',
+                  background: `${selected.color}18`,
+                  border: `1px solid ${selected.color}45`,
+                  color: selected.color,
                 }}>
                   {selected.law}
                 </span>
@@ -467,12 +519,32 @@ export default function TeslaInspect() {
             display: 'flex', alignItems: 'flex-start', gap: '0.55rem',
             padding: '0.65rem 0.8rem', borderRadius: '0.65rem',
             background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.18)',
+            marginBottom: selected.tip ? '0.5rem' : 0,
           }}>
             <span style={{ fontSize: '0.82rem', flexShrink: 0, marginTop: '1px' }}>ℹ️</span>
             <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
               {selected.info}
             </p>
           </div>
+
+          {/* Alleine prüfen – Tipp */}
+          {selected.tip && (
+            <div style={{
+              display: 'flex', alignItems: 'flex-start', gap: '0.55rem',
+              padding: '0.65rem 0.8rem', borderRadius: '0.65rem',
+              background: 'rgba(234,179,8,0.06)', border: '1px solid rgba(234,179,8,0.22)',
+            }}>
+              <span style={{ fontSize: '0.82rem', flexShrink: 0, marginTop: '1px' }}>💡</span>
+              <div>
+                <p style={{ margin: '0 0 2px', fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fbbf24' }}>
+                  Alleine prüfen
+                </p>
+                <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+                  {selected.tip}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
