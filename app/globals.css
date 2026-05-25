@@ -1,36 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --bg:           #0f0f12;
-  --surface:      #17171c;
-  --surface-2:    #1d1d24;
-  --border:       #252530;
-  --border-light: #32323f;
+  /* ── Luxury Dark UI ── */
+  --bg:           #0A0A0A;
+  --surface:      #111111;
+  --surface-2:    #1A1A1A;
+  --border:       #222222;
+  --border-light: #2E2E2E;
   --green:        #22c55e;
   --green-dark:   #16a34a;
   --green-glow:   rgba(34,197,94,0.1);
-  --gold:         #d4a017;
-  --gold-light:   #f0c040;
-  --gold-dark:    #a07a0a;
-  --gold-glow:    rgba(212,160,23,0.18);
-  --text:         #faf5e8;
-  --text-muted:   #c4a85e;
-  --text-dim:     #6b5222;
+
+  /* Klassisches Metallic-Gold / Champagner-Gold */
+  --gold:         #D4AF37;
+  --gold-light:   #F1D6A2;
+  --gold-dark:    #C89B5E;
+  --gold-glow:    rgba(212,175,55,0.2);
+
+  /* Textfarben — warm & edel */
+  --text:         #F5EDD8;
+  --text-muted:   #BFA060;
+  --text-dim:     #4A3424;
 
   /* Theme-adaptive semantic variables */
-  --gold-rgb:      212, 160, 23;
-  --text-h:        #fff8e8;
-  --text-body:     #f0e5cc;
-  --card-bg:       rgba(12,10,6,0.97);
-  --card-border:   rgba(212,160,23,0.14);
-  --card-shadow:   0 30px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,220,80,0.04);
-  --input-bg:      rgba(255,255,255,0.04);
-  --input-border:  rgba(255,220,80,0.1);
-  --input-color:   #f0e5cc;
-  --divider-color: rgba(255,220,80,0.06);
-  --nav-bg:        rgba(6,5,2,0.96);
-  --nav-border:    rgba(212,160,23,0.22);
-  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,160,23,0.13) 0%, rgba(140,100,10,0.05) 45%, transparent 70%);
+  --gold-rgb:      212, 175, 55;
+  --text-h:        #FFF8E8;
+  --text-body:     #EDE0C0;
+  --card-bg:       rgba(10,10,10,0.98);
+  --card-border:   rgba(212,175,55,0.15);
+  --card-shadow:   0 30px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(212,175,55,0.05);
+  --input-bg:      rgba(255,255,255,0.03);
+  --input-border:  rgba(212,175,55,0.15);
+  --input-color:   #EDE0C0;
+  --divider-color: rgba(212,175,55,0.07);
+  --nav-bg:        rgba(6,6,6,0.97);
+  --nav-border:    rgba(212,175,55,0.22);
+  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,175,55,0.11) 0%, rgba(74,52,36,0.04) 45%, transparent 70%);
 }
 
 @theme inline {
@@ -92,10 +97,10 @@
 }
 
 /* ── Leaf decorations (LoginForm) ─────────────────────── */
-.leaf-main   { fill: #d4a017; }
-.leaf-dark   { fill: #a07a0a; }
-.leaf-darker { fill: #7a5a05; }
-.leaf-light  { fill: #f0c040; }
+.leaf-main   { fill: #D4AF37; }
+.leaf-dark   { fill: #C89B5E; }
+.leaf-darker { fill: #4A3424; }
+.leaf-light  { fill: #F1D6A2; }
 [data-theme="light"] .leaf-main   { fill: #0d9488; }
 [data-theme="light"] .leaf-dark   { fill: #0f766e; }
 [data-theme="light"] .leaf-darker { fill: #115e59; }
@@ -174,7 +179,7 @@ body {
     90deg,
     var(--gold-dark) 0%,
     var(--gold) 30%,
-    #fff5c0 50%,
+    #F1D6A2 50%,
     var(--gold) 70%,
     var(--gold-dark) 100%
   );
