@@ -1,278 +1,364 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import type { Question, Topic } from '@/types'
 import { TOPICS } from '@/types'
+import { supabase } from '@/lib/supabase'
 
-interface Props {
-  questions: Question[]
+const CORRECT_KEY = 'fragenCorrectIds'
+const WRONG_KEY   = 'fragenWrongIds'
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
 }
 
+interface Props { questions: Question[] }
+
 export default function FragenClient({ questions }: Props) {
-  const [selectedTopic, setSelectedTopic] = useState<Topic | 'Alle'>('Alle')
-  const [learnedIds, setLearnedIds] = useState<Set<string>>(new Set())
+  const [selectedTopic, setSelectedTopic]         = useState<Topic | 'Alle'>('Alle')
   const [showOnlyUnlearned, setShowOnlyUnlearned] = useState(false)
-  const [search, setSearch] = useState('')
+  const [showOnlyWrong, setShowOnlyWrong]         = useState(false)
+  const [search, setSearch]                       = useState('')
+  const [correctIds, setCorrectIds]               = useState<Set<string>>(new Set())
+  const [wrongIds, setWrongIds]                   = useState<Set<string>>(new Set())
+  const [userId, setUserId]                       = useState('')
 
   useEffect(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('learnedIds') ?? '[]')
-      setLearnedIds(new Set(stored))
-    } catch { /* ignore */ }
+      setCorrectIds(new Set(JSON.parse(localStorage.getItem(CORRECT_KEY) ?? '[]')))
+      setWrongIds(new Set(JSON.parse(localStorage.getItem(WRONG_KEY) ?? '[]')))
+    } catch {}
+    supabase.auth.getUser().then(({ data }) => { if (data.user) setUserId(data.user.id) })
   }, [])
 
-  const toggleLearned = (id: string) => {
-    setLearnedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      localStorage.setItem('learnedIds', JSON.stringify([...next]))
-      return next
-    })
+  const onCorrect = async (qId: string) => {
+    const firstTime = !correctIds.has(qId)
+    if (firstTime) {
+      const next = new Set(correctIds); next.add(qId)
+      setCorrectIds(next)
+      localStorage.setItem(CORRECT_KEY, JSON.stringify([...next]))
+    }
+    // Remove from wrong list
+    if (wrongIds.has(qId)) {
+      const nw = new Set(wrongIds); nw.delete(qId)
+      setWrongIds(nw)
+      localStorage.setItem(WRONG_KEY, JSON.stringify([...nw]))
+    }
+    // +2 Punkte in Supabase (nur beim ersten Mal)
+    if (firstTime && userId) {
+      try {
+        const { data: stats } = await supabase
+          .from('user_stats').select('points').eq('user_id', userId).single()
+        await supabase.from('user_stats')
+          .upsert({ user_id: userId, points: (stats?.points ?? 0) + 2 }, { onConflict: 'user_id' })
+      } catch {}
+    }
   }
 
-  const filtered = questions.filter((q) => {
-    if (selectedTopic !== 'Alle' && q.topic !== selectedTopic) return false
-    if (showOnlyUnlearned && learnedIds.has(q.id)) return false
-    if (search && !q.question.toLowerCase().includes(search.toLowerCase())) return false
-    return true
-  })
+  const onWrong = (qId: string) => {
+    if (correctIds.has(qId)) return
+    const next = new Set(wrongIds); next.add(qId)
+    setWrongIds(next)
+    localStorage.setItem(WRONG_KEY, JSON.stringify([...next]))
+  }
 
   const topicCounts: Record<string, number> = {}
   for (const q of questions) topicCounts[q.topic] = (topicCounts[q.topic] ?? 0) + 1
 
-  const learnedPercent = questions.length > 0 ? Math.round((learnedIds.size / questions.length) * 100) : 0
+  const filtered = questions.filter(q => {
+    if (selectedTopic !== 'Alle' && q.topic !== selectedTopic) return false
+    if (showOnlyUnlearned && correctIds.has(q.id)) return false
+    if (showOnlyWrong && !wrongIds.has(q.id)) return false
+    if (search && !q.question.toLowerCase().includes(search.toLowerCase())) return false
+    return true
+  })
+
+  const correctPct = questions.length > 0
+    ? Math.round((correctIds.size / questions.length) * 100) : 0
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div style={{ maxWidth: '640px', margin: '0 auto', padding: '1.25rem 1rem 84px' }}>
 
-      {/* ── Sidebar ── */}
-      <aside className="lg:w-56 shrink-0">
-        <div
-          className="rounded-xl overflow-hidden sticky top-6"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          {/* Progress block */}
-          <div className="p-5" style={{ borderBottom: '1px solid var(--border)' }}>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>Fortschritt</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--gold)' }}>{learnedPercent}%</span>
-            </div>
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${learnedPercent}%`,
-                  background: 'linear-gradient(90deg, var(--green-dark), var(--gold))',
-                }}
-              />
-            </div>
-            <p className="text-xs mt-2" style={{ color: 'var(--text-dim)' }}>
-              {learnedIds.size} / {questions.length} gelernt
-            </p>
-          </div>
-
-          {/* Filter */}
-          <div className="p-3" style={{ borderBottom: '1px solid var(--border)' }}>
-            <label className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors"
-              style={{ color: 'var(--text-muted)' }}>
-              <input
-                type="checkbox"
-                checked={showOnlyUnlearned}
-                onChange={(e) => setShowOnlyUnlearned(e.target.checked)}
-                className="rounded"
-                style={{ accentColor: 'var(--green)' }}
-              />
-              Nur ungelernte
-            </label>
-          </div>
-
-          {/* Topics */}
-          <div className="p-3">
-            <p className="text-xs font-bold tracking-widest uppercase px-2 mb-2" style={{ color: 'var(--text-dim)' }}>
-              Thema
-            </p>
-            <ul className="space-y-0.5">
-              {(['Alle', ...TOPICS] as const).map((t) => {
-                const active = selectedTopic === t
-                const cnt = t === 'Alle' ? questions.length : (topicCounts[t] ?? 0)
-                return (
-                  <li key={t}>
-                    <button
-                      onClick={() => setSelectedTopic(t)}
-                      className="w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-all"
-                      style={
-                        active
-                          ? { background: 'var(--green-glow)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.2)' }
-                          : { color: 'var(--text-muted)', border: '1px solid transparent' }
-                      }
-                    >
-                      <span>{t}</span>
-                      <span style={{ color: active ? 'var(--green)' : 'var(--text-dim)' }}>{cnt}</span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '1.1rem' }}>
+        <Link href="/dashboard" style={{
+          width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
+          background: 'var(--input-bg)', border: '1px solid var(--input-border)',
+          color: 'var(--text-dim)', fontSize: '1rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
+        }}>←</Link>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 900, color: 'var(--text)' }}>
+            📚 Theoriefragen
+          </h1>
+          <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>
+            {correctIds.size} / {questions.length} richtig · {correctPct}%
+          </p>
         </div>
-      </aside>
+        <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.25)', padding: '3px 9px', borderRadius: '100px' }}>
+          700 Fragen
+        </div>
+      </div>
 
-      {/* ── Main ── */}
-      <div className="flex-1 min-w-0">
+      {/* ── Fortschrittsbalken ── */}
+      <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(var(--gold-rgb),0.1)', overflow: 'hidden', marginBottom: '1.1rem' }}>
+        <div style={{
+          width: `${correctPct}%`, height: '100%', borderRadius: '2px',
+          background: 'linear-gradient(90deg, var(--gold-dark), var(--gold))',
+          transition: 'width 0.6s ease',
+        }} />
+      </div>
 
-        {/* Search */}
-        <div className="mb-5">
-          <input
-            type="text"
-            placeholder="Frage suchen…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-3 text-sm rounded-xl focus:outline-none transition-all"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border)',
-              color: 'var(--text)',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--green)'
-              e.currentTarget.style.boxShadow = '0 0 0 3px var(--green-glow)'
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
+      {/* ── Suche ── */}
+      <input
+        type="text"
+        placeholder="🔍  Frage suchen…"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{
+          width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', boxSizing: 'border-box',
+          background: 'var(--input-bg)', border: '1px solid var(--input-border)',
+          color: 'var(--text)', fontSize: '0.85rem', outline: 'none', marginBottom: '0.75rem',
+        }}
+        onFocus={e => e.currentTarget.style.borderColor = 'rgba(var(--gold-rgb),0.45)'}
+        onBlur={e => e.currentTarget.style.borderColor = 'var(--input-border)'}
+      />
+
+      {/* ── Themen-Chips ── */}
+      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+        {(['Alle', ...TOPICS] as const).map(t => {
+          const active = selectedTopic === t
+          const cnt = t === 'Alle' ? questions.length : (topicCounts[t] ?? 0)
+          return (
+            <button key={t} onClick={() => setSelectedTopic(t)} style={{
+              padding: '3px 9px', borderRadius: '100px', fontSize: '0.6rem', fontWeight: 700,
+              cursor: 'pointer',
+              background: active ? 'rgba(var(--gold-rgb),0.14)' : 'var(--input-bg)',
+              border: active ? '1px solid rgba(var(--gold-rgb),0.4)' : '1px solid var(--input-border)',
+              color: active ? 'var(--gold)' : 'var(--text-muted)',
+            }}>{t} ({cnt})</button>
+          )
+        })}
+      </div>
+
+      {/* ── Filter-Buttons ── */}
+      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+        <button onClick={() => { setShowOnlyUnlearned(v => !v); setShowOnlyWrong(false) }} style={{
+          padding: '3px 10px', borderRadius: '100px', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer',
+          background: showOnlyUnlearned ? 'rgba(34,197,94,0.1)' : 'var(--input-bg)',
+          border: showOnlyUnlearned ? '1px solid rgba(34,197,94,0.35)' : '1px solid var(--input-border)',
+          color: showOnlyUnlearned ? '#22c55e' : 'var(--text-muted)',
+        }}>○ Noch nicht richtig ({questions.length - correctIds.size})</button>
+        <button onClick={() => { setShowOnlyWrong(v => !v); setShowOnlyUnlearned(false) }} style={{
+          padding: '3px 10px', borderRadius: '100px', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer',
+          background: showOnlyWrong ? 'rgba(239,68,68,0.1)' : 'var(--input-bg)',
+          border: showOnlyWrong ? '1px solid rgba(239,68,68,0.35)' : '1px solid var(--input-border)',
+          color: showOnlyWrong ? '#f87171' : 'var(--text-muted)',
+        }}>✗ Falsch beantwortet ({wrongIds.size})</button>
+      </div>
+
+      <p style={{ fontSize: '0.63rem', color: 'var(--text-dim)', marginBottom: '0.75rem' }}>
+        {filtered.length} Fragen
+      </p>
+
+      {/* ── Fragenliste ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+        {filtered.map(q => (
+          <QuestionCard
+            key={q.id}
+            question={q}
+            alreadyCorrect={correctIds.has(q.id)}
+            onCorrect={() => onCorrect(q.id)}
+            onWrong={() => onWrong(q.id)}
           />
-        </div>
-
-        <p className="text-xs mb-5 font-medium" style={{ color: 'var(--text-dim)' }}>
-          {filtered.length} {filtered.length === 1 ? 'Frage' : 'Fragen'}
-          {selectedTopic !== 'Alle' && <span style={{ color: 'var(--gold)' }}> · {selectedTopic}</span>}
-        </p>
-
-        <div className="space-y-3">
-          {filtered.map((q) => (
-            <QuestionCard
-              key={q.id}
-              question={q}
-              learned={learnedIds.has(q.id)}
-              onToggleLearned={() => toggleLearned(q.id)}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <div className="text-center py-20" style={{ color: 'var(--text-dim)' }}>
-              <p className="text-3xl mb-3">◎</p>
-              <p className="text-sm">Keine Fragen gefunden</p>
-            </div>
-          )}
-        </div>
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-dim)' }}>
+            <p style={{ fontSize: '2rem', margin: '0 0 0.75rem' }}>◎</p>
+            <p style={{ fontSize: '0.85rem' }}>Keine Fragen gefunden</p>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
+/* ─────────────────────────────────────────── */
+/*  QuestionCard                               */
+/* ─────────────────────────────────────────── */
+
 function QuestionCard({
   question: q,
-  learned,
-  onToggleLearned,
+  alreadyCorrect,
+  onCorrect,
+  onWrong,
 }: {
   question: Question
-  learned: boolean
-  onToggleLearned: () => void
+  alreadyCorrect: boolean
+  onCorrect: () => void
+  onWrong: () => void
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]         = useState(false)
+  const [selected, setSelected] = useState<string | null>(null)
 
-  const pointColor =
-    q.points >= 5 ? '#f87171' : q.points === 4 ? '#fb923c' : 'var(--gold)'
+  // Antworten einmalig beim Mount mischen
+  const shuffled = useMemo(() => shuffle(q.answers), [q.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const answered      = selected !== null
+  const correctAnswer = q.answers.find(a => a.correct)!
+  const gotItRight    = selected === correctAnswer.id
+
+  const handleSelect = (id: string) => {
+    if (answered) return
+    setSelected(id)
+    if (id === correctAnswer.id) onCorrect()
+    else onWrong()
+  }
+
+  const ptColor = q.points >= 5 ? '#f87171' : q.points === 4 ? '#fb923c' : 'var(--gold)'
 
   return (
-    <div
-      className="rounded-xl overflow-hidden transition-all duration-200"
-      style={{
-        background: 'var(--surface)',
-        border: `1px solid ${open ? 'var(--border-light)' : 'var(--border)'}`,
-        opacity: learned && !open ? 0.65 : 1,
-      }}
-    >
-      {/* Question header */}
-      <div
-        className="p-5 cursor-pointer select-none flex items-start gap-4"
-        onClick={() => setOpen((v) => !v)}
-      >
-        {/* Left: point badge */}
-        <div
-          className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black mt-0.5"
-          style={{
-            background: `${pointColor}18`,
-            color: pointColor,
-            border: `1px solid ${pointColor}40`,
-          }}
-        >
-          {q.points}
-        </div>
+    <div style={{
+      borderRadius: '1.1rem', overflow: 'hidden',
+      background: 'transparent',
+      border: `1px solid ${
+        open
+          ? answered
+            ? gotItRight ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.35)'
+            : 'rgba(var(--gold-rgb),0.35)'
+          : 'rgba(var(--gold-rgb),0.18)'
+      }`,
+      opacity: alreadyCorrect && !open ? 0.65 : 1,
+      transition: 'border-color 0.2s, opacity 0.2s',
+    }}>
 
-        {/* Middle: question text + topic */}
-        <div className="flex-1 min-w-0">
-          <p className="text-xs mb-1.5 font-medium" style={{ color: 'var(--text-dim)' }}>
+      {/* ── Kopfzeile ── */}
+      <div
+        onClick={() => setOpen(v => !v)}
+        style={{
+          padding: '0.8rem 0.9rem', cursor: 'pointer',
+          display: 'flex', alignItems: 'flex-start', gap: '0.7rem',
+        }}
+      >
+        {/* Punkte-Badge */}
+        <div style={{
+          width: '28px', height: '28px', borderRadius: '7px', flexShrink: 0,
+          background: `${ptColor}18`, color: ptColor, border: `1px solid ${ptColor}40`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '0.62rem', fontWeight: 900,
+        }}>{q.points}</div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ margin: '0 0 0.2rem', fontSize: '0.58rem', color: 'var(--text-dim)', fontWeight: 600 }}>
             {q.topic} · {q.id}
           </p>
-          <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--text)' }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text)', lineHeight: 1.5, fontWeight: 600 }}>
             {q.question}
           </p>
         </div>
 
-        {/* Right: actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggleLearned() }}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all"
-            title={learned ? 'Als ungelernt markieren' : 'Als gelernt markieren'}
-            style={
-              learned
-                ? { background: 'rgba(34,197,94,0.15)', color: 'var(--green)', border: '1px solid rgba(34,197,94,0.3)' }
-                : { background: 'var(--surface-2)', color: 'var(--text-dim)', border: '1px solid var(--border)' }
-            }
-          >
-            {learned ? '✓' : '○'}
-          </button>
-          <span className="text-xs w-4 text-center" style={{ color: 'var(--text-dim)' }}>
-            {open ? '▲' : '▼'}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0, paddingTop: '2px' }}>
+          {alreadyCorrect && (
+            <span style={{
+              width: '18px', height: '18px', borderRadius: '50%',
+              background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: 900,
+            }}>✓</span>
+          )}
+          <span style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>{open ? '▲' : '▼'}</span>
         </div>
       </div>
 
-      {/* Answers */}
+      {/* ── Antworten ── */}
       {open && (
-        <div className="px-5 pb-5 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
-          <p className="text-xs font-bold tracking-widest uppercase pt-4 mb-3" style={{ color: 'var(--text-dim)' }}>
-            Antwortmöglichkeiten
-          </p>
-          {q.answers.map((a) => (
-            <div
-              key={a.id}
-              className="flex items-start gap-3 p-3.5 rounded-xl text-sm"
-              style={
-                a.correct
-                  ? { background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.25)', color: '#86efac' }
-                  : { background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-muted)' }
-              }
-            >
-              <span
-                className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                style={
-                  a.correct
-                    ? { background: 'var(--green)', color: '#000' }
-                    : { background: 'var(--border)', color: 'var(--text-dim)' }
+        <div style={{ borderTop: '1px solid rgba(var(--gold-rgb),0.1)', padding: '0.8rem 0.9rem' }}>
+          {!answered && (
+            <p style={{
+              margin: '0 0 0.6rem', fontSize: '0.58rem', fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)',
+            }}>Wähle die richtige Antwort aus</p>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            {shuffled.map(a => {
+              // Styling je nach Status
+              let bg         = 'transparent'
+              let border     = 'rgba(var(--gold-rgb),0.18)'
+              let textColor  = 'var(--text-muted)'
+              let iconSymbol = a.id.toUpperCase()
+              let iconBg     = 'rgba(var(--gold-rgb),0.07)'
+              let iconColor  = 'var(--text-dim)'
+
+              if (answered) {
+                if (a.correct) {
+                  bg = 'rgba(34,197,94,0.07)'; border = 'rgba(34,197,94,0.38)'
+                  textColor = '#86efac'; iconSymbol = '✓'
+                  iconBg = 'rgba(34,197,94,0.18)'; iconColor = '#22c55e'
+                } else if (a.id === selected) {
+                  bg = 'rgba(239,68,68,0.07)'; border = 'rgba(239,68,68,0.38)'
+                  textColor = '#fca5a5'; iconSymbol = '✗'
+                  iconBg = 'rgba(239,68,68,0.18)'; iconColor = '#ef4444'
                 }
-              >
-                {a.id.toUpperCase()}
-              </span>
-              <span className="flex-1">{a.text}</span>
-              {a.correct && (
-                <span className="text-xs font-bold shrink-0" style={{ color: 'var(--green)' }}>Richtig</span>
-              )}
+              }
+
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => handleSelect(a.id)}
+                  disabled={answered}
+                  style={{
+                    width: '100%', textAlign: 'left',
+                    padding: '0.65rem 0.8rem', borderRadius: '9px',
+                    cursor: answered ? 'default' : 'pointer',
+                    background: bg, border: `1px solid ${border}`,
+                    display: 'flex', alignItems: 'flex-start', gap: '0.6rem',
+                    transition: 'background 0.12s',
+                  }}
+                  onMouseEnter={e => { if (!answered) e.currentTarget.style.background = 'rgba(var(--gold-rgb),0.07)' }}
+                  onMouseLeave={e => { if (!answered) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span style={{
+                    width: '22px', height: '22px', borderRadius: '6px', flexShrink: 0,
+                    background: iconBg, color: iconColor, border: `1px solid ${border}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.6rem', fontWeight: 900,
+                  }}>{iconSymbol}</span>
+                  <span style={{ flex: 1, fontSize: '0.78rem', color: textColor, lineHeight: 1.45 }}>
+                    {a.text}
+                  </span>
+                  {answered && a.correct && !alreadyCorrect && selected === a.id && (
+                    <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#22c55e', flexShrink: 0 }}>
+                      +2 ⭐
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* ── Feedback ── */}
+          {answered && (
+            <div style={{
+              marginTop: '0.6rem', padding: '0.55rem 0.8rem', borderRadius: '9px',
+              display: 'flex', alignItems: 'center', gap: '7px',
+              background: gotItRight ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+              border: `1px solid ${gotItRight ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
+              fontSize: '0.75rem', fontWeight: 700,
+              color: gotItRight ? '#86efac' : '#fca5a5',
+            }}>
+              {gotItRight
+                ? alreadyCorrect
+                  ? '✓  Richtig! (Punkte wurden bereits gewertet)'
+                  : '✓  Richtig! +2 Punkte werden gutgeschrieben.'
+                : '✗  Falsch – die richtige Antwort ist grün markiert.'}
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
