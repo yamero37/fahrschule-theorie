@@ -19,6 +19,7 @@ type CarPart = {
   sticker?: boolean  // TÜV-Plaketten-Diagram anzeigen
   tire?: boolean     // Reifen-Infopanel anzeigen
   washer?: boolean   // Scheibenwischwasser-Panel anzeigen
+  supa?: boolean     // SUPA-Eselsbrücke anzeigen
 }
 
 const VIEWS = ['Heck', 'Front', 'Seite', 'Innenraum'] as const
@@ -165,6 +166,22 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
     },
   ],
   Innenraum: [
+    // ── Decke / Headliner ──
+    {
+      id: 'warnblinker',
+      cx: 162, cy: 8,
+      title: 'Warnblinker',
+      subtitle: 'Rote Dreiecks-Taste · Deckenkonsole über dem Innenspiegel',
+      color: '#dc2626',
+      checks: [
+        { label: 'Rote Dreiecks-Taste an der Decke drücken' },
+        { label: 'Alle 4 Blinker leuchten gleichzeitig orange auf' },
+        { label: 'Nur bei tatsächlicher Gefahr oder Notlage einschalten' },
+        { label: 'So früh wie möglich einschalten — nicht erst an der Gefahrenstelle' },
+      ],
+      info: 'Der Warnblinker warnt andere Verkehrsteilnehmer frühzeitig. Er darf nur bei echter Gefahr eingesetzt werden — nicht zum Parken im Halteverbot oder als Danke-Geste.',
+      supa: true,
+    },
     {
       id: 'spiegel',
       cx: 200, cy: 16,
@@ -175,26 +192,12 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
         { label: 'Innenspiegel: gesamte Heckscheibe im Blickfeld' },
         { label: 'Linker Außenspiegel: Fahrzeugflanke links sichtbar, Horizont mittig' },
         { label: 'Rechter Außenspiegel: Fahrzeugflanke rechts sichtbar, Horizont mittig' },
-        { label: 'Blinde Winkel immer zusätzlich per Schulterblick prüfen' },
+        { label: 'Blinde Winkel zusätzlich per Schulterblick prüfen' },
       ],
-      info: 'Spiegel immer vor Fahrtantritt einstellen — nie während der Fahrt. Beim Tesla werden Außenspiegel über das Fahrertür-Panel (oder per Display-Profil) verstellt. Der Innenspiegel wird manuell geschwenkt.',
-      tip: 'Beim Tesla: Display → Fahrzeugeinstellungen → Spiegel einstellen. Gespeicherte Profile stellen Spiegel automatisch ein.',
+      info: 'Spiegel immer vor Fahrtantritt einstellen — nie während der Fahrt. Beim Tesla werden Außenspiegel über das Fahrertür-Panel (oder per Display-Profil) verstellt.',
+      tip: 'Beim Tesla: Display → Spiegel einstellen. Gespeicherte Fahrer-Profile stellen Spiegel automatisch ein.',
     },
-    {
-      id: 'sitz',
-      cx: 108, cy: 175,
-      title: 'Sitz & Lenkrad einstellen',
-      subtitle: 'Fahrersitz · vor Fahrtantritt einstellen',
-      color: '#f97316',
-      checks: [
-        { label: 'Abstand: Pedale vollständig durchtreten, Bein leicht gebeugt' },
-        { label: 'Lehne: leichte Vorneigung, Arme am Lenkrad leicht angewinkelt' },
-        { label: 'Sitzhöhe: freie Sicht über die Motorhaube' },
-        { label: 'Lenkrad: kein Kontakt mit Knien beim vollen Einschlag' },
-      ],
-      info: 'Eine korrekte Sitzposition ist entscheidend für die volle Kontrolle — besonders in Gefahrensituationen. Beim Tesla ist der Sitz elektrisch verstellbar. Profile lassen sich speichern und werden beim Einsteigen automatisch geladen.',
-      tip: 'Beim Tesla: Einstellungen per Fahrertür-Bedienfeld oder per Display → Fahrer-Profile für schnelle Wiederherstellung.',
-    },
+    // ── Linke Seite / Gurt ──
     {
       id: 'gurt',
       cx: 34, cy: 148,
@@ -207,22 +210,115 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
         { label: 'Beckengurt über dem Becken, nicht über dem Bauch' },
         { label: 'Gurt darf nicht verdreht sein und liegt flach am Körper' },
       ],
-      info: 'Der Sicherheitsgurt ist die wichtigste passive Sicherheitseinrichtung im Fahrzeug. Er reduziert das Verletzungsrisiko bei einem Unfall um bis zu 50 %. Nicht angegurtet fahren ist eine Ordnungswidrigkeit (Bußgeld 30 €).',
+      info: 'Der Sicherheitsgurt ist die wichtigste passive Sicherheitseinrichtung. Er reduziert das Verletzungsrisiko bei einem Unfall um bis zu 50 %. Nicht angegurtet fahren: Bußgeld 30 €.',
       law: '§ 21a StVO',
+    },
+    // ── Lenkrad-Bereich ──
+    {
+      id: 'sitz',
+      cx: 72, cy: 165,
+      title: 'Sitz & Lenkrad einstellen',
+      subtitle: 'Fahrersitz · vor Fahrtantritt einstellen',
+      color: '#fb923c',
+      checks: [
+        { label: 'Abstand: Pedale vollständig durchtreten, Bein leicht gebeugt' },
+        { label: 'Lehne: leichte Vorneigung, Arme am Lenkrad leicht angewinkelt' },
+        { label: 'Sitzhöhe: freie Sicht über die Motorhaube' },
+        { label: 'Lenkrad: kein Kontakt mit Knien beim vollen Einschlag' },
+      ],
+      info: 'Eine korrekte Sitzposition ist entscheidend für die volle Kontrolle — besonders in Gefahrensituationen. Beim Tesla ist der Sitz elektrisch verstellbar und kann per Profil gespeichert werden.',
+      tip: 'Fahrertür-Bedienfeld oder Display → Fahrer-Profil → Sitzeinstellungen automatisch laden.',
+    },
+    {
+      id: 'hupe',
+      cx: 108, cy: 194,
+      title: 'Hupe',
+      subtitle: 'Lenkrad-Nabe drücken · § 16 StVO',
+      color: '#fbbf24',
+      checks: [
+        { label: 'Außerorts: kurzes Signal vor dem Überholen (Ankündigung)' },
+        { label: 'Als Warnsignal bei drohender Gefahr (jederzeit erlaubt)' },
+        { label: 'Innerorts: nur bei unmittelbarer Gefahr erlaubt' },
+        { label: 'Nicht als Ausdrucksmittel von Ärger oder Ungeduld verwenden' },
+      ],
+      info: 'Die Hupe darf außerorts zum Ankündigen eines Überholmanövers eingesetzt werden. Innerorts ist sie nur bei unmittelbarer Gefahr erlaubt. Missbräuchliche Benutzung kann als Belästigung gewertet werden.',
+      law: '§ 16 StVO',
+    },
+    {
+      id: 'fernlicht',
+      cx: 148, cy: 205,
+      title: 'Fernlicht',
+      subtitle: 'Blinker-Hebel nach hinten (von dir weg) drücken',
+      color: '#93c5fd',
+      checks: [
+        { label: 'Rechten Hebel nach hinten drücken = Fernlicht EIN' },
+        { label: 'Blaue Kontrollleuchte im Display leuchtet auf' },
+        { label: 'Nur bei freier Sicht ohne entgegenkommende Fahrzeuge' },
+        { label: 'Rechtzeitig auf Abblendlicht zurückschalten (andere nicht blenden)' },
+      ],
+      info: 'Fernlicht leuchtet weiter und heller als Abblendlicht — erhöht die Sichtweite erheblich. Es muss sofort abgeblendet werden, sobald Gegenverkehr kommt oder man einem Fahrzeug zu nahe auffährt.',
+      tip: 'Kontrollleuchte: blaues Scheinwerfer-Symbol mit waagerechten Strichen im Display.',
+      law: '§ 17 StVO',
+    },
+    {
+      id: 'scheibenwischer',
+      cx: 66, cy: 212,
+      title: 'Scheibenwischer + Waschanlage',
+      subtitle: 'Linker Hebel: Knopf am Ende reindrücken',
+      color: '#38bdf8',
+      checks: [
+        { label: 'Linken Hebel (gleicher wie Blinker) → Knopf am Ende reindrücken' },
+        { label: 'Wasser sprüht und Wischer wischen gleichzeitig' },
+        { label: 'Wischer-Stufe am Hebel oder auf "Auto" über Display einstellen' },
+        { label: 'Scheibenwischwasser muss ausreichend befüllt sein (Frunk prüfen)' },
+      ],
+      info: 'Beim Tesla Model 3 ist der linke Hebel für Blinker und Scheibenwischer kombiniert. Der Knopf am Hebelende aktiviert die Sprühfunktion. Der Auto-Wischer-Modus erkennt Regen automatisch über eine Kamera.',
+    },
+    // ── Pedal-Bereich ──
+    {
+      id: 'betriebsbremse',
+      cx: 83, cy: 245,
+      title: 'Betriebsbremse prüfen',
+      subtitle: 'Bremspedal · Widerstandsprüfung vor Fahrtantritt',
+      color: '#f87171',
+      checks: [
+        { label: 'Leicht reindrücken: ab 1/3 des Wegs Widerstand spüren' },
+        { label: 'Ab 2/3 des Wegs darf das Pedal nicht weiter nachgeben' },
+        { label: 'Pedal fühlt sich fest an → Bremse in Ordnung' },
+        { label: 'Weiches / durchgehendes Pedal → defekte Bremse → nicht fahren!' },
+      ],
+      info: 'Die Betriebsbremse (Fußbremse) ist das wichtigste Bremssystem. Beim Tesla gibt es kein Kupplungspedal — nur Gas und Bremse. Der Widerstand im Pedal kommt vom Bremskraftbegrenzer und zeigt, dass das System Druck aufgebaut hat.',
+      tip: 'Prüfung: Zündung EIN (Motor nicht starten) → Bremspedal langsam durchdrücken → Widerstand bei ca. 1/3 muss spürbar sein.',
+    },
+    // ── Display-Bereich ──
+    {
+      id: 'nebel-innen',
+      cx: 238, cy: 220,
+      title: 'Nebelschlussleuchte (Display)',
+      subtitle: 'Einschalten über Schnellmenü im Display',
+      color: '#f97316',
+      checks: [
+        { label: 'Display → Schnellzugriff → Nebelschlussleuchte tippen' },
+        { label: 'Orange Kontrollleuchte (Rücklicht + Wellenlinien) leuchtet auf' },
+        { label: 'Nur bei Sichtweite unter 50 Meter einschalten' },
+        { label: 'Bei besserem Wetter sofort ausschalten (blendet Hinterfahrer)' },
+      ],
+      info: 'Die Nebelschlussleuchte ist beim Tesla Model 3 ausschließlich über das Display steuerbar. Die orange Kontrollleuchte zeigt die Aktivierung an. Sie darf nur bei extremer Sichtbehinderung durch Nebel, Schnee oder Regen genutzt werden.',
+      law: '§ 53d StVZO',
     },
     {
       id: 'display',
       cx: 286, cy: 163,
       title: 'Display — Fahrzeugkontrolle',
       subtitle: '15,4" Zentraldisplay · Bedienzentrale für alles',
-      color: '#38bdf8',
+      color: '#60a5fa',
       checks: [
         { label: 'Keine aktiven Warnmeldungen oder Fehlermeldungen' },
         { label: 'Reichweite ausreichend für die geplante Fahrt' },
         { label: 'Licht auf "Auto" oder korrekt manuell eingestellt' },
         { label: 'Scheibenwischer auf Auto-Modus (oder geprüft)' },
       ],
-      info: 'Beim Tesla Model 3 werden fast alle Fahrzeugfunktionen über den 15,4" Touchscreen gesteuert — Licht, Klimaanlage, Außenspiegel, Sitzheizung, Scheibenwischer, Fahrmodus und vieles mehr. Es gibt kaum physische Knöpfe.',
+      info: 'Beim Tesla Model 3 werden fast alle Fahrzeugfunktionen über den 15,4" Touchscreen gesteuert — Licht, Klimaanlage, Außenspiegel, Sitzheizung, Scheibenwischer, Nebelschlussleuchte, Fahrmodus und mehr.',
       tip: 'Vor Fahrtantritt: Warnleuchten prüfen, Akkuladestand und Reichweite kontrollieren, Licht auf "Auto" stellen.',
     },
   ],
@@ -1347,6 +1443,26 @@ function TeslaInteriorSVG({
       <line x1="26" y1="9" x2="84" y2="9" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
       <line x1="316" y1="9" x2="374" y2="9" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
 
+      {/* ── Deckenkonsole (Warnblinker + Innenlicht) ── */}
+      <rect x="142" y="1.5" width="116" height="13" rx="3"
+        fill="#161618" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Warnblinker-Taste (rotes Dreieck) */}
+      <rect x="146" y="2.5" width="22" height="9" rx="2"
+        fill="#160000" stroke="rgba(220,38,38,0.6)" strokeWidth="0.8" />
+      <polygon points="157,4 151.5,10.5 162.5,10.5" fill="rgba(220,38,38,0.5)" />
+      <polygon points="157,4 151.5,10.5 162.5,10.5" fill="none"
+        stroke="rgba(220,38,38,0.3)" strokeWidth="0.5" />
+      {/* Innenlicht */}
+      <rect x="180" y="3.5" width="46" height="7" rx="2" fill="rgba(255,255,255,0.04)" />
+      {[184,188,192,196,200,204,208,212,216,220].map(x => (
+        <line key={x} x1={x} y1="3.5" x2={x} y2="10.5"
+          stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      ))}
+      {/* Trenn-Taste rechts (Fahrzeugkamera o.ä.) */}
+      <rect x="234" y="2.5" width="20" height="9" rx="2"
+        fill="#0a0a0c" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+      <circle cx="244" cy="7" r="2.5" fill="rgba(255,255,255,0.08)" />
+
       {/* ── Innenspiegel (rahmenlos, Tesla-typisch) ── */}
       {/* Stiel */}
       <rect x="197" y="28" width="6" height="10" rx="2" fill="#161618" />
@@ -1500,9 +1616,19 @@ function TeslaInteriorSVG({
       <rect x="155" y="188" width="9" height="16" rx="3.5"
         fill="#1e1e22" stroke="rgba(255,255,255,0.1)" strokeWidth="0.75" />
       <rect x="156.5" y="190" width="6" height="12" rx="2.5" fill="#161618" />
-      {/* Scheibenwischer-Hebel */}
+      {/* Scheibenwischer-Hebel (links) */}
       <path d="M 60 210 L 86 202 L 90 209 L 64 217 Z"
         fill="#181818" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Knopf am Ende des Scheibenwischer-Hebels */}
+      <circle cx="63" cy="213" r="4" fill="#1e1e22" stroke="rgba(56,189,248,0.2)" strokeWidth="0.75" />
+      {/* Rechter Blinker/Fernlicht-Hebel */}
+      <path d="M 126 204 L 158 200 L 160 207 L 128 211 Z"
+        fill="#181818" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Fernlicht-Symbol am Hebelende */}
+      <circle cx="159" cy="203.5" r="4" fill="#1e1e22" stroke="rgba(147,197,253,0.25)" strokeWidth="0.75" />
+      <line x1="156" y1="200.5" x2="162" y2="200.5" stroke="rgba(147,197,253,0.3)" strokeWidth="0.75" />
+      <line x1="155" y1="202.5" x2="162" y2="202.5" stroke="rgba(147,197,253,0.3)" strokeWidth="0.75" />
+      <line x1="155" y1="204.5" x2="162" y2="204.5" stroke="rgba(147,197,253,0.3)" strokeWidth="0.75" />
       {/* Lenksäule */}
       <rect x="100" y="244" width="16" height="16" rx="4"
         fill="#141416" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
@@ -1550,6 +1676,28 @@ function TeslaInteriorSVG({
         fill="url(#iSeatGrad)" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
       <path d="M 396 234 Q 354 228 316 232" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
 
+      {/* ── Bremspedal (unterhalb Lenksäule) ── */}
+      <rect x="52" y="233" width="62" height="20" rx="4"
+        fill="#0c0c0e" stroke="rgba(248,113,113,0.28)" strokeWidth="1" />
+      <rect x="54" y="235" width="58" height="16" rx="3" fill="#0a0a0c" />
+      {/* Riffelstruktur */}
+      {[57,62,67,72,77,82,87,92,97,102,107].map(x => (
+        <line key={x} x1={x} y1="236" x2={x} y2="250"
+          stroke="rgba(255,255,255,0.055)" strokeWidth="1.2" />
+      ))}
+      <text x="83" y="247" textAnchor="middle" fontSize="4.5" letterSpacing="1.5"
+        fill="rgba(248,113,113,0.35)" fontFamily="Arial" fontWeight="700">BRAKE</text>
+      {/* Gaspedal daneben */}
+      <rect x="120" y="236" width="36" height="17" rx="3.5"
+        fill="#0c0c0e" stroke="rgba(255,255,255,0.08)" strokeWidth="0.75" />
+      <rect x="122" y="238" width="32" height="13" rx="2.5" fill="#0a0a0c" />
+      {[124,129,134,139,144].map(x => (
+        <line key={x} x1={x} y1="239" x2={x} y2="250"
+          stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+      ))}
+      <text x="138" y="248" textAnchor="middle" fontSize="4.5" letterSpacing="1"
+        fill="rgba(255,255,255,0.12)" fontFamily="Arial" fontWeight="700">GAS</text>
+
       {/* ── Interaktive Hotspots ── */}
       {parts.map((p, i) => (
         <Hotspot
@@ -1562,6 +1710,73 @@ function TeslaInteriorSVG({
         />
       ))}
     </svg>
+  )
+}
+
+/* ── SUPA Eselsbrücke Panel ─────────────────────────────── */
+function SupaPanel() {
+  const items = [
+    { letter: 'S', word: 'Stau',        icon: '🚗', color: '#ef4444', desc: 'Stau voraus — andere Fahrer frühzeitig warnen, damit sie rechtzeitig bremsen' },
+    { letter: 'U', word: 'Unfall',       icon: '💥', color: '#f97316', desc: 'Unfall — Unfallstelle absichern und nachfolgende Fahrzeuge warnen' },
+    { letter: 'P', word: 'Panne',        icon: '🔧', color: '#fbbf24', desc: 'Panne — liegengebliebenes Fahrzeug für andere sichtbar machen' },
+    { letter: 'A', word: 'Abschleppen',  icon: '🚛', color: '#a78bfa', desc: 'Abschleppvorgang — ungewöhnlich langsame Fahrt auf der Fahrbahn' },
+  ]
+  return (
+    <div style={{ margin: '0.85rem 0 0.5rem' }}>
+      <p style={{
+        margin: '0 0 0.55rem', fontSize: '0.6rem', fontWeight: 800,
+        letterSpacing: '0.08em', textTransform: 'uppercase', color: '#dc2626',
+      }}>Wann Warnblinker? — Eselsbrücke SUPA</p>
+
+      {/* SUPA Buchstaben-Übersicht */}
+      <div style={{
+        display: 'flex', gap: '0.4rem', marginBottom: '0.55rem', justifyContent: 'center',
+      }}>
+        {items.map(item => (
+          <div key={item.letter} style={{
+            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: '0.5rem 0.3rem', borderRadius: '0.65rem',
+            background: `${item.color}12`, border: `1px solid ${item.color}40`,
+          }}>
+            <span style={{
+              width: '28px', height: '28px', borderRadius: '8px',
+              background: `${item.color}22`, border: `1.5px solid ${item.color}55`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', fontWeight: 900, color: item.color,
+              fontFamily: 'Arial', marginBottom: '4px',
+            }}>{item.letter}</span>
+            <span style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--text)' }}>{item.word}</span>
+            <span style={{ fontSize: '1rem' }}>{item.icon}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Detail-Karten */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        {items.map(item => (
+          <div key={item.letter} style={{
+            display: 'flex', alignItems: 'center', gap: '0.65rem',
+            padding: '0.5rem 0.75rem', borderRadius: '0.6rem',
+            background: `${item.color}08`, border: `1px solid ${item.color}28`,
+          }}>
+            <span style={{
+              width: '24px', height: '24px', borderRadius: '7px', flexShrink: 0,
+              background: `${item.color}20`, border: `1.5px solid ${item.color}50`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.75rem', fontWeight: 900, color: item.color, fontFamily: 'Arial',
+            }}>{item.letter}</span>
+            <div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text)', marginRight: '6px' }}>
+                {item.icon} {item.word}
+              </span>
+              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)', lineHeight: 1.5 }}>
+                {item.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -1818,6 +2033,9 @@ export default function TeslaInspect() {
 
           {/* Scheibenwischwasser-Panel */}
           {selected.washer && <WasherFluidPanel />}
+
+          {/* SUPA-Eselsbrücke */}
+          {selected.supa && <SupaPanel />}
 
           {/* Erklärungstext */}
           <div style={{
