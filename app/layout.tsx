@@ -42,6 +42,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Link href="/datenschutz" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
             Datenschutz
           </Link>
+          <Link href="/agb" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+            AGB
+          </Link>
         </footer>
       </body>
     </html>

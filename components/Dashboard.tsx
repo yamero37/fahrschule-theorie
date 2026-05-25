@@ -87,6 +87,7 @@ export default function Dashboard() {
   const [points, setPoints] = useState(0)
   const [isPremium, setIsPremium] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
+  const [agbConsent, setAgbConsent] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialDone, setTutorialDone] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -678,7 +679,10 @@ export default function Dashboard() {
               )}
             </div>
             <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>
-              {isPremium ? 'Alle Features sind für dich freigeschaltet.' : 'Mehr Funktionen. Mehr Fortschritt.'}
+              {isPremium
+                ? 'Alle Features sind für dich freigeschaltet.'
+                : <>Einmalig <strong style={{ color: 'var(--text-h)' }}>9,99 €</strong> · keine Abo-Kosten · zzgl. gesetzl. MwSt. (§ 19 UStG: 0 %)</>
+              }
             </p>
           </div>
           {isPremium ? (
@@ -687,30 +691,47 @@ export default function Dashboard() {
               filter: 'drop-shadow(0 0 8px rgba(234,179,8,0.6))',
             }}>✅</span>
           ) : (
-            <button
-              onClick={startCheckout}
-              disabled={checkingOut}
-              style={{
-                padding: '0.55rem 1rem', borderRadius: '100px', flexShrink: 0,
-                background: checkingOut
-                  ? 'rgba(139,92,246,0.3)'
-                  : 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
-                color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
-                cursor: checkingOut ? 'default' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: '5px',
-                boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
-                position: 'relative',
-                transition: 'opacity 0.2s',
-                opacity: checkingOut ? 0.7 : 1,
-              }}
-            >
-              {checkingOut ? (
-                <>
-                  <span style={{ width: '12px', height: '12px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                  Lädt…
-                </>
-              ) : 'Jetzt upgraden 💎'}
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', flexShrink: 0, position: 'relative' }}>
+              {/* AGB-Zustimmung */}
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', cursor: 'pointer', maxWidth: '200px' }}>
+                <input
+                  type="checkbox"
+                  checked={agbConsent}
+                  onChange={e => setAgbConsent(e.target.checked)}
+                  style={{ marginTop: '2px', accentColor: '#8b5cf6', flexShrink: 0 }}
+                />
+                <span style={{ fontSize: '0.58rem', color: 'var(--text-dim)', lineHeight: 1.4 }}>
+                  Ich stimme den{' '}
+                  <a href="/agb" target="_blank" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>AGB</a>
+                  {' '}zu und bestätige, dass der Zugang sofort freigeschaltet wird — mein{' '}
+                  <strong style={{ color: '#f87171' }}>Widerrufsrecht erlischt</strong> damit.
+                </span>
+              </label>
+              <button
+                onClick={startCheckout}
+                disabled={checkingOut || !agbConsent}
+                style={{
+                  padding: '0.55rem 1rem', borderRadius: '100px',
+                  background: (!agbConsent || checkingOut)
+                    ? 'rgba(139,92,246,0.3)'
+                    : 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
+                  color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
+                  cursor: (!agbConsent || checkingOut) ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  boxShadow: agbConsent ? '0 4px 20px rgba(139,92,246,0.4)' : 'none',
+                  transition: 'all 0.2s',
+                  opacity: (!agbConsent || checkingOut) ? 0.6 : 1,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {checkingOut ? (
+                  <>
+                    <span style={{ width: '12px', height: '12px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                    Lädt…
+                  </>
+                ) : 'Jetzt upgraden 💎'}
+              </button>
+            </div>
           )}
         </div>
 
