@@ -17,7 +17,7 @@ const CARS = [
     ],
   },
   {
-    sketchfabId: 'c1af0ef4607844299a01364537b2c71a',
+    sketchfabId: '991a39ce1c7f40089c07ae204b5044b9',
     name: 'VW T-Roc',
     year: '2025',
     badge: '🚙 SUV / Crossover',
