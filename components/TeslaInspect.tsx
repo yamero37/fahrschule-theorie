@@ -95,6 +95,23 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       tip: 'Rückwärts an eine Wand stellen → Bremse treten → durch den Innenspiegel schauen ob alle 3 Lichter leuchten.',
       law: '§ 53 StVZO',
     },
+    // ── Nebelschlussleuchte ──
+    {
+      id: 'nebel',
+      cx: 40, cy: 134,
+      title: 'Nebelschlussleuchte',
+      subtitle: 'Linke Seite außen · Rücklichtleiste',
+      color: '#a78bfa',
+      checks: [
+        { label: 'Leuchtet auf wenn aktiviert (funktioniert)' },
+        { label: 'Nicht beschädigt / nicht gebrochen' },
+        { label: 'Nur bei Sichtweite unter 50 Meter einschalten' },
+        { label: 'Bei besserer Sicht sofort wieder ausschalten' },
+      ],
+      info: 'Die Nebelschlussleuchte ist rot und deutlich heller als normale Rücklichter. Sie ist LINKS verbaut (bei Fahrzeugen für den Rechtsverkehr). Nur erlaubt bei Nebel, Schnee oder starkem Regen wenn die Sichtweite unter 50 Meter liegt. Bei besserem Wetter ausschalten — sie blendet sonst nachfolgende Fahrer stark und kann mit Bremslichtern verwechselt werden.',
+      tip: 'Symbol auf dem Armaturenbrett: ein Rücklicht-Symbol mit Wellenlinien dahinter. Einschalten → im Innenspiegel oder durch Umschauen prüfen ob sie leuchtet.',
+      law: '§ 53d StVZO',
+    },
     // ── Kennzeichen ──
     {
       id: 'kennzeichen',
@@ -393,6 +410,11 @@ function TeslaRearSVG({
       {/* Glow-Effekt */}
       <rect x="26" y="126" width="130" height="17" rx="3" fill="rgba(220,38,38,0.2)" filter="url(#redGlow)" />
       <rect x="244" y="126" width="130" height="17" rx="3" fill="rgba(220,38,38,0.2)" filter="url(#redGlow)" />
+      {/* ── Nebelschlussleuchte (linke Außenseite, hell markiert) ── */}
+      <rect x="26" y="126" width="28" height="17" rx="3" fill="#1a0030" stroke="rgba(167,139,250,0.5)" strokeWidth="1" />
+      <rect x="28" y="128" width="22" height="13" rx="2" fill="rgba(167,139,250,0.2)" />
+      {/* Mittlere Trennlinie (trennt Nebel von restlichem Rücklicht) */}
+      <line x1="54" y1="127" x2="54" y2="143" stroke="rgba(0,0,0,0.5)" strokeWidth="1" />
 
       {/* ── Stoßstange ── */}
       <path
