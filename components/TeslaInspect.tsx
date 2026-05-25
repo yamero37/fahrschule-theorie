@@ -16,6 +16,7 @@ type CarPart = {
   info: string
   tip?: string    // Alleine prüfen – Tipp
   law?: string
+  sticker?: boolean  // TÜV-Plaketten-Diagram anzeigen
 }
 
 const VIEWS = ['Heck', 'Front', 'Seite', 'Innenraum'] as const
@@ -94,6 +95,22 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       tip: 'Rückwärts an eine Wand stellen → Bremse treten → durch den Innenspiegel schauen ob alle 3 Lichter leuchten.',
       law: '§ 53 StVZO',
     },
+    // ── Kennzeichen ──
+    {
+      id: 'kennzeichen',
+      cx: 200, cy: 172,
+      title: 'Kennzeichen + TÜV-Plakette',
+      subtitle: 'Hinteres Kennzeichen · Mitte Stoßstange',
+      color: '#fbbf24',
+      checks: [
+        { label: 'Kennzeichen vollständig vorhanden und lesbar' },
+        { label: 'Fest angebracht — nicht verbogen, nicht locker' },
+        { label: 'TÜV-Plakette (HU) nicht abgelaufen' },
+      ],
+      info: 'Das Kennzeichen muss jederzeit gut lesbar sein. Die TÜV-Plakette (Hauptuntersuchung) zeigt wann die nächste HU fällig ist. Neue Fahrzeuge: erste HU nach 3 Jahren — danach alle 2 Jahre.',
+      law: '§ 60 StVZO · § 29 StVZO',
+      sticker: true,
+    },
   ],
   Front: [],
   Seite: [],
@@ -142,6 +159,144 @@ function Hotspot({
         {index + 1}
       </text>
     </g>
+  )
+}
+
+/* ── TÜV-Plaketten Diagram ──────────────────────────────── */
+function TuvStickerDiagram() {
+  // Positions für Zahlen 1–12 auf dem Ziffernblatt (clockwise, 12 o'clock = oben)
+  // Monatsziffer oben = Ablaufmonat → Beispiel: "6" oben = Juni
+  const months = [
+    { n: 6,  x: 50, y: 14,  highlight: true  }, // TOP (= Ablaufmonat Beispiel)
+    { n: 7,  x: 68, y: 20,  highlight: false },
+    { n: 8,  x: 80, y: 34,  highlight: false },
+    { n: 9,  x: 85, y: 50,  highlight: false },
+    { n: 10, x: 80, y: 66,  highlight: false },
+    { n: 11, x: 68, y: 80,  highlight: false },
+    { n: 12, x: 50, y: 86,  highlight: false },
+    { n: 1,  x: 32, y: 80,  highlight: false },
+    { n: 2,  x: 20, y: 66,  highlight: false },
+    { n: 3,  x: 15, y: 50,  highlight: false },
+    { n: 4,  x: 20, y: 34,  highlight: false },
+    { n: 5,  x: 32, y: 20,  highlight: false },
+  ]
+
+  return (
+    <div style={{ margin: '0.85rem 0 0.5rem' }}>
+      {/* Titel */}
+      <p style={{
+        margin: '0 0 0.6rem', fontSize: '0.6rem', fontWeight: 800,
+        letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fbbf24',
+      }}>TÜV-Plakette lesen</p>
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+        {/* Sticker SVG */}
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <svg viewBox="0 0 100 100" width="90" height="90">
+            {/* Äußerer Ring (Jahresfarbe – hier Gelb für 2026) */}
+            <circle cx="50" cy="50" r="47" fill="#fbbf24" />
+            {/* Weißer Innenring */}
+            <circle cx="50" cy="50" r="38" fill="white" />
+            {/* Innenfläche */}
+            <circle cx="50" cy="50" r="25" fill="#f5f2ec" />
+
+            {/* Alle 12 Monatszahlen */}
+            {months.map(m => (
+              <text
+                key={m.n}
+                x={m.x} y={m.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={m.highlight ? '9.5' : '7'}
+                fontWeight={m.highlight ? '900' : '600'}
+                fill={m.highlight ? '#dc2626' : '#888'}
+              >{m.n}</text>
+            ))}
+
+            {/* Highlight-Kasten um den Ablaufmonat (oben) */}
+            <rect x="40" y="5" width="20" height="13" rx="3"
+              fill="rgba(220,38,38,0.15)" stroke="#dc2626" strokeWidth="1.2" />
+
+            {/* Jahreszahl in der Mitte */}
+            <text x="50" y="54" textAnchor="middle" dominantBaseline="middle"
+              fontSize="20" fontWeight="900" fill="#1a1a1a">26</text>
+          </svg>
+        </div>
+
+        {/* Beschriftung */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: '140px' }}>
+          {/* Monat */}
+          <div style={{
+            display: 'flex', alignItems: 'flex-start', gap: '8px',
+            padding: '0.45rem 0.65rem', borderRadius: '0.6rem',
+            background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)',
+          }}>
+            <span style={{
+              width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+              background: '#dc2626', fontSize: '0.52rem', fontWeight: 900,
+              color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>▲</span>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 800, color: '#fca5a5' }}>Obere Zahl am Rand</p>
+              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)' }}>= Ablaufmonat (1–12)</p>
+            </div>
+          </div>
+
+          {/* Jahr */}
+          <div style={{
+            display: 'flex', alignItems: 'flex-start', gap: '8px',
+            padding: '0.45rem 0.65rem', borderRadius: '0.6rem',
+            background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)',
+          }}>
+            <span style={{
+              width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+              background: '#fbbf24', fontSize: '0.52rem', fontWeight: 900,
+              color: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>●</span>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 800, color: '#fde68a' }}>Zahl in der Mitte</p>
+              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)' }}>= Ablaujahr (z.B. 26 = 2026)</p>
+            </div>
+          </div>
+
+          {/* Farbe */}
+          <div style={{
+            display: 'flex', alignItems: 'flex-start', gap: '8px',
+            padding: '0.45rem 0.65rem', borderRadius: '0.6rem',
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+          }}>
+            <span style={{ fontSize: '0.9rem', flexShrink: 0 }}>🎨</span>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 800, color: 'var(--text)' }}>Farbe des Rings</p>
+              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)' }}>Jedes Jahr andere Farbe — schnelle Erkennung</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gültigkeitsdauer */}
+      <div style={{
+        display: 'flex', gap: '0.5rem', marginTop: '0.65rem', flexWrap: 'wrap',
+      }}>
+        {[
+          { label: 'Neuwagen', value: 'Erste HU nach 3 Jahren', icon: '🆕' },
+          { label: 'Danach', value: 'Alle 2 Jahre', icon: '🔄' },
+        ].map(item => (
+          <div key={item.label} style={{
+            flex: 1, minWidth: '120px',
+            padding: '0.5rem 0.65rem', borderRadius: '0.6rem',
+            background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)',
+            display: 'flex', alignItems: 'center', gap: '6px',
+          }}>
+            <span style={{ fontSize: '0.85rem' }}>{item.icon}</span>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.58rem', color: 'var(--text-dim)', fontWeight: 700 }}>{item.label}</p>
+              <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 800, color: '#fde68a' }}>{item.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -513,6 +668,9 @@ export default function TeslaInspect() {
               </div>
             ))}
           </div>
+
+          {/* TÜV-Plaketten-Diagram */}
+          {selected.sticker && <TuvStickerDiagram />}
 
           {/* Erklärungstext */}
           <div style={{
