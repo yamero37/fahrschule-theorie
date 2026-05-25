@@ -164,7 +164,68 @@ const VIEW_PARTS: Record<ViewName, CarPart[]> = {
       tire: true,
     },
   ],
-  Innenraum: [],
+  Innenraum: [
+    {
+      id: 'spiegel',
+      cx: 200, cy: 16,
+      title: 'Spiegel einstellen',
+      subtitle: 'Innen- + Außenspiegel · vor jedem Fahrtantritt',
+      color: '#a78bfa',
+      checks: [
+        { label: 'Innenspiegel: gesamte Heckscheibe im Blickfeld' },
+        { label: 'Linker Außenspiegel: Fahrzeugflanke links sichtbar, Horizont mittig' },
+        { label: 'Rechter Außenspiegel: Fahrzeugflanke rechts sichtbar, Horizont mittig' },
+        { label: 'Blinde Winkel immer zusätzlich per Schulterblick prüfen' },
+      ],
+      info: 'Spiegel immer vor Fahrtantritt einstellen — nie während der Fahrt. Beim Tesla werden Außenspiegel über das Fahrertür-Panel (oder per Display-Profil) verstellt. Der Innenspiegel wird manuell geschwenkt.',
+      tip: 'Beim Tesla: Display → Fahrzeugeinstellungen → Spiegel einstellen. Gespeicherte Profile stellen Spiegel automatisch ein.',
+    },
+    {
+      id: 'sitz',
+      cx: 108, cy: 175,
+      title: 'Sitz & Lenkrad einstellen',
+      subtitle: 'Fahrersitz · vor Fahrtantritt einstellen',
+      color: '#f97316',
+      checks: [
+        { label: 'Abstand: Pedale vollständig durchtreten, Bein leicht gebeugt' },
+        { label: 'Lehne: leichte Vorneigung, Arme am Lenkrad leicht angewinkelt' },
+        { label: 'Sitzhöhe: freie Sicht über die Motorhaube' },
+        { label: 'Lenkrad: kein Kontakt mit Knien beim vollen Einschlag' },
+      ],
+      info: 'Eine korrekte Sitzposition ist entscheidend für die volle Kontrolle — besonders in Gefahrensituationen. Beim Tesla ist der Sitz elektrisch verstellbar. Profile lassen sich speichern und werden beim Einsteigen automatisch geladen.',
+      tip: 'Beim Tesla: Einstellungen per Fahrertür-Bedienfeld oder per Display → Fahrer-Profile für schnelle Wiederherstellung.',
+    },
+    {
+      id: 'gurt',
+      cx: 34, cy: 148,
+      title: 'Sicherheitsgurt',
+      subtitle: 'Pflicht · vor jedem Losfahren anlegen',
+      color: '#22c55e',
+      checks: [
+        { label: 'Immer anlegen — auch bei kurzen Strecken' },
+        { label: 'Schultergurt über Schulter und Brust (nie unter dem Arm)' },
+        { label: 'Beckengurt über dem Becken, nicht über dem Bauch' },
+        { label: 'Gurt darf nicht verdreht sein und liegt flach am Körper' },
+      ],
+      info: 'Der Sicherheitsgurt ist die wichtigste passive Sicherheitseinrichtung im Fahrzeug. Er reduziert das Verletzungsrisiko bei einem Unfall um bis zu 50 %. Nicht angegurtet fahren ist eine Ordnungswidrigkeit (Bußgeld 30 €).',
+      law: '§ 21a StVO',
+    },
+    {
+      id: 'display',
+      cx: 286, cy: 163,
+      title: 'Display — Fahrzeugkontrolle',
+      subtitle: '15,4" Zentraldisplay · Bedienzentrale für alles',
+      color: '#38bdf8',
+      checks: [
+        { label: 'Keine aktiven Warnmeldungen oder Fehlermeldungen' },
+        { label: 'Reichweite ausreichend für die geplante Fahrt' },
+        { label: 'Licht auf "Auto" oder korrekt manuell eingestellt' },
+        { label: 'Scheibenwischer auf Auto-Modus (oder geprüft)' },
+      ],
+      info: 'Beim Tesla Model 3 werden fast alle Fahrzeugfunktionen über den 15,4" Touchscreen gesteuert — Licht, Klimaanlage, Außenspiegel, Sitzheizung, Scheibenwischer, Fahrmodus und vieles mehr. Es gibt kaum physische Knöpfe.',
+      tip: 'Vor Fahrtantritt: Warnleuchten prüfen, Akkuladestand und Reichweite kontrollieren, Licht auf "Auto" stellen.',
+    },
+  ],
 }
 
 /* ── Hotspot SVG-Element ────────────────────────────────── */
@@ -1189,6 +1250,321 @@ function TireInfoPanel() {
   )
 }
 
+/* ── Tesla Innenraum SVG ────────────────────────────────── */
+function TeslaInteriorSVG({
+  parts, selectedId, onSelect,
+}: {
+  parts: CarPart[]; selectedId: string | null; onSelect: (id: string) => void
+}) {
+  const spokeAngles = [-40, 40]
+  return (
+    <svg viewBox="0 0 400 260" style={{ width: '100%', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="iSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0e1e2c" />
+          <stop offset="65%" stopColor="#091420" />
+          <stop offset="100%" stopColor="#060e16" />
+        </linearGradient>
+        <linearGradient id="iRoadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0f120d" />
+          <stop offset="100%" stopColor="#0a0c08" />
+        </linearGradient>
+        <linearGradient id="iDashGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1c1c20" />
+          <stop offset="100%" stopColor="#0e0e10" />
+        </linearGradient>
+        <linearGradient id="iWoodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#1c1006" />
+          <stop offset="30%"  stopColor="#241508" />
+          <stop offset="70%"  stopColor="#1e1108" />
+          <stop offset="100%" stopColor="#1a0f06" />
+        </linearGradient>
+        <linearGradient id="iWheelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#2a2a2c" />
+          <stop offset="100%" stopColor="#161618" />
+        </linearGradient>
+        <linearGradient id="iSeatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1a1a1e" />
+          <stop offset="100%" stopColor="#0e0e12" />
+        </linearGradient>
+        <radialGradient id="iScreenGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(56,189,248,0.08)" />
+          <stop offset="100%" stopColor="rgba(56,189,248,0)" />
+        </radialGradient>
+        <filter id="iGlow">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <clipPath id="iWheelClip">
+          <rect x="54" y="130" width="108" height="96" />
+        </clipPath>
+      </defs>
+
+      {/* ── Haupthintergrund ── */}
+      <rect x="0" y="0" width="400" height="260" fill="#090909" />
+
+      {/* ── Türverkleidungen ── */}
+      <rect x="0"   y="0" width="24" height="260" fill="#111114" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      <rect x="376" y="0" width="24" height="260" fill="#111114" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      {/* Türtafeln Rahmen */}
+      <rect x="2"   y="130" width="18" height="80" rx="4" fill="#161618" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      <rect x="380" y="130" width="18" height="80" rx="4" fill="#161618" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Lautsprecher links (Tesla-typisch in der Tür) */}
+      {[145,150,155,160,165,170].map(y => (
+        <line key={y} x1="5" y1={y} x2="19" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.6" />
+      ))}
+      {[145,150,155,160,165,170].map(y => (
+        <line key={y} x1="381" y1={y} x2="395" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.6" />
+      ))}
+      {/* Türöffner-Taste */}
+      <rect x="3"  y="186" width="16" height="5" rx="2.5" fill="#1a1a1c" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+      <rect x="381" y="186" width="16" height="5" rx="2.5" fill="#1a1a1c" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+
+      {/* ── Windschutzscheibe ── */}
+      <path d="M 24 2 L 376 2 L 360 78 L 40 78 Z" fill="url(#iSkyGrad)" />
+      {/* Straße am unteren Rand */}
+      <path d="M 40 78 L 360 78 L 346 66 L 200 60 L 54 66 Z" fill="url(#iRoadGrad)" />
+      {/* Straßenmarkierung */}
+      <line x1="200" y1="78" x2="200" y2="61" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" strokeDasharray="5,4" />
+      <line x1="200" y1="78" x2="200" y2="61" stroke="rgba(255,255,255,0.1)"  strokeWidth="6" strokeDasharray="5,4" />
+      {/* Horizont (Bäume/Häuser Silhouette) */}
+      <path d="M 40 68 Q 80 64 100 67 Q 120 64 130 67 Q 160 60 200 60 Q 240 60 270 67 Q 280 64 300 67 Q 320 64 360 68"
+        fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.75" />
+      {/* Himmel-Gradient-Schicht */}
+      <path d="M 24 2 L 376 2 L 360 50 L 40 50 Z"
+        fill="rgba(14,30,50,0.3)" />
+
+      {/* ── A-Säulen ── */}
+      <path d="M 0 2 L 24 2 L 40 78 L 0 78 Z" fill="#0c0c0e" />
+      <path d="M 400 2 L 376 2 L 360 78 L 400 78 Z" fill="#0c0c0e" />
+      {/* A-Säulen Außenkante */}
+      <line x1="24" y1="2" x2="40" y2="78" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+      <line x1="376" y1="2" x2="360" y2="78" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+
+      {/* ── Sonnenblenden ── */}
+      <rect x="24" y="2" width="62" height="14" rx="2" fill="#161618" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+      <rect x="314" y="2" width="62" height="14" rx="2" fill="#161618" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+      <line x1="26" y1="9" x2="84" y2="9" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+      <line x1="316" y1="9" x2="374" y2="9" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+
+      {/* ── Innenspiegel (rahmenlos, Tesla-typisch) ── */}
+      {/* Stiel */}
+      <rect x="197" y="28" width="6" height="10" rx="2" fill="#161618" />
+      {/* Spiegel-Gehäuse */}
+      <rect x="172" y="2" width="56" height="29" rx="4" fill="#06101c" stroke="rgba(147,197,253,0.25)" strokeWidth="1" />
+      {/* Spiegelfläche */}
+      <rect x="174" y="4" width="52" height="25" rx="3" fill="#08182a" />
+      {/* Reflexion */}
+      <path d="M 174 4 L 226 4 L 222 12 L 178 12 Z" fill="rgba(255,255,255,0.045)" />
+      <path d="M 178 16 L 222 16 L 221 22 L 179 22 Z" fill="rgba(255,255,255,0.02)" />
+      {/* Rückspiegel-Rahmen-Highlight */}
+      <rect x="172" y="2" width="56" height="2" rx="1" fill="rgba(255,255,255,0.07)" />
+
+      {/* ── Armaturenbrett Hauptkörper ── */}
+      <path d="M 0 78 L 400 78 L 400 210 L 0 210 Z" fill="url(#iDashGrad)" />
+      {/* Oberkante / Cowl-Wölbung */}
+      <path d="M 0 78 Q 200 74 400 78 L 400 88 Q 200 84 0 88 Z" fill="#202024" />
+
+      {/* ── Horizontaler Zierstreifen (Tesla Model 3 – geht über gesamte Breite) ── */}
+      <rect x="0" y="88" width="400" height="13" fill="url(#iWoodGrad)" />
+      {/* Holzmaserung */}
+      {[89,91,93,95,97].map(y => (
+        <path key={y} d={`M 0 ${y} Q 133 ${y + 0.4} 266 ${y - 0.3} Q 333 ${y + 0.2} 400 ${y}`}
+          fill="none" stroke="rgba(255,220,150,0.025)" strokeWidth="0.5" />
+      ))}
+      {/* Zierstreifen Highlight oben */}
+      <line x1="0" y1="88" x2="400" y2="88" stroke="rgba(255,255,255,0.14)" strokeWidth="0.75" />
+      {/* Zierstreifen Schatten unten */}
+      <line x1="0" y1="101" x2="400" y2="101" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" />
+
+      {/* ── Lüftungsdüsen (versteckter Schlitz – Tesla-typisch) ── */}
+      <rect x="0" y="101" width="400" height="7" fill="#0a0a0c" />
+      {[102,103.5,105,106.5].map(y => (
+        <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="rgba(255,255,255,0.025)" strokeWidth="0.5" />
+      ))}
+      {/* Ausströmöffnungen */}
+      {[20, 75, 145, 220, 270, 330, 375].map(x => (
+        <rect key={x} x={x - 18} y="102" width="36" height="4" rx="2" fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
+      ))}
+
+      {/* ── ZENTRALDISPLAY (15,4" Landscape ─ Hero-Element) ── */}
+      {/* Ambient Glow um den Bildschirm */}
+      <rect x="190" y="105" width="196" height="130" rx="12"
+        fill="url(#iScreenGlow)" />
+      {/* Gehäuse / Bezel */}
+      <rect x="193" y="108" width="190" height="126" rx="8"
+        fill="#000" stroke="rgba(56,189,248,0.18)" strokeWidth="1.5" />
+      {/* Bezel Highlight oben */}
+      <rect x="193" y="108" width="190" height="2" rx="0"
+        fill="rgba(255,255,255,0.06)" />
+
+      {/* ─── Bildschirminhalt ─── */}
+      {/* Statusleiste */}
+      <rect x="194" y="109" width="188" height="14" rx="0" fill="#050505" />
+      <text x="203" y="119" fontSize="7.5" fill="rgba(255,255,255,0.55)" fontFamily="Arial, sans-serif">11:42</text>
+      <text x="200" y="119" fontSize="6.5" fill="rgba(56,189,248,0.5)"  fontFamily="Arial, sans-serif" textAnchor="middle">●</text>
+      {/* Akku + Reichweite rechts */}
+      <text x="374" y="119" textAnchor="end" fontSize="7" fill="rgba(255,255,255,0.4)" fontFamily="Arial, sans-serif">⚡ 87 %</text>
+
+      {/* Linkes Panel: Geschwindigkeit + Gang */}
+      <rect x="194" y="123" width="82" height="110" fill="#060606" />
+      {/* Geschwindigkeit */}
+      <text x="235" y="166" textAnchor="middle" fontSize="48" fontWeight="900" fill="white" fontFamily="Arial, sans-serif">0</text>
+      <text x="235" y="177" textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.38)" fontFamily="Arial, sans-serif">km/h</text>
+      {/* PRND Wahlhebel */}
+      <text x="205" y="196" fontSize="9" fill="rgba(255,255,255,0.28)" fontFamily="Arial, sans-serif">R</text>
+      <text x="219" y="196" fontSize="9" fill="rgba(255,255,255,0.28)" fontFamily="Arial, sans-serif">N</text>
+      {/* P aktiv hervorgehoben */}
+      <rect x="228" y="188" width="14" height="11" rx="3"
+        fill="rgba(56,189,248,0.22)" stroke="rgba(56,189,248,0.65)" strokeWidth="0.75" />
+      <text x="235" y="197" textAnchor="middle" fontSize="9" fontWeight="900" fill="#38bdf8" fontFamily="Arial, sans-serif">P</text>
+      <text x="250" y="196" fontSize="9" fill="rgba(255,255,255,0.28)" fontFamily="Arial, sans-serif">D</text>
+      {/* Reichweite */}
+      <text x="235" y="214" textAnchor="middle" fontSize="8" fill="rgba(56,189,248,0.65)" fontFamily="Arial, sans-serif">487 km</text>
+      {/* Karte Trennlinie */}
+      <line x1="276" y1="123" x2="276" y2="233" stroke="rgba(255,255,255,0.04)" strokeWidth="0.75" />
+
+      {/* Rechtes Panel: Karte */}
+      <rect x="276" y="123" width="106" height="110" fill="#0b1408" />
+      {/* Straßen */}
+      <line x1="328" y1="123" x2="328" y2="233" stroke="rgba(255,255,255,0.18)" strokeWidth="2.5" />
+      <line x1="276" y1="178" x2="382" y2="178" stroke="rgba(255,255,255,0.18)" strokeWidth="2.5" />
+      <path d="M 276 148 L 305 148 L 318 163 L 318 233" fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="1.5" />
+      <path d="M 348 123 L 348 150 L 362 165 L 382 165" fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="1.5" />
+      {/* Gebäudeblöcke */}
+      {[
+        {x:278,y:126,w:22,h:16},{x:304,y:126,w:14,h:11},
+        {x:336,y:126,w:18,h:14},{x:356,y:126,w:22,h:20},
+        {x:278,y:184,w:18,h:14},{x:336,y:184,w:20,h:18},
+        {x:358,y:184,w:20,h:24},
+      ].map((b,i) => (
+        <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx="1" fill="#132008" />
+      ))}
+      {/* Standort-Dot */}
+      <circle cx="328" cy="178" r="5" fill="#38bdf8" />
+      <circle cx="328" cy="178" r="9" fill="none" stroke="rgba(56,189,248,0.4)" strokeWidth="1.2" />
+      <circle cx="328" cy="178" r="14" fill="none" stroke="rgba(56,189,248,0.15)" strokeWidth="0.75" />
+      {/* Richtungspfeil auf Karte */}
+      <path d="M 325 170 L 328 163 L 331 170 L 328 168 Z" fill="#38bdf8" />
+
+      {/* Untere Kontrollleiste */}
+      <rect x="194" y="233" width="188" height="0" rx="0" fill="#040404" />
+      <line x1="194" y1="233" x2="382" y2="233" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+
+      {/* Screen Spiegelung (Glasreflex) */}
+      <path d="M 193 108 L 382 108 L 378 116 L 197 116 Z"
+        fill="rgba(255,255,255,0.025)" />
+
+      {/* ── LENKRAD (flacher Boden, Tesla-Design) ── */}
+      {/* Geclippte Gruppe für flachen Boden */}
+      <g clipPath="url(#iWheelClip)">
+        {/* Außenring */}
+        <circle cx="108" cy="196" r="52" fill="none" stroke="url(#iWheelGrad)" strokeWidth="12" />
+        <circle cx="108" cy="196" r="52" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+        <circle cx="108" cy="196" r="46" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
+        {/* Speichen */}
+        {spokeAngles.map(deg => {
+          const rad = (deg * Math.PI) / 180
+          return (
+            <line key={deg}
+              x1={108 + 18 * Math.cos(rad)} y1={196 + 18 * Math.sin(rad)}
+              x2={108 + 50 * Math.cos(rad)} y2={196 + 50 * Math.sin(rad)}
+              stroke="#1e1e20" strokeWidth="13" strokeLinecap="round"
+            />
+          )
+        })}
+        {spokeAngles.map(deg => {
+          const rad = (deg * Math.PI) / 180
+          return (
+            <line key={deg}
+              x1={108 + 18 * Math.cos(rad)} y1={196 + 18 * Math.sin(rad)}
+              x2={108 + 50 * Math.cos(rad)} y2={196 + 50 * Math.sin(rad)}
+              stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeLinecap="round"
+            />
+          )
+        })}
+      </g>
+      {/* Mittelnabe / Airbag */}
+      <ellipse cx="108" cy="194" rx="20" ry="17"
+        fill="#161618" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+      {/* Tesla T-Logo im Lenkrad */}
+      <rect x="100" y="189" width="16" height="3" rx="1.5" fill="rgba(255,255,255,0.3)" />
+      <rect x="106.5" y="189" width="3" height="10" rx="1" fill="rgba(255,255,255,0.3)" />
+      {/* Hupen-Ring */}
+      <ellipse cx="108" cy="194" rx="20" ry="17" fill="none"
+        stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Scroll-Wheels (Bedienräder am Lenkrad) */}
+      <rect x="56" y="188" width="9" height="16" rx="3.5"
+        fill="#1e1e22" stroke="rgba(255,255,255,0.1)" strokeWidth="0.75" />
+      <rect x="57.5" y="190" width="6" height="12" rx="2.5" fill="#161618" />
+      <rect x="155" y="188" width="9" height="16" rx="3.5"
+        fill="#1e1e22" stroke="rgba(255,255,255,0.1)" strokeWidth="0.75" />
+      <rect x="156.5" y="190" width="6" height="12" rx="2.5" fill="#161618" />
+      {/* Scheibenwischer-Hebel */}
+      <path d="M 60 210 L 86 202 L 90 209 L 64 217 Z"
+        fill="#181818" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* Lenksäule */}
+      <rect x="100" y="244" width="16" height="16" rx="4"
+        fill="#141416" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+      <rect x="88"  y="256" width="40" height="4" rx="2"
+        fill="#111114" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+
+      {/* ── Sicherheitsgurt (linke Seite) ── */}
+      {/* Gurt-Aufroller (oberer Anker) */}
+      <rect x="0" y="124" width="12" height="22" rx="3"
+        fill="#182014" stroke="rgba(34,197,94,0.3)" strokeWidth="0.75" />
+      <rect x="1" y="126" width="10" height="18" rx="2" fill="#0e1a0e" />
+      {/* Gurtband diagonaler Verlauf */}
+      <path d="M 6 145 L 6 146 Q 8 158 14 166 L 42 208"
+        fill="none" stroke="#1a4022" strokeWidth="8" strokeLinecap="round" />
+      <path d="M 6 145 L 6 146 Q 8 158 14 166 L 42 208"
+        fill="none" stroke="rgba(34,197,94,0.35)" strokeWidth="1" strokeLinecap="round" />
+      {/* Schloss / Steckzunge */}
+      <rect x="36" y="206" width="10" height="6" rx="2"
+        fill="#152012" stroke="rgba(34,197,94,0.4)" strokeWidth="0.75" />
+
+      {/* ── Mittelkonsole ── */}
+      <rect x="156" y="208" width="88" height="52" rx="6"
+        fill="#141416" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+      {/* Wireless Charging Pad */}
+      <rect x="160" y="212" width="80" height="30" rx="4"
+        fill="#0c0c0e" stroke="rgba(255,255,255,0.07)" strokeWidth="0.75" />
+      <circle cx="200" cy="227" r="10" fill="none" stroke="rgba(56,189,248,0.12)" strokeWidth="1.5" />
+      <circle cx="200" cy="227" r="6"  fill="none" stroke="rgba(56,189,248,0.08)" strokeWidth="1" />
+      <text x="200" y="230" textAnchor="middle" fontSize="8" fill="rgba(56,189,248,0.22)" fontFamily="Arial">⚡</text>
+      {/* Getränkehalter */}
+      <circle cx="173" cy="248" r="9" fill="#090909" stroke="rgba(255,255,255,0.07)" strokeWidth="0.75" />
+      <circle cx="227" cy="248" r="9" fill="#090909" stroke="rgba(255,255,255,0.07)" strokeWidth="0.75" />
+      <circle cx="173" cy="248" r="5" fill="#060606" />
+      <circle cx="227" cy="248" r="5" fill="#060606" />
+
+      {/* ── Fahrersitz (Andeutung unten links) ── */}
+      <path d="M 0 222 Q 40 216 88 220 L 90 260 L 0 260 Z"
+        fill="url(#iSeatGrad)" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      {/* Sitznaht */}
+      <path d="M 4 234 Q 46 228 84 232" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+      <path d="M 4 244 Q 46 238 84 242" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+
+      {/* ── Beifahrersitz ── */}
+      <path d="M 400 222 Q 360 216 312 220 L 310 260 L 400 260 Z"
+        fill="url(#iSeatGrad)" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+      <path d="M 396 234 Q 354 228 316 232" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" />
+
+      {/* ── Interaktive Hotspots ── */}
+      {parts.map((p, i) => (
+        <Hotspot
+          key={p.id}
+          cx={p.cx} cy={p.cy}
+          color={p.color}
+          selected={selectedId === p.id}
+          onClick={() => onSelect(p.id)}
+          index={i}
+        />
+      ))}
+    </svg>
+  )
+}
+
 /* ── Hauptkomponente ────────────────────────────────────── */
 export default function TeslaInspect() {
   const [activeView, setActiveView] = useState<ViewName>('Heck')
@@ -1327,7 +1703,15 @@ export default function TeslaInspect() {
           />
         )}
 
-        {activeView !== 'Heck' && activeView !== 'Front' && activeView !== 'Seite' && (
+        {activeView === 'Innenraum' && (
+          <TeslaInteriorSVG
+            parts={parts}
+            selectedId={selectedId}
+            onSelect={togglePart}
+          />
+        )}
+
+        {activeView !== 'Heck' && activeView !== 'Front' && activeView !== 'Seite' && activeView !== 'Innenraum' && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: '180px', flexDirection: 'column', gap: '0.5rem',
