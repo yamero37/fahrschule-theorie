@@ -11,31 +11,31 @@
   --green-dark:   #16a34a;
   --green-glow:   rgba(34,197,94,0.1);
 
-  /* Klassisches Metallic-Gold / Champagner-Gold */
-  --gold:         #D4AF37;
-  --gold-light:   #F1D6A2;
-  --gold-dark:    #C89B5E;
-  --gold-glow:    rgba(212,175,55,0.2);
+  /* Champagner-Gold — gleiche Palette wie Light UI */
+  --gold:         #D8B36A;
+  --gold-light:   #E3C27D;
+  --gold-dark:    #CFA85F;
+  --gold-glow:    rgba(216,179,106,0.22);
 
-  /* Textfarben — warm & edel */
-  --text:         #F5EDD8;
-  --text-muted:   #BFA060;
+  /* Textfarben — Soft Beige auf Tiefschwarz */
+  --text:         #E8DED1;
+  --text-muted:   #C4AD8A;
   --text-dim:     #4A3424;
 
   /* Theme-adaptive semantic variables */
-  --gold-rgb:      212, 175, 55;
-  --text-h:        #FFF8E8;
-  --text-body:     #EDE0C0;
+  --gold-rgb:      216, 179, 106;
+  --text-h:        #F3EFE8;
+  --text-body:     #E8DED1;
   --card-bg:       rgba(10,10,10,0.98);
-  --card-border:   rgba(212,175,55,0.15);
-  --card-shadow:   0 30px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(212,175,55,0.05);
+  --card-border:   rgba(216,179,106,0.15);
+  --card-shadow:   0 30px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(216,179,106,0.05);
   --input-bg:      rgba(255,255,255,0.03);
-  --input-border:  rgba(212,175,55,0.15);
-  --input-color:   #EDE0C0;
-  --divider-color: rgba(212,175,55,0.07);
+  --input-border:  rgba(216,179,106,0.18);
+  --input-color:   #E8DED1;
+  --divider-color: rgba(216,179,106,0.08);
   --nav-bg:        rgba(6,6,6,0.97);
-  --nav-border:    rgba(212,175,55,0.22);
-  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,175,55,0.11) 0%, rgba(74,52,36,0.04) 45%, transparent 70%);
+  --nav-border:    rgba(216,179,106,0.22);
+  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(216,179,106,0.1) 0%, rgba(74,52,36,0.04) 45%, transparent 70%);
 }
 
 @theme inline {
@@ -102,10 +102,10 @@
 }
 
 /* ── Leaf decorations (LoginForm) ─────────────────────── */
-.leaf-main   { fill: #D4AF37; }
-.leaf-dark   { fill: #C89B5E; }
+.leaf-main   { fill: #D8B36A; }
+.leaf-dark   { fill: #CFA85F; }
 .leaf-darker { fill: #4A3424; }
-.leaf-light  { fill: #F1D6A2; }
+.leaf-light  { fill: #E3C27D; }
 [data-theme="light"] .leaf-main   { fill: #D8B36A; }
 [data-theme="light"] .leaf-dark   { fill: #CFA85F; }
 [data-theme="light"] .leaf-darker { fill: #B8903A; }
@@ -184,7 +184,7 @@ body {
     90deg,
     var(--gold-dark) 0%,
     var(--gold) 30%,
-    #F1D6A2 50%,
+    #E8DED1 50%,
     var(--gold) 70%,
     var(--gold-dark) 100%
   );
