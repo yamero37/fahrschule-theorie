@@ -139,9 +139,10 @@ function SlotBtn({ start, dur, booked, accepted, mine, mineAccepted, selected, o
     :                         'var(--text-muted)'
 
   return (
-    <button onClick={onClick} disabled={booked} style={{
+    <button onClick={onClick} disabled={booked} className="slot-btn" style={{
       padding: '8px 6px', borderRadius: '8px', fontSize: '0.68rem', fontWeight: 600, textAlign: 'center',
       border, background: bg, color, cursor: booked ? 'default' : 'pointer', transition: 'all 0.1s',
+      width: '100%',
     }}>
       {minsToTime(start)}
       {mineAccepted          && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: '#22c55e' }}>✓ Bestätigt</span>}

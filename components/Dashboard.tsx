@@ -406,7 +406,7 @@ export default function Dashboard() {
           <div style={{ height: '1px', background: 'rgba(var(--gold-rgb),0.12)', margin: '1.1rem 0 1rem' }} />
 
           {/* ── STAT TILES ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem' }}>
+          <div className="dash-stat-grid" style={{ gap: '0.45rem' }}>
             {[
               { icon: '📖', value: '14',             label: 'Lektionen', color: '#8b5cf6', barPct: 40  },
               { icon: '🎯', value: `${points}`,       label: 'Punkte',    color: '#ec4899', barPct: Math.min(100, (points / 300) * 100) },
@@ -638,14 +638,13 @@ export default function Dashboard() {
         </Link>
 
         {/* ── PREMIUM BANNER ── */}
-        <div style={{
+        <div className="dash-premium-inner" style={{
           position: 'relative', overflow: 'hidden',
           background: isPremium
             ? 'linear-gradient(135deg, rgba(96,165,250,0.1), rgba(167,139,250,0.09), rgba(244,114,182,0.07))'
             : 'linear-gradient(135deg, rgba(96,165,250,0.07), rgba(167,139,250,0.06), rgba(244,114,182,0.05))',
           border: '1.5px solid rgba(147,197,253,0.45)',
           borderRadius: '1.25rem', padding: '1rem 1.1rem',
-          display: 'flex', alignItems: 'center', gap: '0.85rem',
           animation: 'glowDiamond 4s ease-in-out infinite',
         }}>
           {/* diamond shimmer */}
@@ -691,7 +690,7 @@ export default function Dashboard() {
               filter: 'drop-shadow(0 0 8px rgba(234,179,8,0.6))',
             }}>✅</span>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', flexShrink: 0, position: 'relative' }}>
+            <div className="dash-premium-checkout" style={{ position: 'relative' }}>
               {/* AGB-Zustimmung */}
               <label style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', cursor: 'pointer', maxWidth: '200px' }}>
                 <input

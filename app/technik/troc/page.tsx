@@ -54,7 +54,7 @@ export default function TrocPage() {
               background: 'rgba(34,197,94,0.06)',
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4ade80' }}>
-                🖱 Drehen · Scrollen zum Zoomen
+                👆 Drehen · Pinch zum Zoomen
               </span>
               <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)' }}>
                 3D-Modell
@@ -63,7 +63,7 @@ export default function TrocPage() {
             <iframe
               title="VW T-Roc 3D-Modell"
               src="https://sketchfab.com/models/991a39ce1c7f40089c07ae204b5044b9/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_watermark=1&ui_watermark_link=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=1&ui_annotations=0&autospin=0.3"
-              style={{ width: '100%', height: '480px', border: 'none', display: 'block' }}
+              className="car-iframe"
               allow="autoplay; fullscreen; xr-spatial-tracking"
               allowFullScreen
             />

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AuthGuard from '@/components/AuthGuard'
+import TeslaInspect from '@/components/TeslaInspect'
 
 export const metadata = { title: 'Tesla Model 3 – TolDrive' }
 
@@ -54,7 +55,7 @@ export default function TeslaPage() {
               background: 'rgba(59,130,246,0.06)',
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60a5fa' }}>
-                🖱 Drehen · Scrollen zum Zoomen
+                👆 Drehen · Pinch zum Zoomen
               </span>
               <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)' }}>
                 3D-Modell
@@ -63,13 +64,13 @@ export default function TeslaPage() {
             <iframe
               title="Tesla Model 3 2024 3D-Modell"
               src="https://sketchfab.com/models/36c52f3f89f6439c90310f14e8ff33f2/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_watermark=1&ui_watermark_link=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=1&ui_annotations=0&autospin=0.3"
-              style={{ width: '100%', height: '480px', border: 'none', display: 'block' }}
+              className="car-iframe"
               allow="autoplay; fullscreen; xr-spatial-tracking"
               allowFullScreen
             />
           </div>
 
-          {/* Specs */}
+          {/* Technische Daten */}
           <div style={{
             marginTop: '1rem',
             background: 'transparent',
@@ -93,6 +94,9 @@ export default function TeslaPage() {
               ))}
             </div>
           </div>
+
+          {/* Interaktiver Fahrzeug-Check */}
+          <TeslaInspect />
 
         </div>
       </div>
