@@ -49,50 +49,55 @@
 /* ── Light theme ────────────────────────────────────────── */
 
 [data-theme="light"] {
-  --bg:           #edf2f7;
-  --surface:      #ffffff;
-  --surface-2:    #f7fafc;
-  --border:       #e2e8f0;
-  --border-light: #cbd5e1;
+  /* ── Luxury Light UI ── */
+  --bg:           #F7F4EF;
+  --surface:      #F3EFE8;
+  --surface-2:    #EFE9E1;
+  --border:       #E8DED1;
+  --border-light: #DDD2C3;
   --green:        #22c55e;
   --green-dark:   #16a34a;
   --green-glow:   rgba(34,197,94,0.1);
-  --gold:         #0d9488;
-  --gold-light:   #2dd4bf;
-  --gold-dark:    #0f766e;
-  --gold-glow:    rgba(13,148,136,0.15);
-  --text:         #0f172a;
-  --text-muted:   #475569;
-  --text-dim:     #94a3b8;
+
+  /* Champagner-Gold */
+  --gold:         #D8B36A;
+  --gold-light:   #E3C27D;
+  --gold-dark:    #CFA85F;
+  --gold-glow:    rgba(216,179,106,0.22);
+
+  /* Text — Anthrazit & Warm Gray */
+  --text:         #1E1E1E;
+  --text-muted:   #6F6B67;
+  --text-dim:     #8D8A86;
 
   /* Theme-adaptive semantic variables */
-  --gold-rgb:      13, 148, 136;
-  --text-h:        #0f172a;
-  --text-body:     #1e293b;
-  --card-bg:       rgba(255,255,255,0.98);
-  --card-border:   rgba(13,148,136,0.18);
-  --card-shadow:   0 8px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
-  --input-bg:      rgba(0,0,0,0.03);
-  --input-border:  rgba(0,0,0,0.1);
-  --input-color:   #0f172a;
-  --divider-color: rgba(0,0,0,0.07);
-  --nav-bg:        rgba(255,255,255,0.95);
-  --nav-border:    rgba(13,148,136,0.2);
-  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(13,148,136,0.07) 0%, rgba(13,148,136,0.02) 45%, transparent 70%);
+  --gold-rgb:      216, 179, 106;
+  --text-h:        #1E1E1E;
+  --text-body:     #2B2B2B;
+  --card-bg:       rgba(243,239,232,0.98);
+  --card-border:   rgba(216,179,106,0.28);
+  --card-shadow:   0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7);
+  --input-bg:      rgba(216,179,106,0.06);
+  --input-border:  rgba(216,179,106,0.28);
+  --input-color:   #1E1E1E;
+  --divider-color: rgba(216,179,106,0.18);
+  --nav-bg:        rgba(247,244,239,0.96);
+  --nav-border:    rgba(216,179,106,0.32);
+  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(216,179,106,0.1) 0%, rgba(232,222,209,0.04) 45%, transparent 70%);
 }
 
-/* Soft teal blob gradient in top corners */
+/* Warm ivory blob gradient in top corners */
 [data-theme="light"] body {
   background:
-    radial-gradient(ellipse 65% 45% at 8% 0%, rgba(13,148,136,0.12) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 38% at 92% 4%, rgba(13,148,136,0.08) 0%, transparent 60%),
-    #edf2f7;
+    radial-gradient(ellipse 65% 45% at 8% 0%,  rgba(216,179,106,0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 38% at 92% 4%, rgba(216,179,106,0.07) 0%, transparent 60%),
+    #F7F4EF;
   color: var(--text);
 }
 
-/* Shooting stars: teal on light theme — !important overrides inline style */
+/* Shooting stars: champagne gold on light theme */
 [data-theme="light"] .shooting-stars div {
-  background: linear-gradient(90deg, transparent 0%, rgba(13,148,136,0.65) 35%, rgba(45,212,191,0.35) 65%, transparent 100%) !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(216,179,106,0.55) 35%, rgba(227,194,125,0.28) 65%, transparent 100%) !important;
   filter: blur(2px) !important;
 }
 
@@ -101,10 +106,10 @@
 .leaf-dark   { fill: #C89B5E; }
 .leaf-darker { fill: #4A3424; }
 .leaf-light  { fill: #F1D6A2; }
-[data-theme="light"] .leaf-main   { fill: #0d9488; }
-[data-theme="light"] .leaf-dark   { fill: #0f766e; }
-[data-theme="light"] .leaf-darker { fill: #115e59; }
-[data-theme="light"] .leaf-light  { fill: #2dd4bf; }
+[data-theme="light"] .leaf-main   { fill: #D8B36A; }
+[data-theme="light"] .leaf-dark   { fill: #CFA85F; }
+[data-theme="light"] .leaf-darker { fill: #B8903A; }
+[data-theme="light"] .leaf-light  { fill: #E3C27D; }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
 
