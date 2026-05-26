@@ -403,40 +403,60 @@ export default function Dashboard() {
         <SidebarNav />
 
         {/* Social links */}
-        <div style={{ margin: '0.5rem 0.85rem 0', padding: '0.7rem 0.85rem', borderRadius: '0.85rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-          <p style={{ margin: '0 0 0.5rem', fontSize: '0.52rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4a4a6a' }}>Folge uns</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-            <a href="https://www.instagram.com/tolga_ar/" target="_blank" rel="noopener noreferrer" style={{
-              display: 'flex', alignItems: 'center', gap: '0.55rem',
-              padding: '0.38rem 0.5rem', borderRadius: '0.5rem',
-              textDecoration: 'none', color: '#9090b8', fontSize: '0.72rem', fontWeight: 600,
-              transition: 'background 0.15s, color 0.15s',
+        <div style={{ margin: '0.5rem 0.85rem 0', display: 'flex', gap: '0.5rem' }}>
+          {/* Instagram */}
+          <a href="https://www.instagram.com/tolga_ar/" target="_blank" rel="noopener noreferrer"
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem',
+              padding: '0.6rem 0.4rem', borderRadius: '0.75rem', textDecoration: 'none',
+              background: 'rgba(225,48,108,0.08)', border: '1px solid rgba(225,48,108,0.18)',
+              transition: 'all 0.2s',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(225,48,108,0.12)'; (e.currentTarget as HTMLAnchorElement).style.color = '#f472b6' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#9090b8' }}
-            >
-              {/* Instagram icon */}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-              @tolga_ar
-            </a>
-            <a href="https://www.tiktok.com/@fahrlehrertolga" target="_blank" rel="noopener noreferrer" style={{
-              display: 'flex', alignItems: 'center', gap: '0.55rem',
-              padding: '0.38rem 0.5rem', borderRadius: '0.5rem',
-              textDecoration: 'none', color: '#9090b8', fontSize: '0.72rem', fontWeight: 600,
-              transition: 'background 0.15s, color 0.15s',
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'rgba(225,48,108,0.18)'
+              el.style.borderColor = 'rgba(225,48,108,0.45)'
+              el.style.transform = 'translateY(-2px)'
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLAnchorElement).style.color = '#e0e0f8' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#9090b8' }}
-            >
-              {/* TikTok icon */}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
-              </svg>
-              @fahrlehrertolga
-            </a>
-          </div>
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'rgba(225,48,108,0.08)'
+              el.style.borderColor = 'rgba(225,48,108,0.18)'
+              el.style.transform = 'translateY(0)'
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f472b6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+            <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#f472b6', letterSpacing: '0.02em' }}>@tolga_ar</span>
+          </a>
+
+          {/* TikTok */}
+          <a href="https://www.tiktok.com/@fahrlehrertolga" target="_blank" rel="noopener noreferrer"
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem',
+              padding: '0.6rem 0.4rem', borderRadius: '0.75rem', textDecoration: 'none',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'rgba(255,255,255,0.1)'
+              el.style.borderColor = 'rgba(255,255,255,0.25)'
+              el.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = 'rgba(255,255,255,0.04)'
+              el.style.borderColor = 'rgba(255,255,255,0.1)'
+              el.style.transform = 'translateY(0)'
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#e0e0f8">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+            </svg>
+            <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#c0c0e0', letterSpacing: '0.02em' }}>@fahrlehrerTolga</span>
+          </a>
         </div>
 
         <div style={{ flex: 1 }} />
