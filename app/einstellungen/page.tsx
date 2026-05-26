@@ -107,26 +107,48 @@ export default function EinstellungenPage() {
   /* ── Upload avatar ── */
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (!file || !userId) return
+    if (!file) return
+    if (!userId) { setAvatarErr('Nicht eingeloggt. Bitte Seite neu laden.'); return }
+
     setAvatarErr('')
     if (file.size > 2 * 1024 * 1024) { setAvatarErr('Bild darf max. 2 MB groß sein.'); return }
     setUploading(true)
 
-    const ext  = file.name.split('.').pop()?.toLowerCase() || 'jpg'
-    const path = `${userId}.${ext}`
+    try {
+      const ext  = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+      const path = `${userId}.${ext}`
 
-    const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type })
-    if (upErr) { setAvatarErr('Upload fehlgeschlagen: ' + upErr.message); setUploading(false); return }
+      const { error: upErr } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type })
 
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-    const url = publicUrl + '?t=' + Date.now()
+      if (upErr) {
+        console.error('Avatar upload error:', upErr)
+        setAvatarErr('Upload fehlgeschlagen: ' + upErr.message)
+        setUploading(false)
+        return
+      }
 
-    await supabase.from('user_stats').upsert({ user_id: userId, avatar_url: url }, { onConflict: 'user_id' })
-    setAvatarUrl(url)
-    setUploading(false)
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      const url = publicUrl + '?t=' + Date.now()
 
-    // Reset file input so same file can be re-uploaded
-    if (fileRef.current) fileRef.current.value = ''
+      const { error: dbErr } = await supabase
+        .from('user_stats')
+        .upsert({ user_id: userId, avatar_url: url }, { onConflict: 'user_id' })
+
+      if (dbErr) {
+        console.error('Avatar DB error:', dbErr)
+        setAvatarErr('Gespeichert, aber DB-Fehler: ' + dbErr.message)
+      } else {
+        setAvatarUrl(url)
+      }
+    } catch (err: unknown) {
+      console.error('Avatar unexpected error:', err)
+      setAvatarErr('Unerwarteter Fehler. Bitte erneut versuchen.')
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
   }
 
   /* ── Toggle notifications ── */
@@ -213,7 +235,14 @@ export default function EinstellungenPage() {
         <Section title="Profil" icon="👤">
 
           {/* Avatar upload */}
-          <div style={{ padding: '1.1rem 1rem', borderBottom: '1px solid var(--divider-color)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <label
+            htmlFor="avatar-input"
+            style={{
+              padding: '1.1rem 1rem', borderBottom: '1px solid var(--divider-color)',
+              display: 'flex', alignItems: 'center', gap: '1rem',
+              cursor: uploading ? 'default' : 'pointer',
+            }}
+          >
             <div style={{ position: 'relative', flexShrink: 0 }}>
               <div style={{
                 width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden',
@@ -227,23 +256,18 @@ export default function EinstellungenPage() {
                 }
               </div>
               {/* Camera badge */}
-              <button
-                onClick={() => fileRef.current?.click()}
-                disabled={uploading}
-                style={{
-                  position: 'absolute', bottom: 0, right: 0,
-                  width: '24px', height: '24px', borderRadius: '50%',
-                  background: uploading ? 'var(--border)' : 'var(--gold)',
-                  border: '2px solid var(--surface)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: uploading ? 'default' : 'pointer', fontSize: '0.65rem',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                }}
-              >
+              <div style={{
+                position: 'absolute', bottom: 0, right: 0,
+                width: '24px', height: '24px', borderRadius: '50%',
+                background: uploading ? 'var(--border)' : 'var(--gold)',
+                border: '2px solid var(--surface)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.65rem',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                pointerEvents: 'none',
+              }}>
                 {uploading ? '⏳' : '📷'}
-              </button>
-              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif"
-                onChange={handleUpload} style={{ display: 'none' }} />
+              </div>
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -251,11 +275,21 @@ export default function EinstellungenPage() {
               <p style={{ margin: '2px 0 0', fontSize: '0.63rem', color: 'var(--text-dim)', lineHeight: 1.5 }}>
                 {uploading
                   ? 'Wird hochgeladen…'
-                  : 'Sichtbar im Livechat, Rangliste & Community · max. 2 MB'}
+                  : 'Tippen um Bild auszuwählen · max. 2 MB'}
               </p>
               {avatarErr && <p style={{ margin: '4px 0 0', fontSize: '0.63rem', color: '#f87171' }}>{avatarErr}</p>}
             </div>
-          </div>
+
+            <input
+              id="avatar-input"
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              onChange={handleUpload}
+              disabled={uploading}
+              style={{ display: 'none' }}
+            />
+          </label>
 
           <InfoRow label="Benutzername" desc="Dein angezeigter Name in der App" value={username} />
           <InfoRow label="E-Mail" desc="Deine Anmeldedaten" value={email} />
