@@ -24,9 +24,10 @@ function weekRange(dateStr: string): { start: string; end: string } {
   return { start: fmt(mon), end: fmt(sun) }
 }
 
-/* ── Niedersachsen public holidays 2026 ── */
-// Easter Sunday 2026: April 5
-const HOLIDAYS_2026 = new Set([
+/* ── Niedersachsen public holidays (2026 + 2027) ── */
+// Easter 2026: April 5 · Easter 2027: March 28
+const HOLIDAYS = new Set([
+  // 2026
   '2026-01-01', // Neujahr
   '2026-04-03', // Karfreitag
   '2026-04-06', // Ostermontag
@@ -37,19 +38,30 @@ const HOLIDAYS_2026 = new Set([
   '2026-10-31', // Reformationstag (Niedersachsen)
   '2026-12-25', // 1. Weihnachtstag
   '2026-12-26', // 2. Weihnachtstag
+  // 2027
+  '2027-01-01', // Neujahr
+  '2027-03-26', // Karfreitag
+  '2027-03-29', // Ostermontag
+  '2027-05-01', // Tag der Arbeit
+  '2027-05-06', // Christi Himmelfahrt
+  '2027-05-17', // Pfingstmontag
+  '2027-10-03', // Tag der deutschen Einheit
+  '2027-10-31', // Reformationstag (Niedersachsen)
+  '2027-12-25', // 1. Weihnachtstag
+  '2027-12-26', // 2. Weihnachtstag
 ])
 
 const HOLIDAY_NAMES: Record<string, string> = {
-  '2026-01-01': 'Neujahr',
-  '2026-04-03': 'Karfreitag',
-  '2026-04-06': 'Ostermontag',
-  '2026-05-01': 'Tag der Arbeit',
-  '2026-05-14': 'Christi Himmelfahrt',
-  '2026-05-25': 'Pfingstmontag',
-  '2026-10-03': 'Tag der deutschen Einheit',
-  '2026-10-31': 'Reformationstag',
-  '2026-12-25': '1. Weihnachtstag',
-  '2026-12-26': '2. Weihnachtstag',
+  '2026-01-01': 'Neujahr',   '2027-01-01': 'Neujahr',
+  '2026-04-03': 'Karfreitag', '2027-03-26': 'Karfreitag',
+  '2026-04-06': 'Ostermontag','2027-03-29': 'Ostermontag',
+  '2026-05-01': 'Tag der Arbeit','2027-05-01': 'Tag der Arbeit',
+  '2026-05-14': 'Christi Himmelfahrt','2027-05-06': 'Christi Himmelfahrt',
+  '2026-05-25': 'Pfingstmontag','2027-05-17': 'Pfingstmontag',
+  '2026-10-03': 'Tag der deutschen Einheit','2027-10-03': 'Tag der deutschen Einheit',
+  '2026-10-31': 'Reformationstag','2027-10-31': 'Reformationstag',
+  '2026-12-25': '1. Weihnachtstag','2027-12-25': '1. Weihnachtstag',
+  '2026-12-26': '2. Weihnachtstag','2027-12-26': '2. Weihnachtstag',
 }
 
 /* ── Slot generation (all in minutes) ── */
@@ -153,12 +165,25 @@ function SlotBtn({ start, dur, booked, accepted, mine, mineAccepted, selected, o
   )
 }
 
+/* ── Rolling 3-month window helpers ── */
+function getBaseDate() {
+  const n = new Date()
+  return { baseYear: n.getFullYear(), baseMonth: n.getMonth() }
+}
+
+function getYearMonth(baseYear: number, baseMonth: number, offset: number): { year: number; month: number } {
+  const total = baseMonth + offset
+  return { year: baseYear + Math.floor(total / 12), month: total % 12 }
+}
+
 /* ── Main component ── */
 export default function TerminKalender({ userId, username }: { userId: string; username: string }) {
-  const YEAR = 2026
-  const todayIso = isoDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+  const { baseYear, baseMonth } = getBaseDate()
+  const todayIso = isoDate(baseYear, baseMonth, new Date().getDate())
 
-  const [month, setMonth] = useState(0)
+  // 0 = current month, 1 = next month, 2 = month after next
+  const [monthOffset, setMonthOffset] = useState(0)
+  const { year: curYear, month: curMonth } = getYearMonth(baseYear, baseMonth, monthOffset)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const duration = 90
   const [bookedSlots, setBookedSlots] = useState<Booked[]>([])
@@ -308,8 +333,8 @@ export default function TerminKalender({ userId, username }: { userId: string; u
   }
 
   /* Calendar grid */
-  const daysInMonth = getDaysInMonth(YEAR, month)
-  const firstDay    = firstDayOfMonth(YEAR, month)
+  const daysInMonth = getDaysInMonth(curYear, curMonth)
+  const firstDay    = firstDayOfMonth(curYear, curMonth)
   const cells: (number | null)[] = [
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
@@ -412,11 +437,11 @@ export default function TerminKalender({ userId, username }: { userId: string; u
 
           {/* Month nav */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-            <button onClick={() => setMonth(m => Math.max(0, m - 1))} disabled={month === 0}
-              style={{ background: 'none', border: 'none', color: month === 0 ? 'var(--text-dim)' : 'var(--text-muted)', cursor: month === 0 ? 'default' : 'pointer', fontSize: '1.1rem', padding: '4px 8px' }}>‹</button>
-            <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 800, color: 'var(--text)' }}>{MONTHS_DE[month]} {YEAR}</p>
-            <button onClick={() => setMonth(m => Math.min(11, m + 1))} disabled={month === 11}
-              style={{ background: 'none', border: 'none', color: month === 11 ? 'var(--text-dim)' : 'var(--text-muted)', cursor: month === 11 ? 'default' : 'pointer', fontSize: '1.1rem', padding: '4px 8px' }}>›</button>
+            <button onClick={() => setMonthOffset(o => Math.max(0, o - 1))} disabled={monthOffset === 0}
+              style={{ background: 'none', border: 'none', color: monthOffset === 0 ? 'var(--text-dim)' : 'var(--text-muted)', cursor: monthOffset === 0 ? 'default' : 'pointer', fontSize: '1.1rem', padding: '4px 8px' }}>‹</button>
+            <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 800, color: 'var(--text)' }}>{MONTHS_DE[curMonth]} {curYear}</p>
+            <button onClick={() => setMonthOffset(o => Math.min(2, o + 1))} disabled={monthOffset === 2}
+              style={{ background: 'none', border: 'none', color: monthOffset === 2 ? 'var(--text-dim)' : 'var(--text-muted)', cursor: monthOffset === 2 ? 'default' : 'pointer', fontSize: '1.1rem', padding: '4px 8px' }}>›</button>
           </div>
 
           {/* Day headers */}
@@ -438,9 +463,9 @@ export default function TerminKalender({ userId, username }: { userId: string; u
               const wd2 = idx % 7 // 0=Mo…5=Sa…6=So
               const isSunday   = wd2 === 6
               const isSaturday = wd2 === 5
-              const dateStr  = isoDate(YEAR, month, day)
+              const dateStr  = isoDate(curYear, curMonth, day)
               const isPast   = dateStr < todayIso
-              const isHoliday = HOLIDAYS_2026.has(dateStr)
+              const isHoliday = HOLIDAYS.has(dateStr)
               const isBlocked = blockedDays.has(dateStr)
               const noRegel   = apptMode === 'regeltermin' && isSaturday
               const isDisabled = isSunday || (isSaturday && !saturdayEnabled) || isPast || isHoliday || isBlocked || noRegel
