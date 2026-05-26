@@ -59,11 +59,11 @@ const CSS = `
 .db-root { display:flex; min-height:100vh; background:#f0eff7; }
 
 .db-sidebar {
-  width:220px; flex-shrink:0; background:#12122a;
+  width:220px; flex-shrink:0; background:var(--surface);
   display:none; flex-direction:column;
   position:fixed; top:0; left:0; bottom:0;
   overflow-y:auto; z-index:40;
-  border-right:1px solid rgba(255,255,255,0.05);
+  border-right:1px solid var(--border);
 }
 .db-main { flex:1; min-height:100vh; display:flex; flex-direction:column; }
 .db-topbar {
@@ -109,7 +109,7 @@ const CSS = `
   color:#6b6b8a; text-decoration:none; font-size:.85rem; font-weight:500;
   transition:background .15s,color .15s;
 }
-.db-navlink:hover { background:rgba(255,255,255,0.05); color:#b0b0d0; }
+.db-navlink:hover { background:rgba(99,102,241,0.06); color:var(--text); }
 .db-navlink.active { background:rgba(99,102,241,.15); color:#a5b4fc; font-weight:700; }
 `
 

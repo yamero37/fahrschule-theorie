@@ -23,7 +23,7 @@ export default function DemoPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#080808',
+      background: 'var(--bg)',
     }}>
       <p style={{ color: 'var(--gold)', fontSize: '1rem', letterSpacing: '0.1em' }}>
         Wird geprüft…

@@ -22,8 +22,8 @@ const BASIC_THEMES: { id: Theme; label: string; desc: string; preview: { bg: str
 
 export default function LayoutPage() {
   const router = useRouter()
-  const [current, setCurrent] = useState<Theme>('dark')
-  const [saved, setSaved] = useState<Theme>('dark')
+  const [current, setCurrent] = useState<Theme>('light')
+  const [saved, setSaved] = useState<Theme>('light')
 
   useEffect(() => {
     try {
@@ -52,7 +52,7 @@ export default function LayoutPage() {
             onClick={() => router.back()}
             style={{
               width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
               color: 'var(--text-dim)', fontSize: '1rem', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
@@ -120,11 +120,11 @@ function ThemeCard({
       onClick={onSelect}
       style={{
         background: 'var(--surface)',
-        border: `2px solid ${active ? 'var(--gold)' : 'rgba(255,255,255,0.07)'}`,
+        border: `2px solid ${active ? 'var(--gold)' : 'var(--border)'}`,
         borderRadius: '1.1rem', padding: '1rem',
         cursor: 'pointer', textAlign: 'left',
         transition: 'border-color 0.2s, box-shadow 0.2s',
-        boxShadow: active ? '0 0 0 3px rgba(201,144,122,0.15)' : 'none',
+        boxShadow: active ? '0 0 0 3px rgba(var(--gold-rgb),0.15)' : 'none',
         position: 'relative', overflow: 'hidden',
       }}
     >
@@ -189,15 +189,15 @@ function ThemeCard({
 function PremiumCard() {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, var(--surface) 0%, rgba(201,144,122,0.06) 100%)',
-      border: '1px solid rgba(201,144,122,0.2)',
+      background: 'linear-gradient(135deg, var(--surface) 0%, rgba(var(--gold-rgb),0.04) 100%)',
+      border: '1px solid rgba(var(--gold-rgb),0.15)',
       borderRadius: '1.1rem', padding: '1.1rem 1.1rem',
       display: 'flex', alignItems: 'center', gap: '1rem',
       opacity: 0.75,
     }}>
       <div style={{
         width: '46px', height: '46px', borderRadius: '12px', flexShrink: 0,
-        background: 'rgba(201,144,122,0.1)', border: '1px solid rgba(201,144,122,0.25)',
+        background: 'rgba(var(--gold-rgb),0.08)', border: '1px solid rgba(var(--gold-rgb),0.2)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.35rem',
       }}>💎</div>
       <div style={{ flex: 1 }}>
@@ -205,7 +205,7 @@ function PremiumCard() {
           <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: 'var(--text)' }}>Premium Layout</p>
           <span style={{
             fontSize: '0.52rem', fontWeight: 800, padding: '2px 7px', borderRadius: '100px',
-            background: 'rgba(201,144,122,0.12)', border: '1px solid rgba(201,144,122,0.3)',
+            background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.25)',
             color: 'var(--gold)', letterSpacing: '0.05em', textTransform: 'uppercase',
           }}>Premium</span>
         </div>
@@ -215,7 +215,7 @@ function PremiumCard() {
       </div>
       <div style={{
         width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0,
-        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+        background: 'var(--input-bg)', border: '1px solid var(--input-border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem',
       }}>🔒</div>
     </div>

@@ -57,7 +57,7 @@ export default function TeslaPage() {
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#60a5fa' }}>
                 👆 Drehen · Pinch zum Zoomen
               </span>
-              <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)' }}>
+              <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.55)' }}>
                 3D-Modell
               </span>
             </div>

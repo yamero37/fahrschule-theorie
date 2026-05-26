@@ -23,7 +23,7 @@ export default function EinstellungenPage() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(201,144,122,0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(var(--gold-rgb),0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
@@ -73,7 +73,7 @@ export default function EinstellungenPage() {
           />
           <SettingRow label="Benachrichtigungen" desc="Push-Nachrichten & Erinnerungen" value="Bald verfügbar" muted />
           <SettingRow label="Sprache" desc="App-Sprache" value="Deutsch" muted />
-          <SettingRow label="Design" desc="Helles / Dunkles Design" value="Dunkel" muted />
+          <SettingRow label="Design" desc="Helles / Dunkles Design" value="Hell" muted />
         </Section>
 
         {/* Lern-Einstellungen */}

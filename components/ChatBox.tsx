@@ -131,12 +131,12 @@ function MsgList({ msgs, userId, bottomRef, typingUsers, userRanks }: {
                   ? 'rgba(139,92,246,0.13)'
                   : mine
                     ? 'rgba(var(--gold-rgb),0.18)'
-                    : 'rgba(255,255,255,0.06)',
+                    : 'var(--surface-2)',
                 border: adminMsg
                   ? '1px solid rgba(139,92,246,0.35)'
                   : mine
                     ? '1px solid rgba(var(--gold-rgb),0.3)'
-                    : '1px solid rgba(255,255,255,0.08)',
+                    : '1px solid var(--border)',
                 fontSize: '0.76rem', color: 'var(--text)', lineHeight: 1.5, wordBreak: 'break-word',
               }}>
                 {m.message}
@@ -182,7 +182,7 @@ function SendBar({ input, onChange, send, sending, placeholder = 'Nachricht…' 
   placeholder?: string
 }) {
   return (
-    <div style={{ display: 'flex', gap: '6px', padding: '0.55rem 1rem 0.85rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+    <div style={{ display: 'flex', gap: '6px', padding: '0.55rem 1rem 0.85rem', borderTop: '1px solid var(--border)' }}>
       <input
         value={input}
         onChange={e => onChange(e.target.value)}
@@ -434,7 +434,7 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0' }}>
+        <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
           {(['public', 'groups'] as const).map(t => (
             <button key={t} onClick={() => { setTab(t); if (t === 'groups') { setView('list'); setActiveGroup(null) } }} style={{
               flex: 1, padding: '7px 4px', border: 'none', cursor: 'pointer',
@@ -541,7 +541,7 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
 
           {view === 'chat' && activeGroup && (
             <>
-              <div style={{ padding: '0.6rem 1rem', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '0.6rem 1rem', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border)' }}>
                 <button onClick={() => { setView('list'); setActiveGroup(null) }} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.75rem', cursor: 'pointer', padding: 0 }}>←</button>
                 <p style={{ margin: 0, fontSize: '0.73rem', fontWeight: 700, color: 'var(--text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activeGroup.name}</p>
                 <button onClick={() => { navigator.clipboard.writeText(activeGroup.id) }} title="Gruppen-ID kopieren"

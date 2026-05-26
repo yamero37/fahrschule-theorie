@@ -67,9 +67,9 @@ export default function CarViewerWrapper() {
             </span>
             <span style={{
               fontSize: '0.6rem', fontWeight: 600,
-              color: 'var(--text-dim)',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.07)',
+              color: 'rgba(255,255,255,0.7)',
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.12)',
               padding: '2px 8px', borderRadius: '100px',
             }}>
               {car.year}
@@ -77,7 +77,7 @@ export default function CarViewerWrapper() {
             <span style={{
               marginLeft: 'auto',
               fontSize: '0.6rem',
-              color: 'rgba(255,255,255,0.25)',
+              color: 'rgba(255,255,255,0.5)',
               flexShrink: 0,
             }}>
               🖱 Drehen · Zoomen
