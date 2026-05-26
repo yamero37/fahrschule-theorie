@@ -28,7 +28,8 @@ export async function GET() {
 
     const leaderboard = stats.map((s, i) => {
       const user = users.find(u => u.id === s.user_id)
-      const displayName = user?.user_metadata?.username || user?.email?.split('@')[0] || `Spieler ${i + 1}`
+      const raw = user?.user_metadata?.username || user?.email || `Spieler ${i + 1}`
+      const displayName = raw.includes('@') ? raw.split('@')[0] : raw
       return { position: i + 1, userId: s.user_id, displayName, points: s.points, avatarUrl: (s as Record<string, unknown>).avatar_url as string | null ?? null }
     })
 
