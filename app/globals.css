@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════
-   DEFAULT THEME: Light + Indigo
+   THEME: Light · Indigo/Purple
    ══════════════════════════════════════════════════════════ */
 
-:root, [data-theme="light"] {
+:root {
   /* Backgrounds */
   --bg:           #f0eff7;
   --surface:      #ffffff;
@@ -12,7 +12,7 @@
   --border:       #e5e7eb;
   --border-light: #d1d5db;
 
-  /* Primary: Indigo (replaces gold) */
+  /* Primary: Indigo */
   --gold:         #6366f1;
   --gold-light:   #818cf8;
   --gold-dark:    #4f46e5;
@@ -44,44 +44,6 @@
   --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%);
 }
 
-/* ══════════════════════════════════════════════════════════
-   DARK THEME (opt-in)
-   ══════════════════════════════════════════════════════════ */
-
-[data-theme="dark"] {
-  --bg:           #0A0A0A;
-  --surface:      #111111;
-  --surface-2:    #1A1A1A;
-  --border:       #222222;
-  --border-light: #2E2E2E;
-  --green:        #22c55e;
-  --green-dark:   #16a34a;
-  --green-glow:   rgba(34,197,94,0.1);
-
-  --gold:         #D8B36A;
-  --gold-light:   #E3C27D;
-  --gold-dark:    #CFA85F;
-  --gold-glow:    rgba(216,179,106,0.22);
-
-  --text:         #E8DED1;
-  --text-muted:   #C4AD8A;
-  --text-dim:     #4A3424;
-
-  --gold-rgb:      216, 179, 106;
-  --text-h:        #F3EFE8;
-  --text-body:     #E8DED1;
-  --card-bg:       rgba(10,10,10,0.98);
-  --card-border:   rgba(216,179,106,0.15);
-  --card-shadow:   0 30px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(216,179,106,0.05);
-  --input-bg:      rgba(255,255,255,0.03);
-  --input-border:  rgba(216,179,106,0.18);
-  --input-color:   #E8DED1;
-  --divider-color: rgba(216,179,106,0.08);
-  --nav-bg:        rgba(6,6,6,0.97);
-  --nav-border:    rgba(216,179,106,0.22);
-  --spotlight:     radial-gradient(ellipse 70% 40% at 50% 0%, rgba(216,179,106,0.1) 0%, rgba(74,52,36,0.04) 45%, transparent 70%);
-}
-
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --color-bg: var(--bg);
@@ -98,21 +60,11 @@ body {
   font-family: var(--font-geist-sans), Arial, sans-serif;
 }
 
-[data-theme="dark"] body {
-  background: var(--bg);
-  color: var(--text);
-}
-
 /* ── Leaf decorations (LoginForm) ─────────────────────── */
 .leaf-main   { fill: #6366f1; }
 .leaf-dark   { fill: #4f46e5; }
 .leaf-darker { fill: #3730a3; }
 .leaf-light  { fill: #818cf8; }
-
-[data-theme="dark"] .leaf-main   { fill: #D8B36A; }
-[data-theme="dark"] .leaf-dark   { fill: #CFA85F; }
-[data-theme="dark"] .leaf-darker { fill: #4A3424; }
-[data-theme="dark"] .leaf-light  { fill: #E3C27D; }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
 
@@ -172,22 +124,6 @@ body {
     var(--gold-dark) 0%,
     var(--gold) 30%,
     #c7d2fe 50%,
-    var(--gold) 70%,
-    var(--gold-dark) 100%
-  );
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: goldShine 5s linear infinite;
-}
-
-[data-theme="dark"] .gold-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--gold-dark) 0%,
-    var(--gold) 30%,
-    #E8DED1 50%,
     var(--gold) 70%,
     var(--gold-dark) 100%
   );

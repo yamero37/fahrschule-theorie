@@ -13,16 +13,6 @@ export default function RegisterForm() {
   const [demoExpired, setDemoExpired] = useState(false)
 
   useEffect(() => {
-    // Force light theme on register page
-    document.documentElement.setAttribute('data-theme', 'light')
-    return () => {
-      const saved = localStorage.getItem('toldrive_theme')
-      if (saved) document.documentElement.setAttribute('data-theme', saved)
-      else document.documentElement.removeAttribute('data-theme')
-    }
-  }, [])
-
-  useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       if (params.get('reason') === 'demo_expired') setDemoExpired(true)

@@ -6,21 +6,6 @@ import Link from 'next/link'
 import { loginUser, setSessionExpiry } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 
-/* ── Force light theme on login page ── */
-function UseLightTheme() {
-  useEffect(() => {
-    // Always show light theme on login page
-    document.documentElement.setAttribute('data-theme', 'light')
-    // Restore saved theme when leaving the page
-    return () => {
-      const saved = localStorage.getItem('toldrive_theme')
-      if (saved) document.documentElement.setAttribute('data-theme', saved)
-      else document.documentElement.removeAttribute('data-theme')
-    }
-  }, [])
-  return null
-}
-
 /* ── Botanical leaf SVG decorations ── */
 function LeavesLeft() {
   return (
@@ -133,9 +118,7 @@ export default function LoginForm() {
       overflowX: 'hidden',
     }}>
 
-      <UseLightTheme />
-
-      {/* Background spotlight — teal on light, rose gold on dark */}
+      {/* Background spotlight */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
         background: 'var(--spotlight)',

@@ -290,7 +290,6 @@ export default function EinstellungenPage() {
           </div>
 
           <InfoRow label="Sprache" desc="App-Sprache" value="Deutsch" />
-          <InfoRow label="Design" desc="Helles / Dunkles Design" value="Hell" />
         </Section>
 
         {/* ── Konto ── */}
