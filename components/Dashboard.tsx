@@ -59,11 +59,11 @@ const CSS = `
 .db-root { display:flex; min-height:100vh; background:#f0eff7; }
 
 .db-sidebar {
-  width:220px; flex-shrink:0; background:var(--surface);
+  width:220px; flex-shrink:0; background:#1e1346;
   display:none; flex-direction:column;
   position:fixed; top:0; left:0; bottom:0;
   overflow-y:auto; z-index:40;
-  border-right:1px solid var(--border);
+  border-right:1px solid rgba(255,255,255,0.07);
 }
 .db-main { flex:1; min-height:100vh; display:flex; flex-direction:column; }
 .db-topbar {
@@ -110,7 +110,7 @@ const CSS = `
   color:#6b6b8a; text-decoration:none; font-size:.85rem; font-weight:500;
   transition:background .15s,color .15s;
 }
-.db-navlink:hover { background:rgba(99,102,241,0.06); color:var(--text); }
+.db-navlink:hover { background:rgba(255,255,255,0.08); color:#e0e0f8; }
 .db-navlink.active { background:rgba(99,102,241,.15); color:#a5b4fc; font-weight:700; }
 `
 
@@ -311,11 +311,15 @@ export default function Dashboard() {
       {/* ── SIDEBAR ── */}
       <aside className="db-sidebar">
         {/* Logo */}
-        <div style={{ padding: '1.4rem 1.25rem 1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ color: '#fff', fontWeight: 900, fontSize: '1.1rem' }}>T</span>
-          </div>
-          <span style={{ fontWeight: 900, fontSize: '.95rem', color: '#f0f0ff', letterSpacing: '.06em' }}>TOLDRIVE</span>
+        <div style={{ padding: '1.2rem 1.25rem 1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/avatar.jpeg" alt="TolDrive" style={{
+            width: 36, height: 36, borderRadius: 10, objectFit: 'cover',
+            border: '1.5px solid rgba(255,255,255,0.25)',
+            boxShadow: '0 0 0 3px rgba(139,92,246,0.35)',
+            flexShrink: 0,
+          }} />
+          <span style={{ fontWeight: 900, fontSize: '.95rem', color: '#ffffff', letterSpacing: '.06em' }}>TOLDRIVE</span>
         </div>
 
         {/* Nav */}
