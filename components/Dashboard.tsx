@@ -369,16 +369,29 @@ export default function Dashboard() {
 
         {/* PRO card */}
         <div style={{ margin: '0 .85rem .75rem', padding: '1rem', borderRadius: '1rem', background: 'linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)' }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: '.4rem' }}>💎</div>
-          <p style={{ margin: '0 0 .15rem', fontWeight: 800, fontSize: '.85rem', color: '#f0f0ff' }}>TolDrive</p>
-          <span style={{ display: 'inline-block', fontSize: '.52rem', fontWeight: 900, background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', color: '#fff', padding: '1px 7px', borderRadius: 4, marginBottom: '.5rem', letterSpacing: '.06em' }}>PRO</span>
-          <p style={{ margin: '0 0 .8rem', fontSize: '.66rem', color: '#9090b8', lineHeight: 1.45 }}>Mehr Funktionen.<br />Mehr Erfolg.</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: '.45rem' }}>
+            <span style={{ fontSize: '1.2rem' }}>💎</span>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: '.85rem', color: '#f0f0ff' }}>Premium</p>
+            <span style={{ fontSize: '.52rem', fontWeight: 900, background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', color: '#fff', padding: '1px 7px', borderRadius: 4, letterSpacing: '.06em' }}>PRO</span>
+          </div>
           {isPremium ? (
-            <span style={{ fontSize: '.72rem', color: '#22c55e', fontWeight: 700 }}>✓ Aktiv</span>
+            <span style={{ fontSize: '.72rem', color: '#22c55e', fontWeight: 700 }}>✓ Bereits aktiv</span>
           ) : (
-            <button onClick={startCheckout} disabled={checkingOut} style={{ width: '100%', padding: '.5rem', borderRadius: '.5rem', background: '#f0f0ff', color: '#1a1a2e', border: 'none', fontWeight: 700, fontSize: '.75rem', cursor: checkingOut ? 'default' : 'pointer', opacity: checkingOut ? .6 : 1 }}>
-              {checkingOut ? 'Lädt…' : 'Upgrade'}
-            </button>
+            <>
+              <p style={{ margin: '0 0 .65rem', fontSize: '.63rem', color: '#9090b8', lineHeight: 1.45 }}>Einmalig <strong style={{ color: '#e0e0f8' }}>9,99 €</strong> · kein Abo · zzgl. MwSt.</p>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 5, cursor: 'pointer', marginBottom: '.55rem' }}>
+                <input type="checkbox" checked={agbConsent} onChange={e => setAgbConsent(e.target.checked)} style={{ marginTop: 2, accentColor: '#a5b4fc', flexShrink: 0 }} />
+                <span style={{ fontSize: '.58rem', color: '#9090b8', lineHeight: 1.45 }}>
+                  Ich stimme den{' '}
+                  <a href="/agb" target="_blank" style={{ color: '#a5b4fc', textDecoration: 'underline' }}>AGB</a>
+                  {' '}zu
+                </span>
+              </label>
+              <button onClick={startCheckout} disabled={checkingOut || !agbConsent}
+                style={{ width: '100%', padding: '.5rem', borderRadius: '.5rem', background: (!agbConsent || checkingOut) ? 'rgba(255,255,255,.08)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: (!agbConsent || checkingOut) ? '#6b6b8a' : '#fff', border: 'none', fontWeight: 700, fontSize: '.75rem', cursor: (!agbConsent || checkingOut) ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
+                {checkingOut ? 'Lädt…' : 'Jetzt upgraden 💎'}
+              </button>
+            </>
           )}
         </div>
 
@@ -527,6 +540,27 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* ── PREMIUM BEREICH ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '.8rem' }}>
+              <span style={{ fontSize: '.82rem' }}>💎</span>
+              <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Premium Bereich</h3>
+              <span style={{ fontSize: '.58rem', fontWeight: 800, padding: '2px 8px', borderRadius: 100, background: 'linear-gradient(90deg,rgba(99,102,241,.12),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)', color: '#6366f1', letterSpacing: '.04em' }}>EXKLUSIV</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '.75rem' }}>
+              {QUICK_PREMIUM.map(item => (
+                <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
+                  <div className="db-qcard" style={{ background: 'linear-gradient(135deg,rgba(99,102,241,.04),rgba(139,92,246,.04))', borderRadius: '1.1rem', padding: '1.1rem 1rem', border: '1px solid rgba(99,102,241,.18)', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: '.75rem' }}>{item.icon}</div>
+                    <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.85rem', color: '#1a1a2e' }}>{item.title}</p>
+                    <p style={{ margin: '0 0 .7rem', fontSize: '.67rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
+                    <span style={{ fontSize: '.75rem', fontWeight: 800, color: item.color }}>Öffnen →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* ── STREAK + COMMUNITY ── */}
           <div className="db-two-col" style={{ marginBottom: '1.5rem' }}>
 
@@ -636,31 +670,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ── PREMIUM BANNER ── */}
-          {!isPremium && (
-            <div style={{ background: 'linear-gradient(135deg,#f0f0ff,#f5f3ff)', borderRadius: '1.25rem', padding: '1.2rem', marginBottom: '1rem', border: '1px solid rgba(99,102,241,.2)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: '.3rem' }}>
-                    <span style={{ fontSize: '1.2rem' }}>💎</span>
-                    <p style={{ margin: 0, fontWeight: 800, fontSize: '.9rem', color: '#1a1a2e' }}>Hol dir Premium</p>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '.7rem', color: '#6b7280' }}>Einmalig <strong>9,99 €</strong> · keine Abo-Kosten · zzgl. MwSt.</p>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'flex-end', flexShrink: 0 }}>
-                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: 6, cursor: 'pointer', fontSize: '.6rem', color: '#6b7280', lineHeight: 1.4 }}>
-                    <input type="checkbox" checked={agbConsent} onChange={e => setAgbConsent(e.target.checked)} style={{ marginTop: 2, accentColor: '#6366f1' }} />
-                    Ich stimme den{' '}<a href="/agb" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>AGB</a>{' '}zu
-                  </label>
-                  <button onClick={startCheckout} disabled={checkingOut || !agbConsent}
-                    style={{ padding: '.5rem 1.2rem', borderRadius: 100, background: (!agbConsent || checkingOut) ? '#e5e7eb' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: (!agbConsent || checkingOut) ? '#9ca3af' : '#fff', border: 'none', fontWeight: 700, fontSize: '.75rem', cursor: (!agbConsent || checkingOut) ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
-                    {checkingOut ? 'Lädt…' : 'Jetzt upgraden 💎'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Mobile bottom padding */}
           <div className="db-mob-pad" style={{ height: 84 }} />
         </div>
@@ -726,30 +735,10 @@ function SidebarNav() {
     { label: 'Einstellungen',href: '/einstellungen', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
   ]
 
-  const premiumItems = [
-    { label: 'Technik',    href: '/technik',    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
-    { label: 'Simulation', href: '/simulation', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> },
-  ]
-
   return (
     <nav style={{ padding: '0 .75rem', display: 'flex', flexDirection: 'column', gap: '.2rem' }}>
       {items.map(it => (
         <Link key={it.label} href={it.href} className={`db-navlink${pathname === it.href ? ' active' : ''}`}>
-          {it.icon}
-          {it.label}
-        </Link>
-      ))}
-
-      {/* Premium-Trenner */}
-      <div style={{ margin: '.6rem .25rem .4rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,.07)' }} />
-        <span style={{ fontSize: '.52rem', fontWeight: 800, letterSpacing: '.1em', color: 'rgba(165,180,252,.5)', textTransform: 'uppercase' }}>💎 Premium</span>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,.07)' }} />
-      </div>
-
-      {premiumItems.map(it => (
-        <Link key={it.label} href={it.href} className={`db-navlink${pathname === it.href ? ' active' : ''}`}
-          style={{ color: pathname === it.href ? '#a5b4fc' : 'rgba(165,180,252,.6)' }}>
           {it.icon}
           {it.label}
         </Link>
