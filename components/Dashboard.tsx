@@ -835,7 +835,7 @@ function AdminFahrstundler({ token }: { token: string }) {
                     <p style={{ margin: 0, fontSize: '.65rem', color: '#6b6b8a' }}>{u.email}</p>
                   </div>
                   <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexShrink: 0 }}>
-                    {u.appApproved ? <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(201,162,39,.1)', border: '1px solid rgba(201,162,39,.25)', color: '#c9a227' }}>App ✓</span> : <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', color: '#f87171' }}>App ✗</span>}
+                    {u.appApproved ? <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(var(--gold-rgb),.1)', border: '1px solid rgba(var(--gold-rgb),.25)', color: 'var(--gold)' }}>App ✓</span> : <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', color: '#f87171' }}>App ✗</span>}
                     {u.fahrstundler && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.25)', color: '#22c55e' }}>Fahrschüler ✓</span>}
                   </div>
                   <button onClick={() => toggle(u.userId, u.fahrstundler)} disabled={acting === u.userId} style={{ padding: '5px 14px', borderRadius: 8, fontSize: '.7rem', fontWeight: 700, background: u.fahrstundler ? 'rgba(239,68,68,.08)' : 'rgba(34,197,94,.1)', border: u.fahrstundler ? '1px solid rgba(239,68,68,.25)' : '1px solid rgba(34,197,94,.3)', color: u.fahrstundler ? '#f87171' : '#22c55e', cursor: acting === u.userId ? 'default' : 'pointer', opacity: acting === u.userId ? .5 : 1, flexShrink: 0, whiteSpace: 'nowrap', transition: 'all .15s' }}>
@@ -878,12 +878,12 @@ function AdminTermine({ appointments, filter, setFilter, acting, onUpdate }: { a
             const ds = new Date(a.date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })
             const ts = `${a.start_time.slice(0,5)} – ${slotEnd(a.start_time, a.duration_min)} Uhr`
             return (
-              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', padding: '.85rem 1.1rem', borderRadius: 12, background: a.status === 'pending' ? 'rgba(201,162,39,.04)' : 'rgba(255,255,255,.025)', border: a.status === 'pending' ? '1px solid rgba(201,162,39,.15)' : '1px solid rgba(255,255,255,.06)' }}>
+              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', padding: '.85rem 1.1rem', borderRadius: 12, background: a.status === 'pending' ? 'rgba(var(--gold-rgb),.04)' : 'var(--surface-2)', border: a.status === 'pending' ? '1px solid rgba(var(--gold-rgb),.15)' : '1px solid var(--border)' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <p style={{ margin: '0 0 2px', fontSize: '.82rem', fontWeight: 800, color: '#e8e8f0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     👤 {a.full_name ?? a.student_name}
                     {a.full_name && a.full_name !== a.student_name && <span style={{ fontSize: '.62rem', color: '#6b6b8a', fontWeight: 500 }}>(@{a.student_name})</span>}
-                    {a.appointment_type === 'regeltermin' && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: 100, background: 'rgba(201,162,39,.1)', border: '1px solid rgba(201,162,39,.25)', color: '#c9a227' }}>🔁 Regeltermin</span>}
+                    {a.appointment_type === 'regeltermin' && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: 100, background: 'rgba(var(--gold-rgb),.1)', border: '1px solid rgba(var(--gold-rgb),.25)', color: 'var(--gold)' }}>🔁 Regeltermin</span>}
                   </p>
                   <p style={{ margin: 0, fontSize: '.72rem', color: '#9090b8' }}>{ds} · {ts} · {a.duration_min} Min.</p>
                   {a.note && <p style={{ margin: '2px 0 0', fontSize: '.67rem', color: '#6b6b8a', fontStyle: 'italic' }}>„{a.note}"</p>}

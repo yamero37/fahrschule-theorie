@@ -100,7 +100,7 @@ function slotsOverlap(aS: number, aD: number, bS: number, bD: number) {
 
 function StatusBadge({ s }: { s: string }) {
   const cfg: Record<string, { label: string; bg: string; color: string; border: string }> = {
-    pending:  { label: 'Ausstehend', bg: 'rgba(201,162,39,0.1)',  color: 'var(--gold)', border: 'rgba(201,162,39,0.3)' },
+    pending:  { label: 'Ausstehend', bg: 'rgba(var(--gold-rgb),0.1)',  color: 'var(--gold)', border: 'rgba(var(--gold-rgb),0.3)' },
     accepted: { label: 'Bestätigt',  bg: 'rgba(34,197,94,0.08)', color: '#22c55e',     border: 'rgba(34,197,94,0.25)' },
     rejected: { label: 'Abgelehnt', bg: 'rgba(239,68,68,0.08)', color: '#f87171',     border: 'rgba(239,68,68,0.25)' },
   }
@@ -117,25 +117,25 @@ function SlotBtn({ start, dur, booked, accepted, mine, mineAccepted, selected, o
   start: number; dur: number; booked: boolean; accepted: boolean
   mine: boolean; mineAccepted: boolean; selected: boolean; onClick: () => void
 }) {
-  const bg = selected       ? 'rgba(201,162,39,0.15)'
+  const bg = selected       ? 'rgba(var(--gold-rgb),0.15)'
     : mineAccepted          ? 'rgba(34,197,94,0.15)'
     : mine                  ? 'rgba(34,197,94,0.08)'
-    : accepted              ? 'rgba(201,162,39,0.08)'
-    : booked                ? 'rgba(255,255,255,0.02)'
-    :                         'rgba(255,255,255,0.04)'
+    : accepted              ? 'rgba(var(--gold-rgb),0.08)'
+    : booked                ? 'var(--surface-2)'
+    :                         'var(--input-bg)'
 
   const border = selected   ? '1.5px solid var(--gold)'
     : mineAccepted          ? '1px solid rgba(34,197,94,0.5)'
     : mine                  ? '1px solid rgba(34,197,94,0.4)'
-    : accepted              ? '1px solid rgba(201,162,39,0.25)'
-    : booked                ? '1px solid rgba(255,255,255,0.04)'
-    :                         '1px solid rgba(255,255,255,0.08)'
+    : accepted              ? '1px solid rgba(var(--gold-rgb),0.25)'
+    : booked                ? '1px solid var(--border)'
+    :                         '1px solid var(--border-light)'
 
   const color = selected    ? 'var(--gold)'
     : mineAccepted          ? '#22c55e'
     : mine                  ? '#22c55e'
-    : accepted              ? 'rgba(201,162,39,0.65)'
-    : booked                ? '#1e1a0a'
+    : accepted              ? 'rgba(var(--gold-rgb),0.65)'
+    : booked                ? 'var(--text-dim)'
     :                         'var(--text-muted)'
 
   return (
@@ -147,8 +147,8 @@ function SlotBtn({ start, dur, booked, accepted, mine, mineAccepted, selected, o
       {minsToTime(start)}
       {mineAccepted          && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: '#22c55e' }}>✓ Bestätigt</span>}
       {mine && !mineAccepted && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: '#22c55e' }}>Dein Termin</span>}
-      {accepted && !mine     && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: 'rgba(201,162,39,0.7)' }}>Bestätigt</span>}
-      {booked && !accepted && !mine && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: '#2a2520' }}>Belegt</span>}
+      {accepted && !mine     && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: 'rgba(var(--gold-rgb),0.7)' }}>Bestätigt</span>}
+      {booked && !accepted && !mine && <span style={{ display: 'block', fontSize: '0.52rem', marginTop: '1px', color: 'var(--text-dim)' }}>Belegt</span>}
     </button>
   )
 }
@@ -313,7 +313,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
       </p>
       <button onClick={() => { setStep('pick'); setSelectedDate(null); setFirstName(''); setLastName(''); setNote('') }} style={{
         padding: '0.75rem 2rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 700,
-        background: 'rgba(201,162,39,0.15)', border: '1px solid rgba(201,162,39,0.35)',
+        background: 'rgba(var(--gold-rgb),0.15)', border: '1px solid rgba(var(--gold-rgb),0.35)',
         color: 'var(--gold)', cursor: 'pointer',
       }}>
         Weiteren Termin buchen
@@ -329,8 +329,8 @@ export default function TerminKalender({ userId, username }: { userId: string; u
         {(['single', 'regeltermin'] as const).map(m => (
           <button key={m} onClick={() => { setApptMode(m); setSelectedSlot(null); setWeekError('') }} style={{
             flex: 1, padding: '9px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 700,
-            border: apptMode === m ? '1px solid rgba(201,162,39,0.4)' : '1px solid rgba(255,255,255,0.08)',
-            background: apptMode === m ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.03)',
+            border: apptMode === m ? '1px solid rgba(var(--gold-rgb),0.4)' : `1px solid var(--border)`,
+            background: apptMode === m ? 'rgba(var(--gold-rgb),0.12)' : 'var(--input-bg)',
             color: apptMode === m ? 'var(--gold)' : 'var(--text-muted)', cursor: 'pointer',
           }}>
             {m === 'single' ? '📅 Einzeltermin' : '🔁 Regeltermin (wöchentlich)'}
@@ -339,7 +339,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
       </div>
 
       {apptMode === 'regeltermin' && (
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', background: 'rgba(201,162,39,0.05)', border: '1px solid rgba(201,162,39,0.15)', borderRadius: '8px', padding: '0.6rem 1rem', marginBottom: '1rem', lineHeight: 1.7 }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', background: 'rgba(var(--gold-rgb),0.05)', border: '1px solid rgba(var(--gold-rgb),0.15)', borderRadius: '8px', padding: '0.6rem 1rem', marginBottom: '1rem', lineHeight: 1.7 }}>
           <strong style={{ color: 'var(--gold)' }}>Regeltermin</strong> — wiederkehrender wöchentlicher Termin. Verfügbare Zeiten: <br />
           Mo / Di: 15:00–17:30 · Mi: 12:30–17:30 · Do: 12:00–22:00 · Fr: 15:00–20:30 Uhr
         </div>
@@ -351,7 +351,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
           <button onClick={() => setShowMyAppts(v => !v)} style={{
             display: 'flex', alignItems: 'center', gap: '8px',
             padding: '0.65rem 1.25rem', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 700,
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--input-bg)', border: '1px solid var(--input-border)',
             color: 'var(--text-muted)', cursor: 'pointer',
           }}>
             📋 Meine Termine ({myAppts.length}) <span>{showMyAppts ? '▲' : '▼'}</span>
@@ -364,13 +364,13 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                   <div key={a.id} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap',
                     padding: '0.75rem 1rem', borderRadius: '10px',
-                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
+                    background: 'var(--input-bg)', border: '1px solid var(--border)',
                   }}>
                     <div>
                       <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         {new Date(a.date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
                         {a.appointment_type === 'regeltermin' && (
-                          <span style={{ fontSize: '0.6rem', color: 'var(--gold)', fontWeight: 700, background: 'rgba(201,162,39,0.1)', padding: '1px 7px', borderRadius: '100px', border: '1px solid rgba(201,162,39,0.2)' }}>🔁 Regeltermin</span>
+                          <span style={{ fontSize: '0.6rem', color: 'var(--gold)', fontWeight: 700, background: 'rgba(var(--gold-rgb),0.1)', padding: '1px 7px', borderRadius: '100px', border: '1px solid rgba(var(--gold-rgb),0.2)' }}>🔁 Regeltermin</span>
                         )}
                       </p>
                       <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
@@ -389,7 +389,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }} className="termin-grid">
 
         {/* ── Calendar ── */}
-        <div style={{ background: 'rgba(14,12,8,0.9)', border: '1px solid rgba(201,162,39,0.18)', borderRadius: '1.25rem', padding: '1.25rem' }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid rgba(var(--gold-rgb),0.18)', borderRadius: '1.25rem', padding: '1.25rem' }}>
 
           {/* Month nav */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
@@ -437,9 +437,9 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                   title={title}
                   style={{
                     aspectRatio: '1', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 600,
-                    border: isSelected ? '1.5px solid var(--gold)' : isHoliday ? '1px solid rgba(201,162,39,0.12)' : '1px solid transparent',
-                    background: isSelected ? 'rgba(201,162,39,0.18)' : isHoliday ? 'rgba(201,162,39,0.04)' : isBlocked ? 'rgba(239,68,68,0.04)' : isDisabled ? 'transparent' : 'rgba(255,255,255,0.03)',
-                    color: isSelected ? 'var(--gold)' : isDisabled ? '#2a2520' : isSaturday && saturdayEnabled ? 'rgba(201,162,39,0.7)' : 'var(--text-muted)',
+                    border: isSelected ? '1.5px solid var(--gold)' : isHoliday ? '1px solid rgba(var(--gold-rgb),0.12)' : '1px solid transparent',
+                    background: isSelected ? 'rgba(var(--gold-rgb),0.18)' : isHoliday ? 'rgba(var(--gold-rgb),0.04)' : isBlocked ? 'rgba(239,68,68,0.04)' : isDisabled ? 'transparent' : 'var(--input-bg)',
+                    color: isSelected ? 'var(--gold)' : isDisabled ? '#2a2520' : isSaturday && saturdayEnabled ? 'rgba(var(--gold-rgb),0.7)' : 'var(--text-muted)',
                     cursor: isDisabled ? 'default' : 'pointer',
                     transition: 'all 0.1s',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
@@ -455,7 +455,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
           {/* Legend */}
           <div style={{ marginTop: '0.85rem', display: 'flex', gap: '8px', fontSize: '0.57rem', color: 'var(--text-dim)', flexWrap: 'wrap' }}>
             <span>🟡 Mo–Fr</span>
-            {saturdayEnabled ? <span style={{ color: 'rgba(201,162,39,0.7)' }}>⚡ Sa</span> : <span>🔒 Sa gesperrt</span>}
+            {saturdayEnabled ? <span style={{ color: 'rgba(var(--gold-rgb),0.7)' }}>⚡ Sa</span> : <span>🔒 Sa gesperrt</span>}
             <span>🎉 Feiertag</span>
             {blockedDays.size > 0 && <span>🚫 Gesperrt</span>}
           </div>
@@ -464,16 +464,16 @@ export default function TerminKalender({ userId, username }: { userId: string; u
         {/* ── Time slots panel ── */}
         <div>
           {!selectedDate ? (
-            <div style={{ background: 'rgba(14,12,8,0.9)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '1.25rem', padding: '2rem', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '1.25rem', padding: '2rem', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
               Wähle links ein Datum.
             </div>
           ) : (
-            <div style={{ background: 'rgba(14,12,8,0.9)', border: '1px solid rgba(201,162,39,0.18)', borderRadius: '1.25rem', padding: '1.25rem' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid rgba(var(--gold-rgb),0.18)', borderRadius: '1.25rem', padding: '1.25rem' }}>
 
               <p style={{ margin: '0 0 0.2rem', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Termin für</p>
               <p style={{ margin: '0 0 1rem', fontSize: '0.88rem', fontWeight: 800, color: 'var(--text)' }}>
                 {new Date(selectedDate + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
-                {isSat && <span style={{ marginLeft: '8px', fontSize: '0.62rem', color: 'rgba(201,162,39,0.8)', fontWeight: 700 }}>Samstag-Zeiten</span>}
+                {isSat && <span style={{ marginLeft: '8px', fontSize: '0.62rem', color: 'rgba(var(--gold-rgb),0.8)', fontWeight: 700 }}>Samstag-Zeiten</span>}
               </p>
 
               {/* Duration toggle */}
@@ -481,8 +481,8 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                 {([45, 90] as const).map(d => (
                   <button key={d} onClick={() => { setDuration(d); setSelectedSlot(null) }} style={{
                     flex: 1, padding: '7px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700,
-                    border: duration === d ? '1px solid rgba(201,162,39,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                    background: duration === d ? 'rgba(201,162,39,0.12)' : 'rgba(255,255,255,0.03)',
+                    border: duration === d ? '1px solid rgba(var(--gold-rgb),0.4)' : `1px solid var(--border)`,
+                    background: duration === d ? 'rgba(var(--gold-rgb),0.12)' : 'var(--input-bg)',
                     color: duration === d ? 'var(--gold)' : 'var(--text-muted)', cursor: 'pointer',
                   }}>
                     {d} Min
@@ -544,11 +544,11 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '4px' }}>
                     <input value={firstName} onChange={e => setFirstName(e.target.value)}
                       placeholder="Vorname *"
-                      style={{ padding: '0.5rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
+                      style={{ padding: '0.5rem 0.65rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
                     />
                     <input value={lastName} onChange={e => setLastName(e.target.value)}
                       placeholder="Nachname *"
-                      style={{ padding: '0.5rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
+                      style={{ padding: '0.5rem 0.65rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
                     />
                   </div>
                   <p style={{ margin: '0 0 0.6rem', fontSize: '0.6rem', color: 'var(--text-dim)' }}>
@@ -557,7 +557,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
 
                   <textarea value={note} onChange={e => setNote(e.target.value)}
                     placeholder="Anmerkung (optional)…" rows={2}
-                    style={{ width: '100%', boxSizing: 'border-box', padding: '0.55rem 0.75rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.76rem', fontFamily: 'inherit', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '0.55rem 0.75rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.76rem', fontFamily: 'inherit', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
                   />
                   <button onClick={submitBooking}
                     disabled={submitting || !firstName.trim() || !lastName.trim()}

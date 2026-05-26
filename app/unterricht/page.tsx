@@ -30,9 +30,9 @@ export default function UnterrichtPage() {
           textTransform: 'uppercase', color: 'var(--gold)',
           marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px',
         }}>
-          <span style={{ flex: 1, height: '1px', background: 'rgba(201,162,39,0.2)' }} />
+          <span style={{ flex: 1, height: '1px', background: 'rgba(var(--gold-rgb),0.2)' }} />
           Allgemeine Themen
-          <span style={{ flex: 1, height: '1px', background: 'rgba(201,162,39,0.2)' }} />
+          <span style={{ flex: 1, height: '1px', background: 'rgba(var(--gold-rgb),0.2)' }} />
         </h2>
 
         <div style={{
@@ -81,11 +81,11 @@ export default function UnterrichtPage() {
 
 function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
   const isB = topic.classB
-  const activeColor   = isB ? '#3b82f6' : 'rgba(201,162,39,0.22)'
-  const inactiveColor = isB ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.06)'
-  const tagBg         = isB ? 'rgba(59,130,246,0.12)' : 'rgba(201,162,39,0.1)'
+  const activeColor   = isB ? '#3b82f6' : 'rgba(var(--gold-rgb),0.35)'
+  const inactiveColor = isB ? 'rgba(59,130,246,0.1)' : 'var(--border)'
+  const tagBg         = isB ? 'rgba(59,130,246,0.12)' : 'rgba(var(--gold-rgb),0.1)'
   const tagColor      = isB ? '#60a5fa' : 'var(--gold)'
-  const tagBorder     = isB ? 'rgba(59,130,246,0.3)' : 'rgba(201,162,39,0.25)'
+  const tagBorder     = isB ? 'rgba(59,130,246,0.3)' : 'rgba(var(--gold-rgb),0.25)'
 
   const inner = (
     <div style={{
@@ -114,9 +114,9 @@ function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
       <span style={{
         position: 'absolute', top: '12px', right: '12px',
         fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-        background: topic.available ? tagBg : 'rgba(255,255,255,0.06)',
+        background: topic.available ? tagBg : 'var(--surface-2)',
         color: topic.available ? tagColor : 'var(--text-dim)',
-        border: `1px solid ${topic.available ? tagBorder : 'rgba(255,255,255,0.1)'}`,
+        border: `1px solid ${topic.available ? tagBorder : 'var(--border)'}`,
         borderRadius: '20px', padding: '2px 8px',
       }}>
         {topic.available ? 'VerfÃ¼gbar' : 'DemnÃ¤chst'}
@@ -129,7 +129,7 @@ function TopicCard({ topic }: { topic: typeof TOPICS[0] }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.4rem' }}>
         <span style={{
           fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-dim)',
-          background: 'rgba(255,255,255,0.06)', borderRadius: '4px', padding: '1px 6px',
+          background: 'var(--surface-2)', borderRadius: '4px', padding: '1px 6px',
         }}>
           {topic.tag ?? `Thema ${topic.id}`}
         </span>

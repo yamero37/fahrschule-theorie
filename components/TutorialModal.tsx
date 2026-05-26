@@ -244,15 +244,15 @@ export default function TutorialModal({ username, userId, onComplete }: Props) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
-      background: 'rgba(8,8,8,0.88)', backdropFilter: 'blur(8px)',
+      background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
     }}>
       <div style={{
         width: '100%', maxWidth: '500px',
         background: 'var(--surface)',
-        border: '1px solid rgba(201,162,39,0.25)',
+        border: '1px solid var(--card-border)',
         borderRadius: '1.25rem', padding: '2rem',
-        boxShadow: '0 0 60px rgba(201,162,39,0.1), 0 24px 64px rgba(0,0,0,0.7)',
+        boxShadow: 'var(--card-shadow)',
         maxHeight: '92vh', overflowY: 'auto',
       }}>
 
@@ -261,7 +261,7 @@ export default function TutorialModal({ username, userId, onComplete }: Props) {
           {Array.from({ length: totalDots }).map((_, i) => (
             <div key={i} style={{
               width: i === currentDot ? '20px' : '6px', height: '6px', borderRadius: '3px',
-              background: i === currentDot ? 'var(--gold)' : i < currentDot ? 'rgba(201,162,39,0.4)' : 'rgba(255,255,255,0.08)',
+              background: i === currentDot ? 'var(--gold)' : i < currentDot ? 'rgba(var(--gold-rgb),0.4)' : 'var(--border)',
               transition: 'all 0.3s',
             }} />
           ))}
@@ -362,7 +362,7 @@ function InfoScreen({ step, username, onNext, onBack }: {
       {step === 0 && (
         <div style={{ textAlign: 'center' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/Toldrive.jpeg" alt="TolDrive" style={{ width: '72px', height: '72px', borderRadius: '10px', border: '1px solid rgba(201,162,39,0.4)', boxShadow: '0 0 16px rgba(201,162,39,0.2)', margin: '0 auto 1.25rem', display: 'block' }} />
+          <img src="/Toldrive.jpeg" alt="TolDrive" style={{ width: '72px', height: '72px', borderRadius: '10px', border: '1px solid rgba(var(--gold-rgb),0.4)', boxShadow: '0 0 16px rgba(var(--gold-rgb),0.2)', margin: '0 auto 1.25rem', display: 'block' }} />
           <p style={{ fontSize: '0.88rem', color: 'var(--text)', lineHeight: 1.7, marginBottom: '0.75rem' }}>
             Hey <strong style={{ color: 'var(--gold)' }}>{username}</strong>, schön dass du dabei bist!
           </p>
@@ -398,8 +398,8 @@ function InfoScreen({ step, username, onNext, onBack }: {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             {INFO_FEATURES.map(f => (
-              <div key={f.title} style={{ background: 'var(--surface-2)', border: '1px solid rgba(201,162,39,0.12)', borderRadius: '10px', padding: '14px', position: 'relative' }}>
-                {f.soon && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '0.5rem', fontWeight: 700, color: 'var(--gold)', background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.2)', borderRadius: '20px', padding: '1px 6px' }}>Bald</span>}
+              <div key={f.title} style={{ background: 'var(--surface-2)', border: '1px solid var(--card-border)', borderRadius: '10px', padding: '14px', position: 'relative' }}>
+                {f.soon && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '0.5rem', fontWeight: 700, color: 'var(--gold)', background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.2)', borderRadius: '20px', padding: '1px 6px' }}>Bald</span>}
                 <div style={{ fontSize: '1.4rem', marginBottom: '5px' }}>{f.icon}</div>
                 <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text)' }}>{f.title}</div>
               </div>
@@ -410,7 +410,7 @@ function InfoScreen({ step, username, onNext, onBack }: {
 
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.75rem' }}>
         {step > 0 && (
-          <button onClick={onBack} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.65rem', background: 'transparent', color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
+          <button onClick={onBack} style={{ flex: 1, padding: '0.75rem', borderRadius: '0.65rem', background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
             ← Zurück
           </button>
         )}
@@ -441,7 +441,7 @@ function QuizScreen({ question, index, total, picked, score, onPick, onNext }: {
       </div>
 
       {/* Progress */}
-      <div style={{ height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', marginBottom: '1.5rem', overflow: 'hidden' }}>
+      <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px', marginBottom: '1.5rem', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${((index + (answered ? 1 : 0)) / total) * 100}%`, background: 'var(--gold)', borderRadius: '2px', transition: 'width 0.4s' }} />
       </div>
 
@@ -451,8 +451,8 @@ function QuizScreen({ question, index, total, picked, score, onPick, onNext }: {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1.5rem' }}>
         {question.options.map((opt, i) => {
-          let bg = 'rgba(255,255,255,0.03)'
-          let border = 'rgba(255,255,255,0.08)'
+          let bg = 'var(--input-bg)'
+          let border = 'var(--input-border)'
           let color = 'var(--text)'
           if (answered) {
             if (i === question.correct) { bg = 'rgba(34,197,94,0.12)'; border = 'rgba(34,197,94,0.4)'; color = '#22c55e' }
@@ -512,7 +512,7 @@ function BattleScreen({ question, index, total, username, userPicked, userMs, di
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'center', marginBottom: '1.25rem' }}>
 
         {/* User */}
-        <div style={{ textAlign: 'center', background: userPicked !== null ? (userCorrect ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'rgba(201,162,39,0.06)', border: `1px solid ${userPicked !== null ? (userCorrect ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)') : 'rgba(201,162,39,0.2)'}`, borderRadius: '10px', padding: '10px 6px' }}>
+        <div style={{ textAlign: 'center', background: userPicked !== null ? (userCorrect ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)') : 'rgba(var(--gold-rgb),0.06)', border: `1px solid ${userPicked !== null ? (userCorrect ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)') : 'rgba(var(--gold-rgb),0.2)'}`, borderRadius: '10px', padding: '10px 6px' }}>
           <div style={{ fontSize: '1.4rem', marginBottom: '4px' }}>👤</div>
           <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80px', margin: '0 auto 4px' }}>{username}</div>
           <div style={{ fontSize: '0.75rem', fontWeight: 800, color: userPicked !== null ? (userCorrect ? '#22c55e' : '#ef4444') : 'var(--gold)' }}>
@@ -545,8 +545,8 @@ function BattleScreen({ question, index, total, username, userPicked, userMs, di
       {/* Options */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '1rem' }}>
         {question.options.map((opt, i) => {
-          let bg = 'rgba(255,255,255,0.03)'
-          let border = 'rgba(255,255,255,0.08)'
+          let bg = 'var(--input-bg)'
+          let border = 'var(--input-border)'
           let color = 'var(--text)'
           if (roundDone) {
             if (i === question.correct) { bg = 'rgba(34,197,94,0.12)'; border = 'rgba(34,197,94,0.4)'; color = '#22c55e' }
@@ -611,7 +611,7 @@ function BattleResult({ rounds, questions, username, winner, onNext }: {
       {/* Round details */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1.5rem' }}>
         {rounds.map((r, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.72rem', color: 'var(--text-muted)', padding: '6px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.72rem', color: 'var(--text-muted)', padding: '6px 10px', background: 'var(--surface-2)', borderRadius: '6px' }}>
             <span style={{ fontWeight: 700, color: 'var(--text-dim)', minWidth: '16px' }}>R{i + 1}</span>
             <span style={{ flex: 1, color: 'var(--text-dim)', fontSize: '0.65rem' }}>{questions[i].text.slice(0, 35)}…</span>
             <span style={{ color: r.userCorrect ? '#22c55e' : '#ef4444', fontWeight: 700 }}>Du: {(r.userTime / 1000).toFixed(1)}s {r.userCorrect ? '✓' : '✗'}</span>
@@ -639,7 +639,7 @@ function CompleteScreen({ completing, onComplete }: { completing: boolean; onCom
       <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
         Du hast alle 5 Vorfahrt-Fragen beantwortet und das KI-Battle bestritten. Dafür erhältst du:
       </p>
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(201,162,39,0.08)', border: '1px solid rgba(201,162,39,0.35)', borderRadius: '12px', padding: '14px 28px', marginBottom: '1.75rem', boxShadow: '0 0 24px rgba(201,162,39,0.15)' }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(var(--gold-rgb),0.08)', border: '1px solid rgba(var(--gold-rgb),0.35)', borderRadius: '12px', padding: '14px 28px', marginBottom: '1.75rem', boxShadow: '0 0 24px rgba(var(--gold-rgb),0.15)' }}>
         <span style={{ fontSize: '1.6rem' }}>⭐</span>
         <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--gold)' }}>+100 Punkte</span>
       </div>

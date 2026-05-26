@@ -38,7 +38,7 @@ export default function EinstellungenPage() {
             onClick={() => router.back()}
             style={{
               width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
               color: 'var(--text-dim)', fontSize: '1rem', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
@@ -124,7 +124,7 @@ function Section({ title, icon, children }: { title: string; icon: string; child
       </div>
       <div style={{
         background: 'var(--surface)', borderRadius: '1.1rem',
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: '1px solid var(--border)',
         overflow: 'hidden',
       }}>
         {children}
@@ -138,7 +138,7 @@ function SettingRow({ label, desc, value, muted }: { label: string; desc: string
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0.85rem 1rem', gap: '1rem',
-      borderBottom: '1px solid rgba(255,255,255,0.04)',
+      borderBottom: '1px solid var(--divider-color)',
     }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}>{label}</p>
@@ -157,11 +157,11 @@ function LinkRow({ label, desc, href, accent }: { label: string; desc: string; h
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0.85rem 1rem', gap: '1rem',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        borderBottom: '1px solid var(--divider-color)',
         cursor: 'pointer',
         transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(var(--gold-rgb),0.04)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>

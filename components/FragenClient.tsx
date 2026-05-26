@@ -374,8 +374,8 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
               {currentIdx + 1 < quizQs.length ? (
                 <button onClick={advance} style={{
                   padding: '5px 12px', borderRadius: '100px', flexShrink: 0, cursor: 'pointer',
-                  background: isRight ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.07)',
-                  border: `1px solid ${isRight ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
+                  background: isRight ? 'rgba(34,197,94,0.2)' : 'var(--input-bg)',
+                  border: `1px solid ${isRight ? 'rgba(34,197,94,0.4)' : 'var(--border)'}`,
                   color: isRight ? '#22c55e' : 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 700,
                 }}>Weiter →</button>
               ) : (

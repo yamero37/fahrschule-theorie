@@ -27,7 +27,7 @@ export default function TerminPage() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(201,162,39,0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(var(--gold-rgb),0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
@@ -42,7 +42,7 @@ export default function TerminPage() {
         </p>
         <a href="/dashboard" style={{
           display: 'inline-block', padding: '0.75rem 2rem', borderRadius: '10px',
-          background: 'rgba(201,162,39,0.12)', border: '1px solid rgba(201,162,39,0.3)',
+          background: 'rgba(var(--gold-rgb),0.12)', border: '1px solid rgba(var(--gold-rgb),0.3)',
           color: 'var(--gold)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none',
         }}>
           ZurÃ¼ck zum Dashboard
@@ -58,7 +58,7 @@ export default function TerminPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: 'rgba(201,162,39,0.08)', border: '1px solid rgba(201,162,39,0.22)', borderRadius: '100px', padding: '4px 14px', marginBottom: '1rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: 'rgba(var(--gold-rgb),0.08)', border: '1px solid rgba(var(--gold-rgb),0.22)', borderRadius: '100px', padding: '4px 14px', marginBottom: '1rem' }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold)', boxShadow: '0 0 6px var(--gold)' }} />
             <span style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--gold)', textTransform: 'uppercase' }}>
               Fahrstunde buchen
@@ -75,11 +75,11 @@ export default function TerminPage() {
         {/* Instructor info */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '12px',
-          background: 'rgba(201,162,39,0.05)', border: '1px solid rgba(201,162,39,0.15)',
+          background: 'rgba(var(--gold-rgb),0.05)', border: '1px solid rgba(var(--gold-rgb),0.15)',
           borderRadius: '12px', padding: '0.85rem 1.1rem', marginBottom: '1.75rem',
         }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/avatar.jpeg" alt="Tolga" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid rgba(201,162,39,0.4)', flexShrink: 0 }} />
+          <img src="/avatar.jpeg" alt="Tolga" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid rgba(var(--gold-rgb),0.4)', flexShrink: 0 }} />
           <div>
             <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 700, color: 'var(--text)' }}>Fahrlehrer Tolga</p>
             <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)' }}>Deine Anfrage wird nach der Buchung von Tolga bestÃ¤tigt.</p>

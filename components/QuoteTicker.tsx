@@ -89,8 +89,8 @@ export default function QuoteTicker({ width = 160 }: { width?: number }) {
           top: '6%',
           bottom: '6%',
           width: '2px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
-          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(var(--gold-rgb),0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(var(--gold-rgb),0.5) 85%, transparent 100%)',
+          boxShadow: '0 0 8px rgba(var(--gold-rgb),0.3)',
         }} />
       </div>
     </>

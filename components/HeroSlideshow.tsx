@@ -52,10 +52,10 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         ))}
 
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(8,8,8,0.7)', zIndex: 1 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 50% at 50% 45%, rgba(201,162,39,0.07) 0%, transparent 65%)', zIndex: 2 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 50% at 50% 45%, rgba(var(--gold-rgb),0.07) 0%, transparent 65%)', zIndex: 2 }} />
 
         {/* Horizon line */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(201,162,39,0.5) 30%, rgba(232,197,71,0.8) 50%, rgba(201,162,39,0.5) 70%, transparent)', zIndex: 5 }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(var(--gold-rgb),0.5) 30%, rgba(232,197,71,0.8) 50%, rgba(var(--gold-rgb),0.5) 70%, transparent)', zIndex: 5 }} />
 
         <div style={{ position: 'relative', zIndex: 3 }}>{children}</div>
       </section>
@@ -107,7 +107,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
         <span style={{
           fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
           color: 'var(--gold)', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-          padding: '5px 14px', borderRadius: '20px', border: '1px solid rgba(201,162,39,0.3)',
+          padding: '5px 14px', borderRadius: '20px', border: '1px solid rgba(var(--gold-rgb),0.3)',
         }}>
           {SLIDES[current].brand}
         </span>
@@ -116,7 +116,7 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
       {/* Horizon line */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px',
-        background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(201,162,39,0.4) 75%, transparent 100%)',
+        background: 'linear-gradient(90deg, transparent 0%, rgba(var(--gold-rgb),0.4) 25%, rgba(232,197,71,0.7) 50%, rgba(var(--gold-rgb),0.4) 75%, transparent 100%)',
         zIndex: 10,
       }} />
 
@@ -144,8 +144,8 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           top: '6%',
           bottom: '6%',
           width: '2px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(201,162,39,0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(201,162,39,0.5) 85%, transparent 100%)',
-          boxShadow: '0 0 8px rgba(201,162,39,0.3)',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(var(--gold-rgb),0.5) 15%, rgba(232,197,71,0.9) 50%, rgba(var(--gold-rgb),0.5) 85%, transparent 100%)',
+          boxShadow: '0 0 8px rgba(var(--gold-rgb),0.3)',
         }} />
 
         {/* Avatar */}
@@ -154,15 +154,15 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
           width: '110px', height: '110px',
           objectFit: 'cover', objectPosition: 'center top',
           borderRadius: '50%',
-          border: '2px solid rgba(201,162,39,0.7)',
-          boxShadow: '0 0 20px rgba(201,162,39,0.35), 0 0 40px rgba(201,162,39,0.12)',
+          border: '2px solid rgba(var(--gold-rgb),0.7)',
+          boxShadow: '0 0 20px rgba(var(--gold-rgb),0.35), 0 0 40px rgba(var(--gold-rgb),0.12)',
           background: '#fff',
           flexShrink: 0,
         }} />
 
         <span style={{
           fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em',
-          textTransform: 'uppercase', color: 'rgba(201,162,39,0.8)',
+          textTransform: 'uppercase', color: 'rgba(var(--gold-rgb),0.8)',
           textAlign: 'center',
         }}>
           Dein Fahrlehrer
@@ -196,15 +196,15 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
               color: 'var(--gold)',
               textDecoration: 'none',
               letterSpacing: '0.05em',
-              textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+              textShadow: '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)',
               transition: 'text-shadow 0.3s, color 0.3s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(201,162,39,0.5)'
+              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(var(--gold-rgb),0.5)'
               e.currentTarget.style.color = 'var(--gold-light)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.textShadow = '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)'
+              e.currentTarget.style.textShadow = '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)'
               e.currentTarget.style.color = 'var(--gold)'
             }}
           >
@@ -219,15 +219,15 @@ export default function HeroSlideshow({ children }: { children: React.ReactNode 
               color: 'var(--gold)',
               textDecoration: 'none',
               letterSpacing: '0.05em',
-              textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+              textShadow: '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)',
               transition: 'text-shadow 0.3s, color 0.3s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(201,162,39,0.5)'
+              e.currentTarget.style.textShadow = '0 0 16px rgba(232,197,71,0.9), 0 0 32px rgba(var(--gold-rgb),0.5)'
               e.currentTarget.style.color = 'var(--gold-light)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.textShadow = '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)'
+              e.currentTarget.style.textShadow = '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)'
               e.currentTarget.style.color = 'var(--gold)'
             }}
           >

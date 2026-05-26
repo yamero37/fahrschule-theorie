@@ -166,13 +166,13 @@ export default function Chat() {
       {/* ── Sidebar ── */}
       <div style={{
         width: '260px', flexShrink: 0,
-        borderRight: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(10,10,10,0.9)',
+        borderRight: '1px solid var(--border)',
+        background: 'var(--surface)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
 
         {/* Logo area */}
-        <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
           <p style={{ margin: 0, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.6rem' }}>Räume</p>
           <RoomItem
             label="🌍 Öffentlicher Chat"
@@ -192,8 +192,8 @@ export default function Chat() {
                 Freundschaftsanfragen ({pendingReceived.length})
               </p>
               {pendingReceived.map(f => (
-                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 9px', borderRadius: '9px', background: 'rgba(201,162,39,0.06)', border: '1px solid rgba(201,162,39,0.15)', marginBottom: '5px' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(201,162,39,0.12)', border: '1px solid rgba(201,162,39,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: 'var(--gold)', flexShrink: 0 }}>
+                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 9px', borderRadius: '9px', background: 'rgba(var(--gold-rgb),0.06)', border: '1px solid rgba(var(--gold-rgb),0.15)', marginBottom: '5px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(var(--gold-rgb),0.12)', border: '1px solid rgba(var(--gold-rgb),0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: 'var(--gold)', flexShrink: 0 }}>
                     {f.other.display_name.charAt(0).toUpperCase()}
                   </div>
                   <span style={{ flex: 1, fontSize: '0.74rem', fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -214,7 +214,7 @@ export default function Chat() {
               </p>
               <button
                 onClick={() => { setShowSearch(s => !s); setSearchQ(''); setSearchResults([]) }}
-                style={{ fontSize: '0.62rem', padding: '2px 8px', borderRadius: '5px', background: showSearch ? 'rgba(201,162,39,0.15)' : 'rgba(255,255,255,0.05)', color: showSearch ? 'var(--gold)' : 'var(--text-dim)', border: `1px solid ${showSearch ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.07)'}`, cursor: 'pointer', fontWeight: 700 }}>
+                style={{ fontSize: '0.62rem', padding: '2px 8px', borderRadius: '5px', background: showSearch ? 'rgba(var(--gold-rgb),0.15)' : 'var(--border)', color: showSearch ? 'var(--gold)' : 'var(--text-dim)', border: `1px solid ${showSearch ? 'rgba(var(--gold-rgb),0.3)' : 'var(--border)'}`, cursor: 'pointer', fontWeight: 700 }}>
                 {showSearch ? '✕' : '+ Suchen'}
               </button>
             </div>
@@ -228,7 +228,7 @@ export default function Chat() {
                   autoFocus
                   style={{
                     width: '100%', padding: '7px 10px', borderRadius: '8px', fontSize: '0.78rem',
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'var(--input-bg)', border: '1px solid var(--input-border)',
                     color: 'var(--text)', outline: 'none', boxSizing: 'border-box',
                   }}
                 />
@@ -236,15 +236,15 @@ export default function Chat() {
                   const isAlready = friends.some(f => f.other.user_id === u.user_id)
                   const isSent = sentIds.includes(u.user_id)
                   return (
-                    <div key={u.user_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', borderRadius: '7px', background: 'rgba(255,255,255,0.03)', marginTop: '4px' }}>
-                      <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', flexShrink: 0 }}>
+                    <div key={u.user_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', borderRadius: '7px', background: 'var(--input-bg)', marginTop: '4px' }}>
+                      <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', flexShrink: 0 }}>
                         {u.display_name.charAt(0).toUpperCase()}
                       </div>
                       <span style={{ flex: 1, fontSize: '0.75rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.display_name}</span>
                       {isAlready && <span style={{ fontSize: '0.62rem', color: '#22c55e', fontWeight: 700 }}>✓ Freund</span>}
                       {!isAlready && isSent && <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)' }}>Gesendet</span>}
                       {!isAlready && !isSent && (
-                        <button onClick={() => sendFriendRequest(u.user_id)} style={{ fontSize: '0.62rem', padding: '2px 7px', borderRadius: '5px', background: 'rgba(201,162,39,0.12)', color: 'var(--gold)', border: '1px solid rgba(201,162,39,0.25)', cursor: 'pointer', fontWeight: 700, flexShrink: 0 }}>
+                        <button onClick={() => sendFriendRequest(u.user_id)} style={{ fontSize: '0.62rem', padding: '2px 7px', borderRadius: '5px', background: 'rgba(var(--gold-rgb),0.12)', color: 'var(--gold)', border: '1px solid rgba(var(--gold-rgb),0.25)', cursor: 'pointer', fontWeight: 700, flexShrink: 0 }}>
                           + Anfrage
                         </button>
                       )}
@@ -285,14 +285,14 @@ export default function Chat() {
 
         {/* Header */}
         <div style={{
-          padding: '0.85rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          padding: '0.85rem 1.5rem', borderBottom: '1px solid var(--border)',
           display: 'flex', alignItems: 'center', gap: '10px',
           background: 'rgba(10,10,10,0.7)', backdropFilter: 'blur(8px)',
         }}>
           {room.type === 'public' ? (
             <span style={{ fontSize: '1.15rem' }}>🌍</span>
           ) : (
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(201,162,39,0.15)', border: '1px solid rgba(201,162,39,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, color: 'var(--gold)', flexShrink: 0 }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(var(--gold-rgb),0.15)', border: '1px solid rgba(var(--gold-rgb),0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, color: 'var(--gold)', flexShrink: 0 }}>
               {room.label.charAt(0).toUpperCase()}
             </div>
           )}
@@ -331,8 +331,8 @@ export default function Chat() {
                 <div style={{
                   maxWidth: '65%', padding: '0.5rem 0.9rem',
                   borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  background: isMe ? 'rgba(201,162,39,0.15)' : 'rgba(255,255,255,0.05)',
-                  border: isMe ? '1px solid rgba(201,162,39,0.22)' : '1px solid rgba(255,255,255,0.07)',
+                  background: isMe ? 'rgba(var(--gold-rgb),0.15)' : 'var(--border)',
+                  border: isMe ? '1px solid rgba(var(--gold-rgb),0.22)' : '1px solid var(--border)',
                   fontSize: '0.84rem', color: 'var(--text)', lineHeight: 1.55, wordBreak: 'break-word',
                 }}>
                   {msg.content}
@@ -350,7 +350,7 @@ export default function Chat() {
 
         {/* Input */}
         <div style={{
-          padding: '0.85rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.06)',
+          padding: '0.85rem 1.5rem', borderTop: '1px solid var(--border)',
           background: 'rgba(10,10,10,0.7)', display: 'flex', gap: '0.75rem', alignItems: 'center',
         }}>
           <input
@@ -362,22 +362,22 @@ export default function Chat() {
             maxLength={500}
             style={{
               flex: 1, padding: '0.75rem 1.1rem', borderRadius: '12px', fontSize: '0.85rem',
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
               color: 'var(--text)', outline: 'none', transition: 'border-color 0.15s',
             }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(201,162,39,0.35)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.09)' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(var(--gold-rgb),0.35)' }}
+            onBlur={e => { e.target.style.borderColor = 'var(--input-border)' }}
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
             style={{
               padding: '0.75rem 1.4rem', borderRadius: '12px', fontSize: '0.82rem', fontWeight: 700,
-              background: input.trim() ? 'linear-gradient(135deg, var(--gold-dark), var(--gold-light))' : 'rgba(255,255,255,0.04)',
+              background: input.trim() ? 'linear-gradient(135deg, var(--gold-dark), var(--gold-light))' : 'var(--input-bg)',
               color: input.trim() ? '#000' : 'var(--text-dim)',
               border: 'none', cursor: input.trim() ? 'pointer' : 'default',
               transition: 'all 0.2s', flexShrink: 0,
-              boxShadow: input.trim() ? '0 0 16px rgba(201,162,39,0.25)' : 'none',
+              boxShadow: input.trim() ? '0 0 16px rgba(var(--gold-rgb),0.25)' : 'none',
             }}
           >
             ↑ Senden
@@ -397,12 +397,12 @@ function RoomItem({ label, sub, avatar, active, onClick }: {
     <div onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: '9px',
       padding: '7px 9px', borderRadius: '9px', cursor: 'pointer',
-      background: active ? 'rgba(201,162,39,0.1)' : 'transparent',
-      border: active ? '1px solid rgba(201,162,39,0.2)' : '1px solid transparent',
+      background: active ? 'rgba(var(--gold-rgb),0.1)' : 'transparent',
+      border: active ? '1px solid rgba(var(--gold-rgb),0.2)' : '1px solid transparent',
       marginBottom: '2px', transition: 'all 0.15s',
     }}>
       {avatar ? (
-        <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 800, color: active ? 'var(--gold)' : 'var(--text-muted)', background: active ? 'rgba(201,162,39,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${active ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.07)'}` }}>
+        <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 800, color: active ? 'var(--gold)' : 'var(--text-muted)', background: active ? 'rgba(var(--gold-rgb),0.15)' : 'var(--border)', border: `1px solid ${active ? 'rgba(var(--gold-rgb),0.3)' : 'var(--border)'}` }}>
           {avatar}
         </div>
       ) : null}
@@ -410,7 +410,7 @@ function RoomItem({ label, sub, avatar, active, onClick }: {
         <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: active ? 700 : 500, color: active ? 'var(--gold)' : 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {label}
         </p>
-        {sub && <p style={{ margin: 0, fontSize: '0.6rem', color: active ? 'rgba(201,162,39,0.7)' : 'var(--text-dim)' }}>{sub}</p>}
+        {sub && <p style={{ margin: 0, fontSize: '0.6rem', color: active ? 'rgba(var(--gold-rgb),0.7)' : 'var(--text-dim)' }}>{sub}</p>}
       </div>
     </div>
   )

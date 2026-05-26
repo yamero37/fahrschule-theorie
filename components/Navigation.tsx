@@ -108,8 +108,8 @@ export default function Navigation() {
                 onClick={() => setFriendsOpen(v => !v)}
                 style={{
                   width: '38px', height: '38px', borderRadius: '10px',
-                  background: friendsOpen ? 'rgba(var(--gold-rgb),0.12)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${friendsOpen ? 'rgba(var(--gold-rgb),0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  background: friendsOpen ? 'rgba(var(--gold-rgb),0.12)' : 'var(--input-bg)',
+                  border: `1px solid ${friendsOpen ? 'rgba(var(--gold-rgb),0.3)' : 'var(--input-border)'}`,
                   color: friendsOpen ? 'var(--gold)' : 'var(--text-muted)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.15s',

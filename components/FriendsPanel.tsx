@@ -96,10 +96,10 @@ export default function FriendsPanel({ userId, onClose }: { userId: string; onCl
     <div style={{
       position: 'absolute', top: 'calc(100% + 8px)', right: 0,
       width: '300px',
-      background: 'rgba(14,12,8,0.98)',
-      border: '1px solid rgba(201,162,39,0.2)',
+      background: 'var(--surface)',
+      border: '1px solid var(--border)',
       borderRadius: '1rem',
-      boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03)',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px var(--border)',
       backdropFilter: 'blur(20px)',
       zIndex: 200,
       overflow: 'hidden',
@@ -113,7 +113,7 @@ export default function FriendsPanel({ userId, onClose }: { userId: string; onCl
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
           {([['all', 'Alle Nutzer'], ['friends', 'Freunde']] as const).map(([t, label]) => (
             <button key={t} onClick={() => setTab(t)} style={{
               flex: 1, padding: '7px 4px', border: 'none', background: 'transparent', cursor: 'pointer',
@@ -124,7 +124,7 @@ export default function FriendsPanel({ userId, onClose }: { userId: string; onCl
             }}>
               {label}
               {t === 'friends' && friends.length > 0 && (
-                <span style={{ marginLeft: '5px', fontSize: '0.55rem', background: 'rgba(201,162,39,0.2)', color: 'var(--gold)', borderRadius: '100px', padding: '1px 5px' }}>
+                <span style={{ marginLeft: '5px', fontSize: '0.55rem', background: 'rgba(var(--gold-rgb),0.15)', color: 'var(--gold)', borderRadius: '100px', padding: '1px 5px' }}>
                   {friends.length}
                 </span>
               )}
@@ -150,7 +150,7 @@ export default function FriendsPanel({ userId, onClose }: { userId: string; onCl
               placeholder="Nutzer suchen…"
               style={{
                 width: '100%', padding: '0.5rem 0.75rem', boxSizing: 'border-box',
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                background: 'var(--input-bg)', border: '1px solid var(--input-border)',
                 borderRadius: '8px', color: 'var(--text)', fontSize: '0.74rem',
                 fontFamily: 'inherit', outline: 'none', marginBottom: '0.65rem',
               }}
@@ -193,7 +193,7 @@ export default function FriendsPanel({ userId, onClose }: { userId: string; onCl
                     onRemove={() => removeFriend(u.userId)}
                   />
                 ))}
-                <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0.65rem 0' }} />
+                <div style={{ height: '1px', background: 'var(--divider-color)', margin: '0.65rem 0' }} />
               </>
             )}
 
@@ -245,7 +245,7 @@ function UserRow({
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: '8px',
-      padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.04)',
+      padding: '0.5rem 0', borderBottom: '1px solid var(--divider-color)',
     }}>
       {/* Avatar placeholder */}
       <div style={{
@@ -273,7 +273,7 @@ function UserRow({
       ) : status === 'none' ? (
         <button onClick={onAdd} style={{
           padding: '4px 10px', borderRadius: '6px', fontSize: '0.65rem', fontWeight: 700,
-          background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.25)',
+          background: 'rgba(var(--gold-rgb),0.1)', border: '1px solid rgba(var(--gold-rgb),0.25)',
           color: 'var(--gold)', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap',
         }}>
           + Hinzufügen

@@ -7,7 +7,7 @@ export default function MobileAbout() {
       flexDirection: 'column',
       alignItems: 'center',
       gap: '1.5rem',
-      borderTop: '1px solid rgba(201,162,39,0.15)',
+      borderTop: '1px solid rgba(var(--gold-rgb),0.15)',
     }}>
 
       {/* Divider */}
@@ -23,8 +23,8 @@ export default function MobileAbout() {
         width: '110px', height: '110px',
         objectFit: 'cover', objectPosition: 'center top',
         borderRadius: '50%',
-        border: '2px solid rgba(201,162,39,0.7)',
-        boxShadow: '0 0 20px rgba(201,162,39,0.35), 0 0 40px rgba(201,162,39,0.12)',
+        border: '2px solid rgba(var(--gold-rgb),0.7)',
+        boxShadow: '0 0 20px rgba(var(--gold-rgb),0.35), 0 0 40px rgba(var(--gold-rgb),0.12)',
         background: '#fff',
       }} />
 
@@ -34,13 +34,13 @@ export default function MobileAbout() {
         width: '80px', height: '80px',
         objectFit: 'cover',
         borderRadius: '12px',
-        border: '1px solid rgba(201,162,39,0.4)',
-        boxShadow: '0 0 14px rgba(201,162,39,0.2)',
+        border: '1px solid rgba(var(--gold-rgb),0.4)',
+        boxShadow: '0 0 14px rgba(var(--gold-rgb),0.2)',
       }} />
 
       <span style={{
         fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em',
-        textTransform: 'uppercase', color: 'rgba(201,162,39,0.8)',
+        textTransform: 'uppercase', color: 'rgba(var(--gold-rgb),0.8)',
         textAlign: 'center',
       }}>
         Dein Fahrlehrer
@@ -75,11 +75,11 @@ export default function MobileAbout() {
             color: 'var(--gold)',
             textDecoration: 'none',
             letterSpacing: '0.05em',
-            textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+            textShadow: '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)',
             padding: '0.6rem 1.4rem',
-            border: '1px solid rgba(201,162,39,0.3)',
+            border: '1px solid rgba(var(--gold-rgb),0.3)',
             borderRadius: '2rem',
-            background: 'rgba(201,162,39,0.05)',
+            background: 'rgba(var(--gold-rgb),0.05)',
           }}
         >
           📷 @tolga_ar
@@ -93,11 +93,11 @@ export default function MobileAbout() {
             color: 'var(--gold)',
             textDecoration: 'none',
             letterSpacing: '0.05em',
-            textShadow: '0 0 10px rgba(201,162,39,0.6), 0 0 20px rgba(201,162,39,0.3)',
+            textShadow: '0 0 10px rgba(var(--gold-rgb),0.6), 0 0 20px rgba(var(--gold-rgb),0.3)',
             padding: '0.6rem 1.4rem',
-            border: '1px solid rgba(201,162,39,0.3)',
+            border: '1px solid rgba(var(--gold-rgb),0.3)',
             borderRadius: '2rem',
-            background: 'rgba(201,162,39,0.05)',
+            background: 'rgba(var(--gold-rgb),0.05)',
           }}
         >
           🎵 @fahrlehrertolga

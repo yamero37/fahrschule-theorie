@@ -138,9 +138,9 @@ export default function AdminPanel() {
         <div style={{
           width: '100%', maxWidth: '360px', padding: '2.5rem',
           background: 'var(--surface)',
-          border: '1px solid rgba(201,162,39,0.25)',
+          border: '1px solid rgba(var(--gold-rgb),0.25)',
           borderRadius: '1rem',
-          boxShadow: '0 0 40px rgba(201,162,39,0.08)',
+          boxShadow: '0 0 40px rgba(var(--gold-rgb),0.08)',
         }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔐</div>
@@ -195,7 +195,7 @@ export default function AdminPanel() {
         {/* Add User Toggle */}
         <div style={{ marginBottom: '1rem' }}>
           <button onClick={() => setShowAdd(v => !v)} className="btn-ghost"
-            style={{ padding: '8px 18px', fontSize: '0.8rem', cursor: 'pointer', border: '1px solid rgba(201,162,39,0.3)' }}>
+            style={{ padding: '8px 18px', fontSize: '0.8rem', cursor: 'pointer', border: '1px solid rgba(var(--gold-rgb),0.3)' }}>
             {showAdd ? '✕ Abbrechen' : '+ Nutzer hinzufügen'}
           </button>
         </div>
@@ -203,7 +203,7 @@ export default function AdminPanel() {
         {/* Add User Form */}
         {showAdd && (
           <div style={{
-            background: 'var(--surface)', border: '1px solid rgba(201,162,39,0.2)',
+            background: 'var(--surface)', border: '1px solid rgba(var(--gold-rgb),0.2)',
             borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '1.5rem',
           }}>
             <form onSubmit={handleAddUser}
@@ -237,7 +237,7 @@ export default function AdminPanel() {
 
         {/* Users Table */}
         <div style={{
-          background: 'var(--surface)', border: '1px solid rgba(201,162,39,0.18)',
+          background: 'var(--surface)', border: '1px solid rgba(var(--gold-rgb),0.18)',
           borderRadius: '0.75rem', overflow: 'hidden',
         }}>
           {loading ? (
@@ -252,7 +252,7 @@ export default function AdminPanel() {
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(201,162,39,0.15)' }}>
+                  <tr style={{ borderBottom: '1px solid rgba(var(--gold-rgb),0.15)' }}>
                     {['Aktivität', 'Benutzername', 'E-Mail', 'Registriert', 'Status', 'Aktionen'].map(h => (
                       <th key={h} style={{
                         padding: '0.85rem 1rem', textAlign: 'left',
@@ -271,8 +271,8 @@ export default function AdminPanel() {
                     const isBusy = approveId === user.id || deleteId === user.id
                     return (
                       <tr key={user.id} style={{
-                        borderBottom: i < users.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                        background: !approved ? 'rgba(201,162,39,0.02)' : 'transparent',
+                        borderBottom: i < users.length - 1 ? '1px solid var(--divider-color)' : 'none',
+                        background: !approved ? 'rgba(var(--gold-rgb),0.02)' : 'transparent',
                         transition: 'background 0.15s',
                       }}>
                         <td style={{ padding: '0.85rem 1rem' }}>
@@ -355,7 +355,7 @@ export default function AdminPanel() {
             style={{
               padding: '6px 14px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 600,
               background: 'transparent', color: 'var(--text-muted)',
-              border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+              border: '1px solid var(--border)', cursor: 'pointer',
             }}
           >
             Aktualisieren
@@ -371,7 +371,7 @@ function StatBadge({ label, value, color }: { label: string; value: number; colo
   const colors = {
     green:  { bg: 'rgba(34,197,94,0.1)',    text: '#22c55e',  border: 'rgba(34,197,94,0.25)' },
     orange: { bg: 'rgba(251,146,60,0.1)',   text: '#fb923c',  border: 'rgba(251,146,60,0.3)' },
-    gold:   { bg: 'rgba(201,162,39,0.08)',  text: 'var(--gold)', border: 'rgba(201,162,39,0.2)' },
+    gold:   { bg: 'rgba(var(--gold-rgb),0.08)',  text: 'var(--gold)', border: 'rgba(var(--gold-rgb),0.2)' },
   }
   const c = colors[color ?? 'gold']
   return (

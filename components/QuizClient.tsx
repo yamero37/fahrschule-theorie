@@ -276,7 +276,7 @@ function Result({ results, questions, onRestart }: {
       <div
         className="rounded-2xl p-8 text-center"
         style={{
-          background: passed ? 'linear-gradient(135deg, #06120a, #0a2010)' : 'linear-gradient(135deg, #120606, #200a0a)',
+          background: passed ? 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04))' : 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04))',
           border: `1px solid ${passed ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`,
           boxShadow: passed ? '0 0 40px rgba(34,197,94,0.08)' : '0 0 40px rgba(239,68,68,0.08)',
         }}
@@ -297,7 +297,7 @@ function Result({ results, questions, onRestart }: {
             <div
               key={label}
               className="rounded-xl p-3"
-              style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)' }}
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
             >
               <p className="text-2xl font-extrabold" style={{ color }}>{value}</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>{label}</p>

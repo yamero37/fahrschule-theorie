@@ -98,11 +98,11 @@ export default function Leaderboard() {
               <div style={{
                 width: '100%', height: `${heights[visualIdx]}px`,
                 background: visualIdx === 1
-                  ? 'linear-gradient(180deg, rgba(201,162,39,0.25) 0%, rgba(201,162,39,0.06) 100%)'
-                  : 'rgba(255,255,255,0.04)',
+                  ? 'linear-gradient(180deg, rgba(var(--gold-rgb),0.25) 0%, rgba(var(--gold-rgb),0.06) 100%)'
+                  : 'var(--input-bg)',
                 border: isMe
-                  ? '1px solid rgba(201,162,39,0.5)'
-                  : `1px solid ${visualIdx === 1 ? 'rgba(201,162,39,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                  ? '1px solid rgba(var(--gold-rgb),0.5)'
+                  : `1px solid ${visualIdx === 1 ? 'rgba(var(--gold-rgb),0.3)' : 'var(--input-bg)'}`,
                 borderRadius: '0.75rem 0.75rem 0 0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexDirection: 'column', gap: '4px',
@@ -123,7 +123,7 @@ export default function Leaderboard() {
       {rest.length > 0 && (
         <div style={{
           background: 'var(--surface)',
-          border: '1px solid rgba(201,162,39,0.12)',
+          border: '1px solid rgba(var(--gold-rgb),0.12)',
           borderRadius: '1rem',
           overflow: 'hidden',
         }}>
@@ -134,8 +134,8 @@ export default function Leaderboard() {
               <div key={entry.userId} style={{
                 display: 'flex', alignItems: 'center', gap: '1rem',
                 padding: '0.85rem 1.25rem',
-                borderBottom: i < rest.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                background: isMe ? 'rgba(201,162,39,0.06)' : 'transparent',
+                borderBottom: i < rest.length - 1 ? '1px solid var(--input-bg)' : 'none',
+                background: isMe ? 'rgba(var(--gold-rgb),0.06)' : 'transparent',
                 transition: 'background 0.15s',
               }}>
                 <span style={{ width: '28px', textAlign: 'right', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-dim)', flexShrink: 0 }}>

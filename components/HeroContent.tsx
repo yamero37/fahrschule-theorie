@@ -33,8 +33,8 @@ export default function HeroContent({ totalQuestions, topicsCount }: Props) {
               width: '80px', height: '80px',
               objectFit: 'cover', objectPosition: 'center top',
               borderRadius: '50%',
-              border: '2px solid rgba(201,162,39,0.6)',
-              boxShadow: '0 0 16px rgba(201,162,39,0.3)',
+              border: '2px solid rgba(var(--gold-rgb),0.6)',
+              boxShadow: '0 0 16px rgba(var(--gold-rgb),0.3)',
               background: '#fff',
             }} />
           </div>

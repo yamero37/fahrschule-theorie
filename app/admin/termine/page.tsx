@@ -23,7 +23,7 @@ function minsToTime(m: number) { return `${pad(Math.floor(m / 60))}:${pad(m % 60
 
 function StatusBadge({ s }: { s: string }) {
   const cfg: Record<string, { label: string; bg: string; color: string; border: string }> = {
-    pending:  { label: 'Ausstehend', bg: 'rgba(201,162,39,0.1)', color: 'var(--gold)',   border: 'rgba(201,162,39,0.3)' },
+    pending:  { label: 'Ausstehend', bg: 'rgba(var(--gold-rgb),0.1)', color: 'var(--gold)',   border: 'rgba(var(--gold-rgb),0.3)' },
     accepted: { label: 'BestÃ¤tigt',  bg: 'rgba(34,197,94,0.08)', color: '#22c55e',       border: 'rgba(34,197,94,0.25)' },
     rejected: { label: 'Abgelehnt', bg: 'rgba(239,68,68,0.08)', color: '#f87171',       border: 'rgba(239,68,68,0.25)' },
   }
@@ -75,7 +75,7 @@ export default function AdminTerminePage() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(201,162,39,0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(var(--gold-rgb),0.15)', borderTop: '3px solid var(--gold)', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
@@ -107,8 +107,8 @@ export default function AdminTerminePage() {
             return (
               <button key={f} onClick={() => setFilter(f)} style={{
                 padding: '6px 14px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700,
-                border: filter === f ? '1px solid rgba(201,162,39,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                background: filter === f ? 'rgba(201,162,39,0.1)' : 'rgba(255,255,255,0.03)',
+                border: filter === f ? '1px solid rgba(var(--gold-rgb),0.3)' : '1px solid var(--border)',
+                background: filter === f ? 'rgba(var(--gold-rgb),0.1)' : 'var(--input-bg)',
                 color: filter === f ? 'var(--gold)' : 'var(--text-dim)',
                 cursor: 'pointer',
               }}>
@@ -123,7 +123,7 @@ export default function AdminTerminePage() {
           {filtered.length === 0 && (
             <div style={{
               textAlign: 'center', padding: '3rem', color: 'var(--text-dim)', fontSize: '0.8rem',
-              background: 'rgba(255,255,255,0.02)', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--surface-2)', borderRadius: '1rem', border: '1px solid var(--border)',
             }}>
               Keine EintrÃ¤ge.
             </div>
@@ -137,8 +137,8 @@ export default function AdminTerminePage() {
             return (
               <div key={a.id} style={{
                 display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap',
-                background: a.status === 'pending' ? 'rgba(201,162,39,0.04)' : 'rgba(255,255,255,0.025)',
-                border: a.status === 'pending' ? '1px solid rgba(201,162,39,0.18)' : '1px solid rgba(255,255,255,0.06)',
+                background: a.status === 'pending' ? 'rgba(var(--gold-rgb),0.04)' : 'var(--surface)',
+                border: a.status === 'pending' ? '1px solid rgba(var(--gold-rgb),0.18)' : '1px solid var(--border)',
                 borderRadius: '1rem', padding: '1rem 1.25rem',
               }}>
                 {/* Date + time */}
@@ -197,7 +197,7 @@ export default function AdminTerminePage() {
                       onClick={() => updateStatus(a.id, 'pending')}
                       style={{
                         padding: '4px 10px', borderRadius: '6px', fontSize: '0.62rem', fontWeight: 600,
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        background: 'var(--input-bg)', border: '1px solid var(--input-border)',
                         color: 'var(--text-dim)', cursor: 'pointer',
                       }}
                     >

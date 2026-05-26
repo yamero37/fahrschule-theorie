@@ -68,10 +68,10 @@ export default function RegisterForm() {
         width: '100%',
         maxWidth: '420px',
         background: 'var(--surface)',
-        border: '1px solid rgba(201,162,39,0.25)',
+        border: '1px solid rgba(var(--gold-rgb),0.25)',
         borderRadius: '1.25rem',
         padding: '2.5rem 2rem',
-        boxShadow: '0 0 60px rgba(201,162,39,0.07), 0 20px 60px rgba(0,0,0,0.6)',
+        boxShadow: '0 0 60px rgba(var(--gold-rgb),0.07), 0 20px 60px rgba(0,0,0,0.6)',
       }}>
 
         {/* Avatar + Logo */}
@@ -86,8 +86,8 @@ export default function RegisterForm() {
               objectFit: 'cover',
               objectPosition: 'center top',
               borderRadius: '50%',
-              border: '2px solid rgba(201,162,39,0.6)',
-              boxShadow: '0 0 16px rgba(201,162,39,0.2)',
+              border: '2px solid rgba(var(--gold-rgb),0.6)',
+              boxShadow: '0 0 16px rgba(var(--gold-rgb),0.2)',
               background: '#fff',
             }}
           />
@@ -95,7 +95,7 @@ export default function RegisterForm() {
           <img
             src="/Toldrive.jpeg"
             alt="TolDrive"
-            style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(201,162,39,0.3)' }}
+            style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(var(--gold-rgb),0.3)' }}
           />
         </div>
 
@@ -108,8 +108,8 @@ export default function RegisterForm() {
 
         {demoExpired && (
           <div style={{
-            background: 'rgba(201,162,39,0.08)',
-            border: '1px solid rgba(201,162,39,0.3)',
+            background: 'rgba(var(--gold-rgb),0.08)',
+            border: '1px solid rgba(var(--gold-rgb),0.3)',
             borderRadius: '0.6rem',
             padding: '0.75rem 1rem',
             marginBottom: '1.5rem',

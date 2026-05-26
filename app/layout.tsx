@@ -24,11 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <footer style={{
-          borderTop: '1px solid rgba(255,255,255,0.07)',
+          borderTop: '1px solid var(--border)',
           padding: '1.25rem 1.5rem',
           textAlign: 'center',
           fontSize: '0.8rem',
-          color: 'rgba(255,255,255,0.3)',
+          color: 'var(--text-dim)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -36,13 +36,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           flexWrap: 'wrap',
         }}>
           <span>© {new Date().getFullYear()} TolDrive · Tolga Arslan</span>
-          <Link href="/impressum" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+          <Link href="/impressum" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
             Impressum
           </Link>
-          <Link href="/datenschutz" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+          <Link href="/datenschutz" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
             Datenschutz
           </Link>
-          <Link href="/agb" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>
+          <Link href="/agb" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
             AGB
           </Link>
         </footer>

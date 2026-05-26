@@ -56,9 +56,9 @@ export default function CarSlideshow() {
             width: i === idx ? '20px' : '6px',
             height: '6px',
             borderRadius: '3px',
-            background: i === idx ? 'var(--gold)' : 'rgba(255,255,255,0.25)',
+            background: i === idx ? 'var(--gold)' : 'var(--border)',
             transition: 'all 0.4s ease',
-            boxShadow: i === idx ? '0 0 8px rgba(201,162,39,0.6)' : 'none',
+            boxShadow: i === idx ? '0 0 8px rgba(var(--gold-rgb),0.5)' : 'none',
           }} />
         ))}
       </div>

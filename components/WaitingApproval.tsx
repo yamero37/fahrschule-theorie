@@ -26,15 +26,15 @@ export default function WaitingApproval() {
     <div style={{
       minHeight: '100vh',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#080808', padding: '2rem',
+      background: 'var(--bg)', padding: '2rem',
     }}>
       <div style={{
         width: '100%', maxWidth: '420px',
         background: 'var(--surface)',
-        border: '1px solid rgba(201,162,39,0.25)',
+        border: '1px solid var(--card-border)',
         borderRadius: '1.25rem',
         padding: '2.5rem 2rem',
-        boxShadow: '0 0 60px rgba(201,162,39,0.07)',
+        boxShadow: 'var(--card-shadow)',
         textAlign: 'center',
       }}>
 

@@ -33,7 +33,7 @@ export default function PremiumSuccessPage() {
       {/* Confetti-ähnlicher Glow-Hintergrund */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(216,179,106,0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(var(--gold-rgb),0.1) 0%, transparent 70%)',
       }} />
 
       <div style={{
@@ -44,7 +44,7 @@ export default function PremiumSuccessPage() {
         padding: '2.5rem 2rem',
         textAlign: 'center',
         animation: 'glowDiamond 4s ease-in-out infinite',
-        boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
       }}>
 
         {/* Shimmer */}
@@ -86,7 +86,7 @@ export default function PremiumSuccessPage() {
 
         {/* Checkmarks */}
         <div style={{
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(var(--gold-rgb),0.03)', border: '1px solid var(--border)',
           borderRadius: '1rem', padding: '1rem 1.2rem', marginBottom: '1.75rem',
           display: 'flex', flexDirection: 'column', gap: '0.55rem', textAlign: 'left',
         }}>

@@ -46,7 +46,7 @@ export default async function ThemaPage({ params }: Props) {
         {/* Topic header */}
         <div style={{
           background: 'var(--surface)',
-          border: `1px solid ${topic.classB ? 'rgba(59,130,246,0.3)' : 'rgba(201,162,39,0.22)'}`,
+          border: `1px solid ${topic.classB ? 'rgba(59,130,246,0.3)' : 'rgba(var(--gold-rgb),0.22)'}`,
           borderRadius: '1.25rem',
           padding: '1.75rem',
           marginBottom: '2rem',
@@ -77,7 +77,7 @@ export default async function ThemaPage({ params }: Props) {
         {topic.lessons.map(lesson => (
           <div key={lesson.id} style={{
             background: 'var(--surface)',
-            border: '1px solid rgba(201,162,39,0.15)',
+            border: '1px solid rgba(var(--gold-rgb),0.15)',
             borderRadius: '1.25rem',
             padding: '2rem',
             marginBottom: '1.5rem',
@@ -122,8 +122,8 @@ function Block({ block }: { block: LessonBlock }) {
         <span style={{
           display: 'inline-block', marginBottom: '0.75rem',
           fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.04em',
-          background: 'rgba(201,162,39,0.1)', color: 'var(--gold)',
-          border: '1px solid rgba(201,162,39,0.3)', borderRadius: '20px', padding: '3px 10px',
+          background: 'rgba(var(--gold-rgb),0.1)', color: 'var(--gold)',
+          border: '1px solid rgba(var(--gold-rgb),0.3)', borderRadius: '20px', padding: '3px 10px',
         }}>
           {block.text}
         </span>
@@ -150,8 +150,8 @@ function Block({ block }: { block: LessonBlock }) {
     case 'highlight':
       return (
         <div style={{
-          background: 'rgba(201,162,39,0.06)',
-          border: '1px solid rgba(201,162,39,0.2)',
+          background: 'rgba(var(--gold-rgb),0.06)',
+          border: '1px solid rgba(var(--gold-rgb),0.2)',
           borderRadius: '0.6rem',
           padding: '0.75rem 1rem',
           marginBottom: '0.75rem',
@@ -214,7 +214,7 @@ function Block({ block }: { block: LessonBlock }) {
       )
 
     case 'divider':
-      return <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '1.25rem 0' }} />
+      return <div style={{ height: '1px', background: 'var(--divider-color)', margin: '1.25rem 0' }} />
 
     default:
       return null
