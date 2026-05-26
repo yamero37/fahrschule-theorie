@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { signOut } from '@/lib/auth'
+import { signOut, setSessionExpiry, getSessionExpiry, isSessionExpired } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
 import ChatBox from './ChatBox'
 
@@ -135,8 +135,9 @@ export default function Dashboard() {
   const [chatOpen,    setChatOpen]      = useState(false)
   const [noteText, setNoteText]         = useState('')
   const [noteSaved, setNoteSaved]       = useState(false)
-  const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const noteUserId    = useRef('')
+  const noteSaveTimer    = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const noteUserId       = useRef('')
+  const sessionTimer     = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [dailyGoal,    setDailyGoal]    = useState(10)
   const [dailyCount,   setDailyCount]   = useState(0)
@@ -165,6 +166,7 @@ export default function Dashboard() {
       if (hdr) hdr.style.display = ''
       if (ftr) ftr.style.display = ''
       window.removeEventListener('resize', sync)
+      if (sessionTimer.current) clearTimeout(sessionTimer.current)
     }
   }, [])
 
@@ -175,6 +177,22 @@ export default function Dashboard() {
           setTimeout(() => res({ data: { session: null } }), 6000))
         const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
         if (!session) { router.replace('/'); return }
+
+        // ── 3-h Session-Check ──
+        if (isSessionExpired()) {
+          await signOut()
+          router.replace('/')
+          return
+        }
+        // Kein Stempel → jetzt setzen (Nutzer war vor dem Feature schon eingeloggt)
+        let expiry = getSessionExpiry()
+        if (!expiry) { setSessionExpiry(); expiry = getSessionExpiry()! }
+        // Timer planen, der beim Ablauf automatisch ausloggt
+        const remaining = expiry - Date.now()
+        sessionTimer.current = setTimeout(async () => {
+          await signOut()
+          router.replace('/')
+        }, remaining)
 
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)

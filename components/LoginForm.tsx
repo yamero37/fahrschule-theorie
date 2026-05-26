@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { loginUser } from '@/lib/auth'
+import { loginUser, setSessionExpiry } from '@/lib/auth'
 
 /* ── Force light theme on login page ── */
 function UseLightTheme() {
@@ -76,6 +76,9 @@ export default function LoginForm() {
         setError('Anmeldung fehlgeschlagen – bitte versuche es erneut oder kontaktiere den Admin.')
         return
       }
+
+      // 3-Stunden-Session starten
+      setSessionExpiry()
 
       // Jeder eingeloggte User kommt direkt zum Dashboard
       router.replace('/dashboard')

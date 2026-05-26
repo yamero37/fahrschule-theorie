@@ -25,7 +25,34 @@ export async function getSession() {
 
 export async function signOut() {
   clearDemo()
+  clearSessionExpiry()
   await supabase.auth.signOut()
+}
+
+// ── Session timeout (3 hours) ────────────────────────────
+
+const SESSION_KEY      = 'toldrive_session_expires'
+const SESSION_DURATION = 3 * 60 * 60 * 1000   // 3 h in ms
+
+export function setSessionExpiry() {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(SESSION_KEY, String(Date.now() + SESSION_DURATION))
+}
+
+export function getSessionExpiry(): number | null {
+  if (typeof window === 'undefined') return null
+  const raw = localStorage.getItem(SESSION_KEY)
+  return raw ? Number(raw) : null
+}
+
+export function isSessionExpired(): boolean {
+  const exp = getSessionExpiry()
+  if (!exp) return false   // no stamp yet → don't force out (backward compat)
+  return Date.now() > exp
+}
+
+export function clearSessionExpiry() {
+  if (typeof window !== 'undefined') localStorage.removeItem(SESSION_KEY)
 }
 
 // ── Demo mode (localStorage, no backend) ────────────────
