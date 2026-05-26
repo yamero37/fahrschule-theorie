@@ -9,215 +9,236 @@ import TutorialModal from './TutorialModal'
 import ChatBox from './ChatBox'
 
 /* ── Ranks ─────────────────────────────────────────────── */
-
 const RANKS = [
-  { id: 'D',       name: 'Anfänger',        min: 0,    max: 99,       color: '#6b7280', glow: 'rgba(107,114,128,0.3)' },
-  { id: 'C',       name: 'Amateur',         min: 100,  max: 299,      color: '#3b82f6', glow: 'rgba(59,130,246,0.3)'  },
-  { id: 'B',       name: 'Fortgeschritten', min: 300,  max: 599,      color: '#8b5cf6', glow: 'rgba(139,92,246,0.3)'  },
-  { id: 'A',       name: 'Profi',           min: 600,  max: 999,      color: '#c9a227', glow: 'rgba(201,162,39,0.35)' },
-  { id: 'S',       name: 'Experte',         min: 1000, max: 1499,     color: '#f97316', glow: 'rgba(249,115,22,0.35)' },
-  { id: 'SS',      name: 'Meister',         min: 1500, max: 1999,     color: '#ef4444', glow: 'rgba(239,68,68,0.35)'  },
-  { id: 'Legende', name: 'Legende',         min: 2000, max: Infinity, color: '#ffd700', glow: 'rgba(255,215,0,0.4)'  },
+  { id: 'D',       name: 'Anfänger',        min: 0,    max: 99,       color: '#6b7280' },
+  { id: 'C',       name: 'Amateur',         min: 100,  max: 299,      color: '#3b82f6' },
+  { id: 'B',       name: 'Fortgeschritten', min: 300,  max: 599,      color: '#8b5cf6' },
+  { id: 'A',       name: 'Profi',           min: 600,  max: 999,      color: '#c9a227' },
+  { id: 'S',       name: 'Experte',         min: 1000, max: 1499,     color: '#f97316' },
+  { id: 'SS',      name: 'Meister',         min: 1500, max: 1999,     color: '#ef4444' },
+  { id: 'Legende', name: 'Legende',         min: 2000, max: Infinity, color: '#ffd700' },
 ]
-
 const RANK_COLORS: Record<string, string> = Object.fromEntries(RANKS.map(r => [r.id, r.color]))
 
-function getRank(points: number) {
-  return RANKS.find(r => points >= r.min && points <= r.max) ?? RANKS[0]
-}
-function getRankId(points: number) {
-  return getRank(points).id
-}
-function getProgress(points: number, rank: typeof RANKS[0]) {
+function getRank(p: number) { return RANKS.find(r => p >= r.min && p <= r.max) ?? RANKS[0] }
+function getRankId(p: number) { return getRank(p).id }
+function getProgress(p: number, rank: typeof RANKS[0]) {
   if (rank.max === Infinity) return 100
-  return Math.min(100, Math.max(0, ((points - rank.min) / (rank.max - rank.min + 1)) * 100))
+  return Math.min(100, Math.max(0, ((p - rank.min) / (rank.max - rank.min + 1)) * 100))
+}
+function padZ(n: number) { return n.toString().padStart(2, '0') }
+function slotEnd(t: string, dur: number) {
+  const [h, m] = t.split(':').map(Number)
+  const e = h * 60 + m + dur
+  return `${padZ(Math.floor(e / 60))}:${padZ(e % 60)}`
 }
 
-/* ── Features ───────────────────────────────────────────── */
+/* ── Types ─────────────────────────────────────────────── */
+type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
+type Appointment = {
+  id: string; student_name: string; full_name?: string; date: string
+  start_time: string; duration_min: number; status: string; note?: string
+  created_at: string; appointment_type?: string
+}
 
-type FeatureItem = { icon: string; title: string; desc: string; href: string; soon: boolean; color: string; badge: string }
-type FeatureGroup = { label: string; color: string; anim: string; shimmer: string; bg: string; items: FeatureItem[] }
-
-const GROUPS: FeatureGroup[] = [
-  {
-    label: '📚 Theorie', color: '#a78bfa',
-    anim: 'glowPurple', shimmer: 'rgba(167,139,250,0.08)', bg: 'rgba(167,139,250,0.06)',
-    items: [
-      { icon: '📖', title: 'Unterricht',       desc: 'Theorie lernen & verstehen',    href: '/unterricht',  soon: false, color: '#a78bfa', badge: '14 Lektionen' },
-      { icon: '📚', title: 'Theoriefragen',    desc: 'Alle Prüfungsfragen üben',      href: '/fragen',      soon: false, color: '#c9a227', badge: '700 Fragen'   },
-      { icon: '⚡', title: 'Theorie-Prüfung',  desc: 'Prüfung im Echtmodus starten',  href: '/quiz',        soon: false, color: '#f97316', badge: 'Simulation'   },
-    ],
-  },
-  {
-    label: '🔧 Praxis', color: '#06b6d4',
-    anim: 'glowCyan', shimmer: 'rgba(6,182,212,0.08)', bg: 'rgba(6,182,212,0.06)',
-    items: [
-      { icon: '🔧', title: 'Technik',    desc: 'Fahrzeugtechnik verstehen', href: '/technik',    soon: false, color: '#06b6d4', badge: 'Neu'     },
-      { icon: '🎓', title: 'Simulation', desc: 'Echte Prüfung simulieren',  href: '/simulation', soon: false, color: '#8b5cf6', badge: 'Prüfung' },
-    ],
-  },
-  {
-    label: '🌐 Online', color: '#22c55e',
-    anim: 'glowGreen', shimmer: 'rgba(34,197,94,0.07)', bg: 'rgba(34,197,94,0.05)',
-    items: [
-      { icon: '🎬', title: 'Lernvideos', desc: 'Erklärvideos ansehen',    href: '/videos',    soon: true,  color: '#22c55e', badge: 'Bald' },
-      { icon: '⚔️', title: 'Battle',    desc: 'Gegen Freunde antreten',  href: '/battle',    soon: true,  color: '#ef4444', badge: 'Bald' },
-      { icon: '🏆', title: 'Rangliste', desc: 'Globales Online-Ranking', href: '/rangliste', soon: false, color: '#ffd700', badge: 'Live' },
-    ],
-  },
+/* ── Quick-access items ────────────────────────────────── */
+const QUICK = [
+  { icon: '📚', title: 'Theorie lernen',  desc: 'Lektionen & Erklärungen',       href: '/unterricht',  color: '#8b5cf6', bg: '#f3f0ff' },
+  { icon: '💬', title: 'Theoriefragen',   desc: 'Üben & Fragen beantworten',      href: '/fragen',      color: '#3b82f6', bg: '#eff6ff' },
+  { icon: '✅', title: 'Prüfung starten', desc: 'Im Echtmodus prüfen',            href: '/quiz',        color: '#22c55e', bg: '#f0fdf4' },
+  { icon: '🚗', title: 'Simulation',      desc: 'Prüfung realistisch simulieren', href: '/simulation',  color: '#f97316', bg: '#fff7ed' },
+  { icon: '▶️', title: 'Lernvideos',      desc: 'Erklärvideos ansehen',           href: '/videos',      color: '#ef4444', bg: '#fff1f2' },
 ]
 
-type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
-type Appointment = { id: string; student_name: string; full_name?: string; date: string; start_time: string; duration_min: number; status: string; note?: string; created_at: string; appointment_type?: string }
+/* ── CSS ───────────────────────────────────────────────── */
+const CSS = `
+@keyframes db-spin { to { transform: rotate(360deg); } }
+@keyframes db-shimmer { 0%{left:-60%} 100%{left:160%} }
 
-function padZ(n: number) { return n.toString().padStart(2, '0') }
-function slotEnd(startTime: string, dur: number) {
-  const [h, m] = startTime.split(':').map(Number)
-  const end = h * 60 + m + dur
-  return `${padZ(Math.floor(end / 60))}:${padZ(end % 60)}`
+/* ── Layout ── */
+.db-root { display:flex; min-height:100vh; background:#f0eff7; }
+
+.db-sidebar {
+  width:220px; flex-shrink:0; background:#12122a;
+  display:none; flex-direction:column;
+  position:fixed; top:0; left:0; bottom:0;
+  overflow-y:auto; z-index:40;
+  border-right:1px solid rgba(255,255,255,0.05);
+}
+.db-main { flex:1; min-height:100vh; display:flex; flex-direction:column; }
+.db-topbar {
+  display:none; align-items:center; justify-content:space-between;
+  padding:.9rem 2rem; background:#f0eff7;
+  border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:30;
+}
+.db-scroll { padding:1.5rem 2rem; flex:1; padding-bottom:1.5rem; }
+
+/* ── Grids ── */
+.db-quick-grid  { display:grid; grid-template-columns:repeat(5,1fr); gap:.75rem; }
+.db-stats-grid  { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; }
+.db-two-col     { display:grid; grid-template-columns:1fr 1fr;       gap:1rem;   }
+.db-disc-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; }
+
+/* ── Hover effects ── */
+.db-qcard:hover, .db-disc:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+.db-qcard, .db-disc { transition:transform .15s,box-shadow .15s; }
+
+/* ── Desktop (≥900px): show sidebar, hide global nav ── */
+@media (min-width:900px) {
+  .db-sidebar { display:flex; }
+  .db-main { margin-left:220px; }
+  .db-topbar { display:flex; }
+  .db-mob-pad { display:none !important; }
+  .db-bottomnav { display:none !important; }
+  .db-mob-admin { display:none !important; }
 }
 
-/* ── Dashboard ──────────────────────────────────────────── */
+/* ── Mobile (<900px) ── */
+@media (max-width:899px) {
+  .db-scroll { padding:.85rem; padding-bottom:90px; }
+  .db-quick-grid { grid-template-columns:repeat(2,1fr); }
+  .db-stats-grid { grid-template-columns:repeat(2,1fr); }
+  .db-two-col    { grid-template-columns:1fr; }
+  .db-disc-grid  { grid-template-columns:1fr; }
+}
 
+/* ── Sidebar nav ── */
+.db-navlink {
+  display:flex; align-items:center; gap:.75rem;
+  padding:.55rem .85rem; border-radius:.75rem;
+  color:#6b6b8a; text-decoration:none; font-size:.85rem; font-weight:500;
+  transition:background .15s,color .15s;
+}
+.db-navlink:hover { background:rgba(255,255,255,0.05); color:#b0b0d0; }
+.db-navlink.active { background:rgba(99,102,241,.15); color:#a5b4fc; font-weight:700; }
+`
+
+/* ── Dashboard ─────────────────────────────────────────── */
 export default function Dashboard() {
   const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [userId, setUserId] = useState('')
-  const [userToken, setUserToken] = useState('')
-  const [points, setPoints] = useState(0)
-  const [isPremium, setIsPremium] = useState(false)
-  const [checkingOut, setCheckingOut] = useState(false)
-  const [agbConsent, setAgbConsent] = useState(false)
+  const [username, setUsername]         = useState('')
+  const [userId,   setUserId]           = useState('')
+  const [userToken, setUserToken]       = useState('')
+  const [points,   setPoints]           = useState(0)
+  const [isPremium, setIsPremium]       = useState(false)
+  const [checkingOut, setCheckingOut]   = useState(false)
+  const [agbConsent, setAgbConsent]     = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
   const [tutorialDone, setTutorialDone] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [topEntries, setTopEntries] = useState<LeaderboardEntry[]>([])
-  const [noteText, setNoteText] = useState('')
-  const [noteSaved, setNoteSaved] = useState(false)
+  const [loading,  setLoading]          = useState(true)
+  const [topEntries, setTopEntries]     = useState<LeaderboardEntry[]>([])
+  const [noteText, setNoteText]         = useState('')
+  const [noteSaved, setNoteSaved]       = useState(false)
   const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const noteUserId = useRef('')
+  const noteUserId    = useRef('')
 
-  // Daily goal (Theoriefragen)
-  const [dailyGoal, setDailyGoal]     = useState(10)
-  const [dailyCount, setDailyCount]   = useState(0)
-  const [editGoal, setEditGoal]       = useState(false)
-  const [editGoalVal, setEditGoalVal] = useState('10')
+  const [dailyGoal,    setDailyGoal]    = useState(10)
+  const [dailyCount,   setDailyCount]   = useState(0)
+  const [editGoal,     setEditGoal]     = useState(false)
+  const [editGoalVal,  setEditGoalVal]  = useState('10')
 
-  // Admin
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [adminToken, setAdminToken] = useState('')
+  const [isAdmin,      setIsAdmin]      = useState(false)
+  const [adminToken,   setAdminToken]   = useState('')
   const [appointments, setAppointments] = useState<Appointment[]>([])
-  const [apptFilter, setApptFilter] = useState<'pending' | 'accepted' | 'rejected' | 'all'>('pending')
-  const [actingAppt, setActingAppt] = useState<string | null>(null)
-  const [showAdmin, setShowAdmin] = useState(false)
+  const [apptFilter,   setApptFilter]   = useState<'pending'|'accepted'|'rejected'|'all'>('pending')
+  const [actingAppt,   setActingAppt]   = useState<string|null>(null)
+  const [showAdmin,    setShowAdmin]    = useState(false)
+
+  /* ── Hide global header/footer on desktop ── */
+  useEffect(() => {
+    const hdr = document.querySelector('body > header') as HTMLElement | null
+    const ftr = document.querySelector('body > footer') as HTMLElement | null
+    function sync() {
+      const desk = window.innerWidth >= 900
+      if (hdr) hdr.style.display = desk ? 'none' : ''
+      if (ftr) ftr.style.display = desk ? 'none' : ''
+    }
+    sync()
+    window.addEventListener('resize', sync)
+    return () => {
+      if (hdr) hdr.style.display = ''
+      if (ftr) ftr.style.display = ''
+      window.removeEventListener('resize', sync)
+    }
+  }, [])
 
   useEffect(() => {
     async function load() {
       try {
         const timeout = new Promise<{ data: { session: null } }>(res =>
-          setTimeout(() => res({ data: { session: null } }), 6000)
-        )
+          setTimeout(() => res({ data: { session: null } }), 6000))
         const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
         if (!session) { router.replace('/'); return }
 
-        // Populate from session immediately — no extra network round-trip needed
         setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Fahrschüler')
         setUserId(session.user.id)
         setUserToken(session.access_token ?? '')
         noteUserId.current = session.user.id
-
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
-
-        // ↓ Show dashboard now — everything below loads in background
         setLoading(false)
 
-        // Daily goal — read from localStorage
         try {
-          const g = parseInt(localStorage.getItem('fragenDailyGoal') ?? '10', 10)
+          const g    = parseInt(localStorage.getItem('fragenDailyGoal') ?? '10', 10)
           const goal = isNaN(g) ? 10 : Math.min(700, Math.max(1, g))
-          setDailyGoal(goal)
-          setEditGoalVal(String(goal))
+          setDailyGoal(goal); setEditGoalVal(String(goal))
           const today = new Date().toISOString().slice(0, 10)
           const c = parseInt(localStorage.getItem(`fragenDaily_${today}`) ?? '0', 10)
           setDailyCount(isNaN(c) ? 0 : c)
         } catch {}
 
         if (admin) {
-          const tok = session.access_token ?? ''
-          setAdminToken(tok)
+          setAdminToken(session.access_token ?? '')
           supabase.from('appointments').select('*')
-            .order('date', { ascending: true })
-            .order('start_time', { ascending: true })
+            .order('date', { ascending: true }).order('start_time', { ascending: true })
             .then(({ data }) => setAppointments(data ?? []))
         }
 
         const uid = session.user.id
         let localDone = false
         try { localDone = localStorage.getItem(`tutorial_done_${uid}`) === '1' } catch {}
+        try { const l = localStorage.getItem(`note_${uid}`); if (l) setNoteText(l) } catch {}
 
-        // Notes — local first (instant), then sync from DB
-        try {
-          const local = localStorage.getItem(`note_${uid}`)
-          if (local) setNoteText(local)
-        } catch {}
-
-        // Stats + leaderboard + notes DB — all fire in parallel, update as they arrive
         ;(async () => {
           try {
             const { data: stats } = await supabase.from('user_stats')
-              .select('points, tutorial_done, is_premium').eq('user_id', uid).single()
+              .select('points,tutorial_done,is_premium').eq('user_id', uid).single()
             if (stats) {
-              setPoints(stats.points ?? 0)
-              setIsPremium(!!stats.is_premium)
+              setPoints(stats.points ?? 0); setIsPremium(!!stats.is_premium)
               const done = !!stats.tutorial_done || localDone
-              setTutorialDone(done)
-              if (!done) setShowTutorial(true)
-            } else {
-              if (localDone) setTutorialDone(true); else setShowTutorial(true)
-            }
-          } catch {
-            if (localDone) setTutorialDone(true); else setShowTutorial(true)
-          }
+              setTutorialDone(done); if (!done) setShowTutorial(true)
+            } else { if (localDone) setTutorialDone(true); else setShowTutorial(true) }
+          } catch { if (localDone) setTutorialDone(true); else setShowTutorial(true) }
         })()
-
         ;(async () => {
           try {
-            const { data: noteData } = await supabase.from('user_notes')
-              .select('content').eq('user_id', uid).single()
-            if (noteData?.content != null) setNoteText(noteData.content)
+            const { data: n } = await supabase.from('user_notes').select('content').eq('user_id', uid).single()
+            if (n?.content != null) setNoteText(n.content)
           } catch {}
         })()
 
         fetch('/api/leaderboard', { signal: AbortSignal.timeout(4000) })
           .then(r => r.json())
-          .then((data: unknown) => { if (Array.isArray(data)) setTopEntries(data.slice(0, 3)) })
+          .then((d: unknown) => { if (Array.isArray(d)) setTopEntries(d.slice(0, 3)) })
           .catch(() => {})
-
-      } catch {
-        setLoading(false)
-      }
+      } catch { setLoading(false) }
     }
     load()
   }, [router])
 
   const saveNote = useCallback(async (text: string, uid: string) => {
     try { localStorage.setItem(`note_${uid}`, text) } catch {}
-    try {
-      await supabase.from('user_notes').upsert({ user_id: uid, content: text, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
-    } catch {}
-    setNoteSaved(true)
-    setTimeout(() => setNoteSaved(false), 2000)
+    try { await supabase.from('user_notes').upsert({ user_id: uid, content: text, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }) } catch {}
+    setNoteSaved(true); setTimeout(() => setNoteSaved(false), 2000)
   }, [])
 
   function handleNoteChange(text: string) {
-    setNoteText(text)
-    setNoteSaved(false)
+    setNoteText(text); setNoteSaved(false)
     if (noteSaveTimer.current) clearTimeout(noteSaveTimer.current)
     noteSaveTimer.current = setTimeout(() => saveNote(text, noteUserId.current), 1000)
   }
 
-  async function updateAppt(id: string, status: 'accepted' | 'rejected' | 'pending') {
+  async function updateAppt(id: string, status: 'accepted'|'rejected'|'pending') {
     setActingAppt(id)
     await supabase.from('appointments').update({ status }).eq('id', id)
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
@@ -226,8 +247,7 @@ export default function Dashboard() {
 
   function saveGoal() {
     const n = Math.min(700, Math.max(1, parseInt(editGoalVal, 10) || 10))
-    setDailyGoal(n)
-    setEditGoalVal(String(n))
+    setDailyGoal(n); setEditGoalVal(String(n))
     try { localStorage.setItem('fragenDailyGoal', String(n)) } catch {}
     setEditGoal(false)
   }
@@ -236,683 +256,466 @@ export default function Dashboard() {
     if (checkingOut || isPremium) return
     setCheckingOut(true)
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${userToken}` },
-      })
+      const res  = await fetch('/api/checkout', { method: 'POST', headers: { authorization: `Bearer ${userToken}` } })
       const data = await res.json()
-      if (data.error === 'already_premium') {
-        setIsPremium(true); setCheckingOut(false); return
-      }
-      if (data.url) {
-        window.location.href = data.url   // weiterleitung zu Stripe Checkout
-      } else {
-        console.error('Kein Checkout-URL:', data)
-        setCheckingOut(false)
-      }
-    } catch (e) {
-      console.error('Checkout-Fehler:', e)
-      setCheckingOut(false)
-    }
+      if (data.error === 'already_premium') { setIsPremium(true); setCheckingOut(false); return }
+      if (data.url) window.location.href = data.url
+      else { console.error('Kein Checkout-URL:', data); setCheckingOut(false) }
+    } catch (e) { console.error('Checkout-Fehler:', e); setCheckingOut(false) }
   }
 
-  const rank = getRank(points)
-  const progress = getProgress(points, rank)
-  const nextRank = RANKS[RANKS.indexOf(rank) + 1]
+  async function handleSignOut() {
+    try { await signOut() } catch {}
+    try { Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-') || k.startsWith('supabase')) localStorage.removeItem(k) }) } catch {}
+    window.location.replace('/')
+  }
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(var(--gold-rgb),0.15)', borderTop: '3px solid var(--gold)', margin: '0 auto 1rem', animation: 'spin 0.8s linear infinite' }} />
-          <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>Wird geladen…</span>
-        </div>
+  const rank      = getRank(points)
+  const progress  = getProgress(points, rank)
+  const nextRank  = RANKS[RANKS.indexOf(rank) + 1]
+  const progVal   = Math.round(progress)
+  const dailyPct  = dailyGoal > 0 ? Math.min(100, Math.round((dailyCount / dailyGoal) * 100)) : 0
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eff7' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(99,102,241,.15)', borderTop: '3px solid #6366f1', margin: '0 auto 1rem', animation: 'db-spin .8s linear infinite' }} />
+        <span style={{ color: '#6b7280', fontSize: '.8rem' }}>Wird geladen…</span>
       </div>
-    )
-  }
-
-  const progressVal = Math.round(progress)
+      <style>{`@keyframes db-spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: '84px', position: 'relative' }}>
+    <div className="db-root">
+      <style>{CSS}</style>
 
+      {/* ── Overlays ── */}
       {showTutorial && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 100 }}>
           <TutorialModal username={username} userId={userId}
-            onComplete={(pts) => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }}
-          />
+            onComplete={pts => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }} />
         </div>
       )}
-
-      {/* ── Admin Drawer ── */}
       {isAdmin && showAdmin && (
-        <AdminDrawer
-          onClose={() => setShowAdmin(false)}
-          appointments={appointments}
-          filter={apptFilter}
-          setFilter={setApptFilter}
-          acting={actingAppt}
-          onUpdate={updateAppt}
-          token={adminToken}
-        />
+        <AdminDrawer onClose={() => setShowAdmin(false)} appointments={appointments}
+          filter={apptFilter} setFilter={setApptFilter} acting={actingAppt}
+          onUpdate={updateAppt} token={adminToken} />
       )}
 
-      {/* ── Main content ── */}
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '1rem 1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-
-        {/* ── Admin button (only for admin) ── */}
-        {isAdmin && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              onClick={() => setShowAdmin(true)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '7px',
-                padding: '7px 14px', borderRadius: '100px',
-                background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.3)',
-                color: '#a78bfa', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.18)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.1)' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              Admin
-            </button>
+      {/* ── SIDEBAR ── */}
+      <aside className="db-sidebar">
+        {/* Logo */}
+        <div style={{ padding: '1.4rem 1.25rem 1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: '1.1rem' }}>T</span>
           </div>
-        )}
-
-        {/* ── BIG HERO CARD (Hero + Stats + Daily Goal) ── */}
-        <div style={{
-          background: 'transparent',
-          border: '1px solid rgba(var(--gold-rgb),0.3)',
-          borderRadius: '1.5rem',
-          padding: '1.4rem 1.4rem 1.25rem',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: '-60px', right: '-30px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--gold-rgb),0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-          {/* Badge */}
-          <p style={{ margin: '0 0 0.9rem', fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.05em' }}>
-            Führerschein Klasse B · 2026
-          </p>
-
-          {/* Content row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ margin: '0 0 0.35rem', fontSize: 'clamp(1.35rem, 5vw, 1.65rem)', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2, color: 'var(--text)' }}>
-                Willkommen zurück,
-              </h1>
-              <h1 style={{ margin: '0 0 0.55rem', fontSize: 'clamp(1.35rem, 5vw, 1.65rem)', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                <span style={{ background: 'linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {username} 👋
-                </span>
-              </h1>
-              <p style={{ margin: '0 0 1.25rem', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
-                Deine persönliche Lernzentrale für die Führerscheinprüfung.
-              </p>
-
-              {/* Buttons */}
-              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <Link href="/fragen" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '8px',
-                  padding: '0.6rem 1.1rem', borderRadius: '100px',
-                  background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
-                  color: '#fff', fontWeight: 700, fontSize: '0.8rem',
-                  textDecoration: 'none', boxShadow: '0 4px 20px rgba(var(--gold-rgb),0.35)',
-                }}>
-                  Weiterlernen
-                  <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem' }}>→</span>
-                </Link>
-                <Link href="/rangliste" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  padding: '0.6rem 1rem', borderRadius: '100px',
-                  background: 'var(--input-bg)', border: '1px solid var(--input-border)',
-                  color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.8rem',
-                  textDecoration: 'none',
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                  Statistik
-                </Link>
-                <button
-                  onClick={async () => {
-                    try { await signOut() } catch {}
-                    // Supabase-Session manuell aus localStorage entfernen (Failsafe)
-                    try {
-                      Object.keys(localStorage).forEach(k => {
-                        if (k.startsWith('sb-') || k.startsWith('supabase')) localStorage.removeItem(k)
-                      })
-                    } catch {}
-                    window.location.replace('/')
-                  }}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center',
-                    padding: '0.6rem 1rem', borderRadius: '100px',
-                    background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.18)',
-                    color: '#f87171', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer',
-                  }}
-                >
-                  Abmelden
-                </button>
-              </div>
-            </div>
-
-            {/* Circular progress */}
-            <CircularProgress value={progressVal} color="var(--gold)" />
-          </div>
-
-          {/* ── divider ── */}
-          <div style={{ height: '1px', background: 'rgba(var(--gold-rgb),0.12)', margin: '1.1rem 0 1rem' }} />
-
-          {/* ── STAT TILES ── */}
-          <div className="dash-stat-grid" style={{ gap: '0.45rem' }}>
-            {[
-              { icon: '📖', value: '14',             label: 'Lektionen', color: '#8b5cf6', barPct: 40  },
-              { icon: '🎯', value: `${points}`,       label: 'Punkte',    color: '#ec4899', barPct: Math.min(100, (points / 300) * 100) },
-              { icon: '🏆', value: rank.id,           label: rank.name,   color: rank.color, barPct: progress },
-              { icon: '📈', value: `${progressVal}%`, label: nextRank ? `Zu ${nextRank.id}` : 'Max', color: '#22c55e', barPct: progress },
-            ].map(s => (
-              <div key={s.label} style={{
-                background: 'rgba(var(--gold-rgb),0.04)',
-                borderRadius: '0.9rem', padding: '0.75rem 0.6rem',
-                display: 'flex', flexDirection: 'column', gap: '0.15rem',
-              }}>
-                <span style={{ fontSize: '1rem', marginBottom: '0.2rem' }}>{s.icon}</span>
-                <span style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1 }}>{s.value}</span>
-                <span style={{ fontSize: '0.55rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>{s.label}</span>
-                <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(var(--gold-rgb),0.1)', overflow: 'hidden', marginTop: '0.4rem' }}>
-                  <div style={{ width: `${s.barPct}%`, height: '100%', background: s.color, borderRadius: '2px', transition: 'width 1.2s ease' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* ── divider ── */}
-          <div style={{ height: '1px', background: 'rgba(var(--gold-rgb),0.12)', margin: '1rem 0' }} />
-
-          {/* ── DAILY GOAL ── */}
-          <div>
-            {/* Header row */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
-              <p style={{ margin: 0, fontWeight: 800, fontSize: '0.82rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🎯 Dein heutiges Ziel
-              </p>
-              {!editGoal && (
-                <button
-                  onClick={() => { setEditGoal(true); setEditGoalVal(String(dailyGoal)) }}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', padding: 0 }}
-                >
-                  Ziel bearbeiten ✏️
-                </button>
-              )}
-            </div>
-
-            {/* Inline goal editor */}
-            {editGoal && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
-                <input
-                  type="number" min={1} max={700}
-                  value={editGoalVal}
-                  onChange={e => setEditGoalVal(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && saveGoal()}
-                  placeholder="1–700"
-                  style={{
-                    width: '80px', padding: '0.35rem 0.6rem', borderRadius: '0.5rem',
-                    background: 'var(--input-bg)', border: '1px solid rgba(var(--gold-rgb),0.35)',
-                    color: 'var(--text)', fontSize: '0.82rem', fontFamily: 'inherit', outline: 'none',
-                  }}
-                  autoFocus
-                />
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>Fragen pro Tag</span>
-                <button onClick={saveGoal} style={{
-                  padding: '0.3rem 0.65rem', borderRadius: '0.45rem', fontSize: '0.72rem', fontWeight: 700,
-                  background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)',
-                  color: '#22c55e', cursor: 'pointer',
-                }}>✓</button>
-                <button onClick={() => setEditGoal(false)} style={{
-                  padding: '0.3rem 0.6rem', borderRadius: '0.45rem', fontSize: '0.72rem',
-                  background: 'rgba(var(--gold-rgb),0.06)', border: '1px solid rgba(var(--gold-rgb),0.18)',
-                  color: 'var(--text-dim)', cursor: 'pointer',
-                }}>✕</button>
-              </div>
-            )}
-
-            {/* Goal reached — celebration */}
-            {dailyCount >= dailyGoal ? (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '0.9rem',
-                background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.04))',
-                border: '1px solid rgba(34,197,94,0.35)', borderRadius: '0.9rem',
-                padding: '0.75rem 1rem',
-                animation: 'terminGlow 2.8s ease-in-out infinite',
-              }}>
-                <span style={{ fontSize: '2rem', flexShrink: 0, filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.5))' }}>👍</span>
-                <div>
-                  <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 900, color: '#22c55e' }}>
-                    Dein heutiges Lernziel erreicht!
-                  </p>
-                  <p style={{ margin: '0.1rem 0 0', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                    Süpeeer! {dailyCount} Fragen heute beantwortet 🎉
-                  </p>
-                </div>
-              </div>
-            ) : (
-              /* Progress ring */
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-                <div style={{ position: 'relative', width: '46px', height: '46px', flexShrink: 0 }}>
-                  <svg width="46" height="46" viewBox="0 0 46 46">
-                    <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(var(--gold-rgb),0.12)" strokeWidth="4" />
-                    <circle cx="23" cy="23" r="18" fill="none" stroke="#3b82f6" strokeWidth="4"
-                      strokeDasharray={`${Math.min(dailyCount / dailyGoal, 1) * 2 * Math.PI * 18} ${2 * Math.PI * 18}`}
-                      strokeLinecap="round" transform="rotate(-90 23 23)"
-                      style={{ transition: 'stroke-dasharray 0.6s ease' }}
-                    />
-                  </svg>
-                  <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.5rem', fontWeight: 900, color: '#3b82f6', lineHeight: 1.1, textAlign: 'center' }}>
-                    {dailyCount}/{dailyGoal}
-                  </span>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Theoriefragen üben</p>
-                  <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{dailyGoal} Fragen pro Tag · 700 verfügbar</p>
-                </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--gold)', flexShrink: 0 }}>
-                  {dailyGoal > 0 ? Math.round((dailyCount / dailyGoal) * 100) : 0}%
-                </span>
-              </div>
-            )}
-          </div>
+          <span style={{ fontWeight: 900, fontSize: '.95rem', color: '#f0f0ff', letterSpacing: '.06em' }}>TOLDRIVE</span>
         </div>
 
-        {/* ── TUTORIAL BANNER ── */}
-        {!tutorialDone && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem',
-            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.22)',
-            borderRadius: '1.25rem', padding: '0.9rem 1.1rem', flexWrap: 'wrap',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.2rem' }}>🎯</span>
-              <div>
-                <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: '#f87171' }}>Tutorial läuft…</p>
-                <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)' }}>Abschließen → +100 Punkte</p>
-              </div>
-            </div>
-            <span style={{ fontSize: '0.65rem', color: '#f87171', fontWeight: 700, background: 'rgba(239,68,68,0.1)', padding: '3px 9px', borderRadius: '100px', border: '1px solid rgba(239,68,68,0.2)', flexShrink: 0 }}>
-              ⏳ In Bearbeitung
-            </span>
-          </div>
-        )}
+        {/* Nav */}
+        <SidebarNav />
 
+        <div style={{ flex: 1 }} />
 
-        {/* ── FEATURE GROUPS ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {GROUPS.map(group => (
-            <div key={group.label} style={{
-              position: 'relative', overflow: 'hidden',
-              background: `linear-gradient(135deg, ${group.bg} 0%, transparent 100%)`,
-              border: `1.5px solid ${group.color}55`,
-              borderRadius: '1.25rem',
-              padding: '0.9rem 0.9rem 0.9rem',
-              animation: `${group.anim} 3s ease-in-out infinite`,
-            }}>
-              {/* shimmer sweep */}
-              <div style={{
-                position: 'absolute', top: 0, bottom: 0, width: '55%',
-                background: `linear-gradient(90deg, transparent, ${group.shimmer}, transparent)`,
-                animation: 'terminShimmer 3s linear infinite',
-                pointerEvents: 'none',
-              }} />
-
-              {/* Section label */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem', position: 'relative' }}>
-                <span style={{
-                  fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.1em',
-                  textTransform: 'uppercase', color: group.color,
-                  filter: `drop-shadow(0 0 4px ${group.color}80)`,
-                }}>{group.label}</span>
-                <div style={{ flex: 1, height: '1px', background: `${group.color}30` }} />
-              </div>
-
-              {/* Cards */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${group.items.length === 2 ? 2 : 3}, 1fr)`,
-                gap: '0.45rem',
-                position: 'relative',
-              }}>
-                {group.items.map(f => <FeatureCard key={f.title} {...f} />)}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* ── TERMIN CARD — highlighted ── */}
-        <Link href="/termin" style={{ textDecoration: 'none', display: 'block' }}>
-          <div style={{
-            position: 'relative', overflow: 'hidden',
-            background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.04) 100%)',
-            border: '1.5px solid rgba(34,197,94,0.5)',
-            borderRadius: '1.25rem', padding: '1.1rem 1.2rem',
-            display: 'flex', alignItems: 'center', gap: '1rem',
-            animation: 'terminGlow 2.8s ease-in-out infinite',
-          }}>
-            {/* shimmer sweep */}
-            <div style={{
-              position: 'absolute', top: 0, bottom: 0, width: '60%',
-              background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.07), transparent)',
-              animation: 'terminShimmer 2.8s linear infinite',
-              pointerEvents: 'none',
-            }} />
-            {/* icon */}
-            <div style={{
-              width: '50px', height: '50px', borderRadius: '14px', flexShrink: 0,
-              background: 'rgba(34,197,94,0.14)', border: '1.5px solid rgba(34,197,94,0.45)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.5rem',
-              filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.4))',
-            }}>📅</div>
-            {/* text */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
-                <p style={{ margin: 0, fontWeight: 900, fontSize: '0.95rem', color: 'var(--text)' }}>
-                  Termin wählen
-                </p>
-                <span style={{
-                  fontSize: '0.53rem', fontWeight: 800, letterSpacing: '0.06em',
-                  background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)',
-                  color: '#22c55e', padding: '2px 8px', borderRadius: '100px',
-                }}>✦ FAHRSTUNDE</span>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                Fahrstunde buchen · Montag – Samstag
-              </p>
-            </div>
-            {/* arrow */}
-            <span style={{
-              fontSize: '1.2rem', color: '#22c55e', flexShrink: 0,
-              filter: 'drop-shadow(0 0 6px rgba(34,197,94,0.55))',
-            }}>→</span>
-          </div>
-        </Link>
-
-        {/* ── PREMIUM BANNER ── */}
-        <div className="dash-premium-inner" style={{
-          position: 'relative', overflow: 'hidden',
-          background: isPremium
-            ? 'linear-gradient(135deg, rgba(96,165,250,0.1), rgba(167,139,250,0.09), rgba(244,114,182,0.07))'
-            : 'linear-gradient(135deg, rgba(96,165,250,0.07), rgba(167,139,250,0.06), rgba(244,114,182,0.05))',
-          border: '1.5px solid rgba(147,197,253,0.45)',
-          borderRadius: '1.25rem', padding: '1rem 1.1rem',
-          animation: 'glowDiamond 4s ease-in-out infinite',
-        }}>
-          {/* diamond shimmer */}
-          <div style={{
-            position: 'absolute', top: 0, bottom: 0, width: '55%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
-            animation: 'terminShimmer 4s linear infinite',
-            pointerEvents: 'none',
-          }} />
-          <div style={{
-            width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0,
-            background: 'linear-gradient(135deg, rgba(96,165,250,0.18), rgba(167,139,250,0.15), rgba(244,114,182,0.12))',
-            border: '1.5px solid rgba(147,197,253,0.45)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem',
-            filter: 'drop-shadow(0 0 8px rgba(147,197,253,0.5))',
-            position: 'relative',
-          }}>💎</div>
-          <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
-              <p style={{
-                margin: 0, fontSize: '0.88rem', fontWeight: 900,
-                background: 'linear-gradient(90deg, #93c5fd, #c4b5fd, #f9a8d4)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              }}>{isPremium ? 'Du bist Premium!' : 'Hol dir Premium'}</p>
-              {isPremium && (
-                <span style={{
-                  fontSize: '0.48rem', fontWeight: 900, padding: '1px 6px', borderRadius: '4px',
-                  background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.35)',
-                  color: '#fbbf24', letterSpacing: '0.06em',
-                }}>⭐ AKTIV</span>
-              )}
-            </div>
-            <p style={{ margin: 0, fontSize: '0.67rem', color: 'var(--text-dim)' }}>
-              {isPremium
-                ? 'Alle Features sind für dich freigeschaltet.'
-                : <>Einmalig <strong style={{ color: 'var(--text-h)' }}>9,99 €</strong> · keine Abo-Kosten · zzgl. gesetzl. MwSt. (§ 19 UStG: 0 %)</>
-              }
-            </p>
-          </div>
+        {/* PRO card */}
+        <div style={{ margin: '0 .85rem .75rem', padding: '1rem', borderRadius: '1rem', background: 'linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)' }}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '.4rem' }}>💎</div>
+          <p style={{ margin: '0 0 .15rem', fontWeight: 800, fontSize: '.85rem', color: '#f0f0ff' }}>TolDrive</p>
+          <span style={{ display: 'inline-block', fontSize: '.52rem', fontWeight: 900, background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', color: '#fff', padding: '1px 7px', borderRadius: 4, marginBottom: '.5rem', letterSpacing: '.06em' }}>PRO</span>
+          <p style={{ margin: '0 0 .8rem', fontSize: '.66rem', color: '#9090b8', lineHeight: 1.45 }}>Mehr Funktionen.<br />Mehr Erfolg.</p>
           {isPremium ? (
-            <span style={{
-              fontSize: '1.4rem', flexShrink: 0,
-              filter: 'drop-shadow(0 0 8px rgba(234,179,8,0.6))',
-            }}>✅</span>
+            <span style={{ fontSize: '.72rem', color: '#22c55e', fontWeight: 700 }}>✓ Aktiv</span>
           ) : (
-            <div className="dash-premium-checkout" style={{ position: 'relative' }}>
-              {/* AGB-Zustimmung */}
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', cursor: 'pointer', maxWidth: '200px' }}>
-                <input
-                  type="checkbox"
-                  checked={agbConsent}
-                  onChange={e => setAgbConsent(e.target.checked)}
-                  style={{ marginTop: '2px', accentColor: '#8b5cf6', flexShrink: 0 }}
-                />
-                <span style={{ fontSize: '0.58rem', color: 'var(--text-dim)', lineHeight: 1.4 }}>
-                  Ich stimme den{' '}
-                  <a href="/agb" target="_blank" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>AGB</a>
-                  {' '}zu und bestätige, dass der Zugang sofort freigeschaltet wird — mein{' '}
-                  <strong style={{ color: '#f87171' }}>Widerrufsrecht erlischt</strong> damit.
-                </span>
-              </label>
-              <button
-                onClick={startCheckout}
-                disabled={checkingOut || !agbConsent}
-                style={{
-                  padding: '0.55rem 1rem', borderRadius: '100px',
-                  background: (!agbConsent || checkingOut)
-                    ? 'rgba(139,92,246,0.3)'
-                    : 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
-                  color: '#fff', border: 'none', fontWeight: 700, fontSize: '0.73rem',
-                  cursor: (!agbConsent || checkingOut) ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', gap: '5px',
-                  boxShadow: agbConsent ? '0 4px 20px rgba(139,92,246,0.4)' : 'none',
-                  transition: 'all 0.2s',
-                  opacity: (!agbConsent || checkingOut) ? 0.6 : 1,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {checkingOut ? (
-                  <>
-                    <span style={{ width: '12px', height: '12px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                    Lädt…
-                  </>
-                ) : 'Jetzt upgraden 💎'}
-              </button>
-            </div>
+            <button onClick={startCheckout} disabled={checkingOut} style={{ width: '100%', padding: '.5rem', borderRadius: '.5rem', background: '#f0f0ff', color: '#1a1a2e', border: 'none', fontWeight: 700, fontSize: '.75rem', cursor: checkingOut ? 'default' : 'pointer', opacity: checkingOut ? .6 : 1 }}>
+              {checkingOut ? 'Lädt…' : 'Upgrade'}
+            </button>
           )}
         </div>
 
+        {/* User */}
+        <div style={{ padding: '.7rem 1.1rem .9rem', borderTop: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.6rem' }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '.82rem', fontWeight: 800, color: '#fff' }}>
+            {username[0]?.toUpperCase()}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: '.75rem', fontWeight: 700, color: '#e0e0f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{username}</p>
+            <p style={{ margin: 0, fontSize: '.6rem', color: '#6b6b8a' }}>Klasse B</p>
+          </div>
+          <button onClick={handleSignOut} title="Abmelden" style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', color: '#f87171', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </aside>
 
-        {/* ── LEADERBOARD (compact) ── */}
-        {topEntries.length > 0 && (
-          <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: 'var(--text)' }}>🏅 Top Spieler</p>
-              <Link href="/rangliste" style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)', textDecoration: 'none' }}>Alle →</Link>
+      {/* ── MAIN ── */}
+      <div className="db-main">
+
+        {/* Top bar */}
+        <div className="db-topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1a1a2e' }}>Dashboard</h2>
+            {isAdmin && (
+              <button onClick={() => setShowAdmin(true)} style={{ padding: '3px 11px', borderRadius: 100, background: 'rgba(99,102,241,.1)', border: '1px solid rgba(99,102,241,.3)', color: '#6366f1', fontSize: '.68rem', fontWeight: 700, cursor: 'pointer' }}>Admin</button>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.65rem' }}>
+            {[
+              <svg key="s" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+              <svg key="b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+            ].map((ic, i) => (
+              <button key={i} style={{ width: 36, height: 36, borderRadius: '50%', background: '#fff', border: '1px solid #e5e7eb', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{ic}</button>
+            ))}
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.88rem', fontWeight: 800, color: '#fff', cursor: 'pointer' }}>
+              {username[0]?.toUpperCase()}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              {topEntries.map((entry, i) => {
-                const rColor = RANK_COLORS[getRankId(entry.points)]
-                const isMe = entry.userId === userId
-                const medals = ['🥇', '🥈', '🥉']
-                return (
-                  <div key={entry.userId} style={{
-                    display: 'flex', alignItems: 'center', gap: '9px',
-                    padding: '0.5rem 0.7rem', borderRadius: '9px',
-                    background: isMe ? 'rgba(var(--gold-rgb),0.08)' : 'transparent',
-                    border: isMe ? '1px solid rgba(var(--gold-rgb),0.22)' : '1px solid transparent',
-                  }}>
-                    <span style={{ fontSize: '1rem', flexShrink: 0 }}>{medals[i]}</span>
-                    <span style={{ flex: 1, fontSize: '0.75rem', fontWeight: 700, color: isMe ? 'var(--gold)' : 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.displayName}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>{entry.points}</span>
-                      <span style={{ fontSize: '0.53rem', fontWeight: 800, padding: '2px 6px', borderRadius: '6px', border: `1px solid ${rColor}40`, background: `${rColor}10`, color: rColor }}>{getRankId(entry.points)}</span>
+          </div>
+        </div>
+
+        {/* ── Scrollable content ── */}
+        <div className="db-scroll">
+
+          {/* ── Mobile admin button ── */}
+          {isAdmin && (
+            <div className="db-mob-admin" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.75rem' }}>
+              <button onClick={() => setShowAdmin(true)} style={{ padding: '5px 13px', borderRadius: 100, background: 'rgba(99,102,241,.1)', border: '1px solid rgba(99,102,241,.3)', color: '#6366f1', fontSize: '.7rem', fontWeight: 700, cursor: 'pointer' }}>Admin</button>
+            </div>
+          )}
+
+          {/* ── WELCOME ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <p style={{ margin: '0 0 .2rem', fontSize: '.88rem', color: '#6b7280' }}>Willkommen zurück,</p>
+            <h1 style={{ margin: '0 0 .25rem', fontSize: 'clamp(1.55rem,4vw,2rem)', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.15 }}>
+              {username} 👋
+            </h1>
+            <p style={{ margin: 0, fontSize: '.82rem', color: '#9ca3af' }}>Bereit für deine nächste Lerneinheit?</p>
+          </div>
+
+          {/* ── HERO CARD ── */}
+          <div style={{ background: 'linear-gradient(135deg,#eef2ff 0%,#f0f4ff 50%,#ede9fe 100%)', borderRadius: '1.5rem', padding: '1.75rem 2rem', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid rgba(99,102,241,.12)' }}>
+            <svg style={{ position: 'absolute', bottom: 0, right: 0, opacity: .07, pointerEvents: 'none' }} width="260" height="110" viewBox="0 0 260 110">
+              <path d="M0,70 Q45,35 90,60 T180,42 T260,52 L260,110 L0,110 Z" fill="#6366f1"/>
+              <path d="M0,85 Q65,58 130,75 T260,65 L260,110 L0,110 Z" fill="#8b5cf6"/>
+            </svg>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
+              <div>
+                <p style={{ margin: '0 0 .5rem', fontSize: '.7rem', fontWeight: 700, color: '#6366f1', letterSpacing: '.04em' }}>Führerschein Klasse B · 2026</p>
+                <h2 style={{ margin: '0 0 .4rem', fontSize: 'clamp(1.25rem,3.5vw,1.65rem)', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.2 }}>
+                  Du bist auf dem<br />besten Weg!
+                </h2>
+                <p style={{ margin: '0 0 1.4rem', fontSize: '.82rem', color: '#6b7280' }}>Deine Lernreise läuft großartig.</p>
+                <Link href="/fragen" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '.65rem 1.25rem', borderRadius: 100, background: '#1a1a2e', color: '#fff', fontWeight: 700, fontSize: '.83rem', textDecoration: 'none' }}>
+                  Weiterlernen →
+                </Link>
+              </div>
+              <CircularProg value={progVal} />
+            </div>
+          </div>
+
+          {/* ── DAILY GOAL ── */}
+          <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.25rem', marginBottom: '1.25rem', border: '1px solid #e5e7eb' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem', flexWrap: 'wrap' }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f3f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🎯</div>
+              <div style={{ flex: 1, minWidth: 160 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.45rem' }}>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '.85rem', color: '#1a1a2e' }}>Dein Tagesziel</p>
+                  <span style={{ fontSize: '.7rem', color: '#6b7280' }}>
+                    {dailyCount < dailyGoal ? `${dailyCount}/${dailyGoal} Aufgaben erledigt` : `${dailyCount} erledigt 🎉`}
+                  </span>
+                </div>
+                <div style={{ height: 8, borderRadius: 4, background: '#f3f4f6', overflow: 'hidden' }}>
+                  <div style={{ width: `${dailyPct}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', borderRadius: 4, transition: 'width .8s ease' }} />
+                </div>
+              </div>
+              <button onClick={() => { setEditGoal(v => !v); setEditGoalVal(String(dailyGoal)) }}
+                style={{ fontSize: '.7rem', color: '#6366f1', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                Ziel bearbeiten ✏️
+              </button>
+            </div>
+            {editGoal && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginTop: '.65rem', flexWrap: 'wrap' }}>
+                <input type="number" min={1} max={700} value={editGoalVal} onChange={e => setEditGoalVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveGoal()} placeholder="1–700" autoFocus
+                  style={{ width: 72, padding: '.32rem .6rem', borderRadius: '.5rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1a1a2e', fontSize: '.82rem', outline: 'none' }} />
+                <span style={{ fontSize: '.68rem', color: '#6b7280' }}>Fragen/Tag</span>
+                <button onClick={saveGoal} style={{ padding: '.28rem .6rem', borderRadius: '.45rem', fontSize: '.72rem', fontWeight: 700, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.3)', color: '#22c55e', cursor: 'pointer' }}>✓</button>
+                <button onClick={() => setEditGoal(false)} style={{ padding: '.28rem .55rem', borderRadius: '.45rem', fontSize: '.72rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', cursor: 'pointer' }}>✕</button>
+              </div>
+            )}
+          </div>
+
+          {/* ── SCHNELLZUGRIFF ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Schnellzugriff</h3>
+            <div className="db-quick-grid">
+              {QUICK.map(item => (
+                <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
+                  <div className="db-qcard" style={{ background: '#fff', borderRadius: '1.1rem', padding: '1rem .9rem', border: '1px solid #e5e7eb', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ width: 42, height: 42, borderRadius: 11, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '.7rem' }}>{item.icon}</div>
+                    <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>{item.title}</p>
+                    <p style={{ margin: '0 0 .6rem', fontSize: '.65rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
+                    <span style={{ fontSize: '.85rem', color: item.color }}>→</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── ÜBERSICHT ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Übersicht</h3>
+            <div className="db-stats-grid">
+              {[
+                { icon: '📖', val: '14',         label: 'Lektionen',       color: '#8b5cf6', sc: '#6366f1', sp: [3,5,4,7,6,8,7,9]  },
+                { icon: '🎯', val: `${points}`,  label: 'Punkte',          color: '#3b82f6', sc: '#3b82f6', sp: [2,4,3,6,5,7,6,8]  },
+                { icon: '🏆', val: rank.id,      label: 'Dein Rang',       color: '#22c55e', sc: '#22c55e', sp: [1,3,4,3,5,6,5,7]  },
+                { icon: '📈', val: `${progVal}%`,label: 'Max. Fortschritt', color: '#f97316', sc: '#f97316', sp: [4,5,4,6,5,7,6,8]  },
+              ].map(s => (
+                <div key={s.label} style={{ background: '#fff', borderRadius: '1.1rem', padding: '1rem 1.05rem', border: '1px solid #e5e7eb' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `${s.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', marginBottom: '.5rem' }}>{s.icon}</div>
+                  <p style={{ margin: '0 0 .08rem', fontSize: '1.25rem', fontWeight: 900, color: '#1a1a2e' }}>{s.val}</p>
+                  <p style={{ margin: '0 0 .55rem', fontSize: '.68rem', color: '#9ca3af' }}>{s.label}</p>
+                  <Sparkline color={s.sc} data={s.sp} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── WEITER LERNEN + LERNREISE ── */}
+          <div className="db-two-col" style={{ marginBottom: '1.5rem' }}>
+            {/* Weiter lernen */}
+            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1.1rem', border: '1px solid #e5e7eb' }}>
+              <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Weiter lernen</h3>
+              <div style={{ borderRadius: '.85rem', overflow: 'hidden', marginBottom: '.85rem', position: 'relative', background: 'linear-gradient(135deg,#1a1a2e,#2d2d5a)', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,255,255,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <div style={{ position: 'absolute', bottom: '.6rem', left: '.75rem' }}>
+                  <p style={{ margin: 0, fontSize: '.58rem', fontWeight: 700, color: '#a78bfa', letterSpacing: '.06em' }}>LEKTION 7</p>
+                </div>
+              </div>
+              <p style={{ margin: '0 0 .55rem', fontWeight: 800, fontSize: '.88rem', color: '#1a1a2e' }}>Vorfahrt an Kreuzungen</p>
+              <div style={{ height: 4, borderRadius: 2, background: '#f3f4f6', marginBottom: '.55rem', overflow: 'hidden' }}>
+                <div style={{ width: '66%', height: '100%', background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', borderRadius: 2 }} />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '.68rem', color: '#9ca3af' }}>8 von 12 Kapiteln</span>
+                <Link href="/unterricht" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '.38rem .8rem', borderRadius: 100, background: '#f3f0ff', color: '#6366f1', fontWeight: 700, fontSize: '.7rem', textDecoration: 'none' }}>Fortsetzen →</Link>
+              </div>
+            </div>
+
+            {/* Deine Lernreise */}
+            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1.1rem', border: '1px solid #e5e7eb' }}>
+              <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Deine Lernreise</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '.55rem' }}>
+                {[
+                  { l: 'Grundlagen',        s: 'Abgeschlossen',      done: true,  active: false },
+                  { l: 'Verkehrszeichen',   s: 'Abgeschlossen',      done: true,  active: false },
+                  { l: 'Vorfahrtsregeln',   s: 'In Bearbeitung',     done: false, active: true  },
+                  { l: 'Verkehrsverhalten', s: 'Noch nicht gestartet', done: false, active: false },
+                ].map(item => (
+                  <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: '.7rem', padding: '.6rem .8rem', borderRadius: '.8rem', background: item.active ? '#f3f0ff' : '#f9fafb', border: item.active ? '1px solid rgba(99,102,241,.2)' : '1px solid #f3f4f6' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0, background: item.done ? '#22c55e' : item.active ? 'transparent' : '#f3f4f6', border: item.active ? '2px solid #6366f1' : item.done ? 'none' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.7rem', color: '#fff' }}>
+                      {item.done ? '✓' : item.active ? '' : '🔒'}
                     </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: '.8rem', fontWeight: 700, color: item.done || item.active ? '#1a1a2e' : '#9ca3af' }}>{item.l}</p>
+                      <p style={{ margin: 0, fontSize: '.62rem', color: item.done ? '#22c55e' : item.active ? '#6366f1' : '#9ca3af' }}>{item.s}</p>
+                    </div>
+                    {(item.done || item.active) && <span style={{ color: item.done ? '#22c55e' : '#6366f1', fontSize: '.9rem' }}>{item.done ? '✓' : '›'}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── ENTDECKE MEHR ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Entdecke mehr</h3>
+            <div className="db-disc-grid">
+              {[
+                { title: 'Battle',     desc: 'Tritt gegen Freunde an und sammle Punkte',    icon: '⚔️', href: '/battle',    bg: '#1a1a2e', tc: '#ef4444' },
+                { title: 'Rangliste',  desc: 'Sieh, wie du im Vergleich abschneidest',      icon: '🏆', href: '/rangliste', bg: '#0f1a0f', tc: '#22c55e' },
+                { title: 'Community', desc: 'Tausche dich mit anderen Lernenden aus',       icon: '👥', href: '/rangliste', bg: '#0f0f1f', tc: '#6366f1' },
+              ].map(c => (
+                <Link key={c.title} href={c.href} style={{ textDecoration: 'none' }}>
+                  <div className="db-disc" style={{ borderRadius: '1.1rem', padding: '1.2rem', background: c.bg, border: '1px solid rgba(255,255,255,.07)', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
+                    <p style={{ margin: '0 0 .3rem', fontWeight: 800, fontSize: '.88rem', color: '#f0f0ff' }}>{c.title}</p>
+                    <p style={{ margin: '0 0 .8rem', fontSize: '.68rem', color: '#9090b8', lineHeight: 1.4 }}>{c.desc}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '.82rem', color: c.tc }}>→</span>
+                      <span style={{ fontSize: '1.35rem' }}>{c.icon}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── TERMIN ── */}
+          <Link href="/termin" style={{ textDecoration: 'none', display: 'block', marginBottom: '1rem' }}>
+            <div style={{ borderRadius: '1.25rem', padding: '1rem 1.25rem', background: 'linear-gradient(135deg,rgba(34,197,94,.07),rgba(34,197,94,.03))', border: '1px solid rgba(34,197,94,.3)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontSize: '1.4rem' }}>📅</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: '0 0 .18rem', fontWeight: 800, fontSize: '.88rem', color: '#1a1a2e' }}>Termin wählen</p>
+                <p style={{ margin: 0, fontSize: '.7rem', color: '#6b7280' }}>Fahrstunde buchen · Montag – Samstag</p>
+              </div>
+              <span style={{ color: '#22c55e', fontSize: '1.1rem' }}>→</span>
+            </div>
+          </Link>
+
+          {/* ── LEADERBOARD ── */}
+          {topEntries.length > 0 && (
+            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.2rem', marginBottom: '1rem', border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.7rem' }}>
+                <p style={{ margin: 0, fontSize: '.88rem', fontWeight: 800, color: '#1a1a2e' }}>🏅 Top Spieler</p>
+                <Link href="/rangliste" style={{ fontSize: '.7rem', fontWeight: 700, color: '#6366f1', textDecoration: 'none' }}>Alle →</Link>
+              </div>
+              {topEntries.map((e, i) => {
+                const rc = RANK_COLORS[getRankId(e.points)]
+                const me = e.userId === userId
+                return (
+                  <div key={e.userId} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '.48rem .65rem', borderRadius: 9, background: me ? '#f3f0ff' : '#f9fafb', border: me ? '1px solid rgba(99,102,241,.2)' : '1px solid #f3f4f6', marginBottom: i < topEntries.length - 1 ? 5 : 0 }}>
+                    <span style={{ fontSize: '.95rem', flexShrink: 0 }}>{['🥇','🥈','🥉'][i]}</span>
+                    <span style={{ flex: 1, fontSize: '.75rem', fontWeight: 700, color: me ? '#6366f1' : '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.displayName}</span>
+                    <span style={{ fontSize: '.65rem', color: '#9ca3af', flexShrink: 0 }}>{e.points}</span>
+                    <span style={{ fontSize: '.52rem', fontWeight: 800, padding: '2px 6px', borderRadius: 6, border: `1px solid ${rc}40`, background: `${rc}10`, color: rc, flexShrink: 0 }}>{getRankId(e.points)}</span>
                   </div>
                 )
               })}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ── NOTEPAD ── */}
-        <div style={{ background: 'transparent', border: '1px solid rgba(var(--gold-rgb),0.28)', borderRadius: '1.25rem', padding: '1rem 1.1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-            <p style={{ margin: 0, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              📝 Notizblock
-            </p>
-            <span style={{ fontSize: '0.6rem', fontWeight: 600, color: noteSaved ? '#22c55e' : 'var(--text-dim)', transition: 'color 0.3s' }}>
-              {noteSaved ? '✓ Gespeichert' : 'Auto-Save'}
-            </span>
+          {/* ── PREMIUM BANNER ── */}
+          {!isPremium && (
+            <div style={{ background: 'linear-gradient(135deg,#f0f0ff,#f5f3ff)', borderRadius: '1.25rem', padding: '1.2rem', marginBottom: '1rem', border: '1px solid rgba(99,102,241,.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: '.3rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>💎</span>
+                    <p style={{ margin: 0, fontWeight: 800, fontSize: '.9rem', color: '#1a1a2e' }}>Hol dir Premium</p>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '.7rem', color: '#6b7280' }}>Einmalig <strong>9,99 €</strong> · keine Abo-Kosten · zzgl. MwSt.</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'flex-end', flexShrink: 0 }}>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: 6, cursor: 'pointer', fontSize: '.6rem', color: '#6b7280', lineHeight: 1.4 }}>
+                    <input type="checkbox" checked={agbConsent} onChange={e => setAgbConsent(e.target.checked)} style={{ marginTop: 2, accentColor: '#6366f1' }} />
+                    Ich stimme den{' '}<a href="/agb" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>AGB</a>{' '}zu
+                  </label>
+                  <button onClick={startCheckout} disabled={checkingOut || !agbConsent}
+                    style={{ padding: '.5rem 1.2rem', borderRadius: 100, background: (!agbConsent || checkingOut) ? '#e5e7eb' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: (!agbConsent || checkingOut) ? '#9ca3af' : '#fff', border: 'none', fontWeight: 700, fontSize: '.75rem', cursor: (!agbConsent || checkingOut) ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
+                    {checkingOut ? 'Lädt…' : 'Jetzt upgraden 💎'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── NOTEPAD ── */}
+          <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.2rem', marginBottom: '1rem', border: '1px solid #e5e7eb' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.6rem' }}>
+              <p style={{ margin: 0, fontSize: '.82rem', fontWeight: 700, color: '#1a1a2e' }}>📝 Notizblock</p>
+              <span style={{ fontSize: '.62rem', color: noteSaved ? '#22c55e' : '#9ca3af', transition: 'color .3s' }}>{noteSaved ? '✓ Gespeichert' : 'Auto-Save'}</span>
+            </div>
+            <textarea value={noteText} onChange={e => handleNoteChange(e.target.value)} placeholder="Notizen, Merkhilfen…" rows={4}
+              style={{ width: '100%', resize: 'vertical', minHeight: 90, padding: '.6rem .75rem', borderRadius: '.6rem', fontSize: '.78rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1a1a2e', outline: 'none', lineHeight: 1.6, fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color .15s' }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#6366f1' }}
+              onBlur={e =>  { e.currentTarget.style.borderColor = '#e5e7eb' }}
+            />
           </div>
-          <textarea
-            value={noteText}
-            onChange={e => handleNoteChange(e.target.value)}
-            placeholder="Notizen, Merkhilfen…"
-            rows={4}
-            style={{
-              width: '100%', resize: 'vertical', minHeight: '90px',
-              padding: '0.65rem 0.75rem', borderRadius: '0.6rem', fontSize: '0.78rem',
-              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
-              color: 'var(--text)', outline: 'none', lineHeight: 1.6,
-              fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.15s',
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(var(--gold-rgb),0.45)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'var(--input-border)' }}
-          />
+
+          {/* Chat */}
+          <ChatBox userId={userId} username={username} isAdmin={isAdmin} />
+
+          {/* Mobile bottom padding */}
+          <div className="db-mob-pad" style={{ height: 84 }} />
         </div>
 
-        {/* Live Chat */}
-        <ChatBox userId={userId} username={username} isAdmin={isAdmin} />
-
+        {/* Bottom nav — mobile only */}
+        <BottomNav />
       </div>
-
-      {/* ── BOTTOM NAV ── */}
-      <BottomNav />
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @keyframes terminShimmer {
-          0%   { left: -60%; }
-          100% { left: 160%; }
-        }
-        @keyframes terminGlow {
-          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.5); }
-          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.3);  border-color: rgba(34,197,94,0.8); }
-        }
-        @keyframes glowPurple {
-          0%,100% { box-shadow: 0 0 16px rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35); }
-          50%      { box-shadow: 0 0 36px rgba(167,139,250,0.32); border-color: rgba(167,139,250,0.72); }
-        }
-        @keyframes glowCyan {
-          0%,100% { box-shadow: 0 0 16px rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.35); }
-          50%      { box-shadow: 0 0 36px rgba(6,182,212,0.32); border-color: rgba(6,182,212,0.72); }
-        }
-        @keyframes glowGreen {
-          0%,100% { box-shadow: 0 0 16px rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); }
-          50%      { box-shadow: 0 0 36px rgba(34,197,94,0.32); border-color: rgba(34,197,94,0.72); }
-        }
-        @keyframes glowDiamond {
-          0%   { box-shadow: 0 0 20px rgba(96,165,250,0.22);  border-color: rgba(96,165,250,0.5);  }
-          25%  { box-shadow: 0 0 28px rgba(167,139,250,0.28); border-color: rgba(167,139,250,0.6); }
-          50%  { box-shadow: 0 0 28px rgba(244,114,182,0.22); border-color: rgba(244,114,182,0.5); }
-          75%  { box-shadow: 0 0 24px rgba(52,211,153,0.22);  border-color: rgba(52,211,153,0.5);  }
-          100% { box-shadow: 0 0 20px rgba(96,165,250,0.22);  border-color: rgba(96,165,250,0.5);  }
-        }
-      `}</style>
     </div>
   )
 }
 
-/* ── Circular Progress ──────────────────────────────────── */
-
-function CircularProgress({ value, color }: { value: number; color: string }) {
-  const r = 36
-  const circ = 2 * Math.PI * r
-  const filled = circ * (value / 100)
+/* ── Sidebar Nav ───────────────────────────────────────── */
+function SidebarNav() {
+  const pathname = usePathname()
+  const items = [
+    { label: 'Dashboard',   href: '/dashboard',    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+    { label: 'Lernen',      href: '/unterricht',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> },
+    { label: 'Prüfung',     href: '/fragen',       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg> },
+    { label: 'Fortschritt', href: '/rangliste',    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+    { label: 'Community',   href: '/battle',       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+    { label: 'Einstellungen', href: '/einstellungen', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
+  ]
   return (
-    <div style={{ position: 'relative', width: '92px', height: '92px', flexShrink: 0 }}>
-      <svg width="92" height="92" viewBox="0 0 92 92">
-        <circle cx="46" cy="46" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="5" />
-        <circle cx="46" cy="46" r={r} fill="none"
-          stroke={color} strokeWidth="5" strokeLinecap="round"
-          strokeDasharray={`${filled} ${circ - filled}`}
-          transform="rotate(-90 46 46)"
-        />
+    <nav style={{ padding: '0 .75rem', display: 'flex', flexDirection: 'column', gap: '.2rem' }}>
+      {items.map(it => (
+        <Link key={it.label} href={it.href} className={`db-navlink${pathname === it.href ? ' active' : ''}`}>
+          {it.icon}
+          {it.label}
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+/* ── Circular Progress ─────────────────────────────────── */
+function CircularProg({ value }: { value: number }) {
+  const r = 38; const c = 2 * Math.PI * r
+  return (
+    <div style={{ position: 'relative', width: 100, height: 100, flexShrink: 0 }}>
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(99,102,241,.15)" strokeWidth="5.5"/>
+        <circle cx="50" cy="50" r={r} fill="none" stroke="url(#pg)" strokeWidth="5.5"
+          strokeLinecap="round" strokeDasharray={`${c*(value/100)} ${c*(1-value/100)}`}
+          transform="rotate(-90 50 50)" style={{ transition: 'stroke-dasharray 1s ease' }}/>
+        <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#6366f1"/>
+          <stop offset="100%" stopColor="#8b5cf6"/>
+        </linearGradient></defs>
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{value}%</span>
-        <span style={{ fontSize: '0.46rem', color: 'var(--text-dim)', letterSpacing: '0.04em', marginTop: '3px', textTransform: 'uppercase' }}>Fortschritt</span>
+        <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1a1a2e', lineHeight: 1 }}>{value}%</span>
+        <span style={{ fontSize: '.42rem', color: '#9ca3af', letterSpacing: '.05em', marginTop: 3, textTransform: 'uppercase' }}>Fortschritt</span>
       </div>
     </div>
   )
 }
 
-/* ── Bottom Navigation ──────────────────────────────────── */
+/* ── Sparkline ─────────────────────────────────────────── */
+function Sparkline({ color, data }: { color: string; data: number[] }) {
+  const w = 80, h = 28
+  const mx = Math.max(...data), mn = Math.min(...data), rng = mx - mn || 1
+  const pts = data.map((v, i) => `${(i/(data.length-1))*w},${h-((v-mn)/rng)*(h-4)-2}`).join(' ')
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity=".8"/>
+    </svg>
+  )
+}
 
+/* ── Bottom Nav ────────────────────────────────────────── */
 function BottomNav() {
   const pathname = usePathname()
   const tabs = [
-    {
-      label: 'Dashboard', href: '/dashboard',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-    },
-    {
-      label: 'Lernen', href: '/unterricht',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-    },
-    {
-      label: 'Prüfung', href: '/fragen',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>,
-    },
-    {
-      label: 'Fortschritt', href: '/rangliste',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-    },
-    {
-      label: 'Community', href: '/rangliste',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-    },
-    {
-      label: 'Einstellungen', href: '/einstellungen',
-      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-    },
+    { label: 'Dashboard',   href: '/dashboard',    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+    { label: 'Lernen',      href: '/unterricht',   icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> },
+    { label: 'Prüfung',     href: '/fragen',       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg> },
+    { label: 'Fortschritt', href: '/rangliste',    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+    { label: 'Settings',    href: '/einstellungen',icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
   ]
-
   return (
-    <div style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
-      background: 'var(--nav-bg)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      borderTop: '1px solid rgba(var(--gold-rgb),0.25)',
-      display: 'flex', justifyContent: 'space-around', alignItems: 'stretch',
-      padding: '0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom, 0px))',
-    }}>
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(247,244,239,.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-around', alignItems: 'stretch', padding: '.45rem 0 calc(.45rem + env(safe-area-inset-bottom,0px))' }}
+      className="db-bottomnav">
       {tabs.map(tab => {
         const active = pathname === tab.href
         return (
-          <Link key={tab.label} href={tab.href} style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-            textDecoration: 'none', padding: '0.3rem 0.3rem', flex: 1,
-            color: active ? 'var(--gold)' : 'var(--text-dim)',
-            transition: 'color 0.15s',
-          }}>
+          <Link key={tab.label} href={tab.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textDecoration: 'none', padding: '.3rem', flex: 1, color: active ? '#6366f1' : '#9ca3af', transition: 'color .15s' }}>
             {tab.icon}
-            <span style={{ fontSize: '0.52rem', fontWeight: active ? 700 : 500, textAlign: 'center', lineHeight: 1.2 }}>{tab.label}</span>
+            <span style={{ fontSize: '.5rem', fontWeight: active ? 700 : 500 }}>{tab.label}</span>
           </Link>
         )
       })}
@@ -920,140 +723,58 @@ function BottomNav() {
   )
 }
 
-/* ── Admin Drawer ───────────────────────────────────────── */
+/* ─── Admin components (unchanged) ────────────────────── */
 
 type AdminDrawerProps = {
-  onClose: () => void
-  appointments: Appointment[]
-  filter: 'pending' | 'accepted' | 'rejected' | 'all'
-  setFilter: (f: 'pending' | 'accepted' | 'rejected' | 'all') => void
-  acting: string | null
-  onUpdate: (id: string, status: 'accepted' | 'rejected' | 'pending') => void
-  token: string
+  onClose: () => void; appointments: Appointment[]
+  filter: 'pending'|'accepted'|'rejected'|'all'
+  setFilter: (f: 'pending'|'accepted'|'rejected'|'all') => void
+  acting: string|null; onUpdate: (id: string, status: 'accepted'|'rejected'|'pending') => void; token: string
 }
-
 const ADMIN_SECTIONS = [
   { id: 'fahrstundler', label: 'Fahrschüler verwalten', icon: '👤' },
   { id: 'anfragen',     label: 'Fahrstunden-Anfragen',  icon: '🚗' },
   { id: 'sperren',      label: 'Tage sperren',           icon: '🚫' },
   { id: 'einstellung',  label: 'Kalender-Einstellungen', icon: '⚙️' },
 ] as const
-
 type AdminSectionId = typeof ADMIN_SECTIONS[number]['id']
 
 function AdminDrawer({ onClose, appointments, filter, setFilter, acting, onUpdate, token }: AdminDrawerProps) {
-  const [active, setActive] = useState<AdminSectionId | null>(null)
+  const [active, setActive] = useState<AdminSectionId|null>(null)
   const pending = appointments.filter(a => a.status === 'pending').length
-
   return (
     <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 200,
-          background: 'rgba(0,0,0,0.65)',
-          backdropFilter: 'blur(6px)',
-          WebkitBackdropFilter: 'blur(6px)',
-        }}
-      />
-
-      {/* Drawer panel */}
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 201,
-        width: 'min(480px, 100vw)',
-        background: '#17171c',
-        borderLeft: '1px solid rgba(139,92,246,0.2)',
-        display: 'flex', flexDirection: 'column',
-        boxShadow: '-12px 0 48px rgba(0,0,0,0.6)',
-      }}>
-
-        {/* Header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '1.25rem 1.4rem',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
-              background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 201, width: 'min(480px,100vw)', background: '#17171c', borderLeft: '1px solid rgba(139,92,246,.2)', display: 'flex', flexDirection: 'column', boxShadow: '-12px 0 48px rgba(0,0,0,.6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.4rem', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(139,92,246,.12)', border: '1px solid rgba(139,92,246,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <div>
-              <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)' }}>Admin-Bereich</p>
-              <p style={{ margin: 0, fontSize: '0.62rem', color: 'var(--text-dim)' }}>Nur für Administratoren</p>
+              <p style={{ margin: 0, fontSize: '.9rem', fontWeight: 800, color: '#e8e8f0' }}>Admin-Bereich</p>
+              <p style={{ margin: 0, fontSize: '.62rem', color: '#6b6b8a' }}>Nur für Administratoren</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              width: '32px', height: '32px', borderRadius: '8px',
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
-              color: 'var(--text-dim)', fontSize: '1rem', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >✕</button>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.09)', color: '#9090b8', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
-
-        {/* Section list */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-
+        <div style={{ overflowY: 'auto', flex: 1, padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
           {ADMIN_SECTIONS.map(s => (
             <div key={s.id}>
-              {/* Section toggle button */}
-              <button
-                onClick={() => setActive(prev => prev === s.id ? null : s.id)}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: '0.85rem',
-                  padding: '0.9rem 1rem', borderRadius: '1rem',
-                  background: active === s.id ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${active === s.id ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.07)'}`,
-                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                }}
-              >
-                <span style={{
-                  width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
-                  background: active === s.id ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${active === s.id ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem',
-                }}>{s.icon}</span>
-                <span style={{ flex: 1, fontSize: '0.83rem', fontWeight: 700, color: active === s.id ? '#a78bfa' : 'var(--text)' }}>
+              <button onClick={() => setActive(prev => prev === s.id ? null : s.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '.85rem', padding: '.9rem 1rem', borderRadius: '1rem', background: active === s.id ? 'rgba(139,92,246,.1)' : 'rgba(255,255,255,.03)', border: `1px solid ${active === s.id ? 'rgba(139,92,246,.3)' : 'rgba(255,255,255,.07)'}`, cursor: 'pointer', textAlign: 'left', transition: 'all .15s' }}>
+                <span style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, background: active === s.id ? 'rgba(139,92,246,.15)' : 'rgba(255,255,255,.05)', border: `1px solid ${active === s.id ? 'rgba(139,92,246,.3)' : 'rgba(255,255,255,.08)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>{s.icon}</span>
+                <span style={{ flex: 1, fontSize: '.83rem', fontWeight: 700, color: active === s.id ? '#a78bfa' : '#e8e8f0' }}>
                   {s.label}
                   {s.id === 'anfragen' && pending > 0 && (
-                    <span style={{ marginLeft: '8px', padding: '1px 7px', borderRadius: '100px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: '0.62rem', fontWeight: 800 }}>
-                      {pending}
-                    </span>
+                    <span style={{ marginLeft: 8, padding: '1px 7px', borderRadius: 100, background: 'rgba(239,68,68,.15)', border: '1px solid rgba(239,68,68,.3)', color: '#f87171', fontSize: '.62rem', fontWeight: 800 }}>{pending}</span>
                   )}
                 </span>
-                <svg
-                  width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke={active === s.id ? '#a78bfa' : 'var(--text-dim)'}
-                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  style={{ transform: active === s.id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}
-                >
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={active === s.id ? '#a78bfa' : '#6b6b8a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: active === s.id ? 'rotate(180deg)' : 'none', transition: 'transform .2s', flexShrink: 0 }}><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-
-              {/* Section content */}
               {active === s.id && (
-                <div style={{ marginTop: '0.5rem', paddingLeft: '0.25rem' }}>
+                <div style={{ marginTop: '.5rem', paddingLeft: '.25rem' }}>
                   {s.id === 'fahrstundler' && <AdminFahrstundler token={token} />}
-                  {s.id === 'anfragen'     && (
-                    <AdminTermine
-                      appointments={appointments}
-                      filter={filter}
-                      setFilter={setFilter}
-                      acting={acting}
-                      onUpdate={onUpdate}
-                    />
-                  )}
+                  {s.id === 'anfragen'     && <AdminTermine appointments={appointments} filter={filter} setFilter={setFilter} acting={acting} onUpdate={onUpdate} />}
                   {s.id === 'sperren'      && <AdminBlockedDays token={token} />}
                   {s.id === 'einstellung'  && <AdminSettings token={token} />}
                 </div>
@@ -1066,155 +787,58 @@ function AdminDrawer({ onClose, appointments, filter, setFilter, acting, onUpdat
   )
 }
 
-/* ── Admin Fahrstündler ─────────────────────────────────── */
-
-type UserRow = {
-  userId: string
-  email: string
-  username: string
-  appApproved: boolean
-  fahrstundler: boolean
-  createdAt: string
-}
+type UserRow = { userId: string; email: string; username: string; appApproved: boolean; fahrstundler: boolean; createdAt: string }
 
 function AdminFahrstundler({ token }: { token: string }) {
-  const [users, setUsers] = useState<UserRow[]>([])
+  const [users, setUsers]   = useState<UserRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [acting, setActing] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
-  const [open, setOpen] = useState(true)
+  const [acting, setActing]   = useState<string|null>(null)
+  const [search, setSearch]   = useState('')
+  const [open, setOpen]       = useState(true)
 
   useEffect(() => {
     if (!token) return
     fetch('/api/admin/fahrstundler', { headers: { authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => { if (Array.isArray(d)) setUsers(d) })
-      .finally(() => setLoading(false))
+      .then(r => r.json()).then(d => { if (Array.isArray(d)) setUsers(d) }).finally(() => setLoading(false))
   }, [token])
 
-  async function toggleFahrstundler(userId: string, current: boolean) {
+  async function toggle(userId: string, cur: boolean) {
     setActing(userId)
-    await fetch('/api/admin/fahrstundler', {
-      method: current ? 'DELETE' : 'POST',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ userId }),
-    })
-    setUsers(prev => prev.map(u => u.userId === userId ? { ...u, fahrstundler: !current } : u))
+    await fetch('/api/admin/fahrstundler', { method: cur ? 'DELETE' : 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ userId }) })
+    setUsers(prev => prev.map(u => u.userId === userId ? { ...u, fahrstundler: !cur } : u))
     setActing(null)
   }
 
-  const filtered = users.filter(u =>
-    u.username.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase())
-  )
-  const fahrstundlerCount = users.filter(u => u.fahrstundler).length
+  const filtered = users.filter(u => u.username.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()))
+  const cnt = users.filter(u => u.fahrstundler).length
 
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(34,197,94,0.04) 0%, rgba(14,12,8,0.95) 100%)',
-      border: '1px solid rgba(34,197,94,0.2)',
-      borderRadius: '1.75rem',
-      padding: '1.5rem 2rem',
-      marginBottom: '1.25rem',
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #22c55e, rgba(34,197,94,0.3))' }} />
-          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
-            👤 Fahrschüler verwalten
-          </p>
-          <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22c55e', fontSize: '0.65rem', fontWeight: 800 }}>
-            {fahrstundlerCount} freigegeben
-          </span>
+    <div style={{ background: 'linear-gradient(135deg,rgba(34,197,94,.04),rgba(14,12,8,.95))', border: '1px solid rgba(34,197,94,.2)', borderRadius: '1.75rem', padding: '1.5rem 2rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 3, height: 22, borderRadius: 2, background: 'linear-gradient(180deg,#22c55e,rgba(34,197,94,.3))' }} />
+          <p style={{ margin: 0, fontSize: '.95rem', fontWeight: 900, color: '#e8e8f0' }}>👤 Fahrschüler verwalten</p>
+          <span style={{ padding: '2px 10px', borderRadius: 100, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.25)', color: '#22c55e', fontSize: '.65rem', fontWeight: 800 }}>{cnt} freigegeben</span>
         </div>
-        <button onClick={() => setOpen(v => !v)} style={{
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
-        }}>
-          {open ? '▲ Einklappen' : '▼ Anzeigen'}
-        </button>
+        <button onClick={() => setOpen(v => !v)} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', borderRadius: 8, color: '#9090b8', fontSize: '.7rem', padding: '4px 12px', cursor: 'pointer' }}>{open ? '▲ Einklappen' : '▼ Anzeigen'}</button>
       </div>
-
       {open && (
         <>
-          {/* Search */}
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Name oder E-Mail suchen…"
-            style={{
-              width: '100%', boxSizing: 'border-box', padding: '0.55rem 0.85rem',
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-              borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem',
-              fontFamily: 'inherit', outline: 'none', marginBottom: '0.85rem',
-            }}
-          />
-
-          {loading ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '1rem 0' }}>Lädt…</p>
-          ) : filtered.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '1rem 0' }}>Keine Nutzer gefunden.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Name oder E-Mail suchen…" style={{ width: '100%', boxSizing: 'border-box', padding: '.55rem .85rem', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', borderRadius: 9, color: '#e8e8f0', fontSize: '.77rem', fontFamily: 'inherit', outline: 'none', marginBottom: '.85rem' }} />
+          {loading ? <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: '.77rem', padding: '1rem 0' }}>Lädt…</p> : filtered.length === 0 ? <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: '.77rem', padding: '1rem 0' }}>Keine Nutzer gefunden.</p> : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {filtered.map(u => (
-                <div key={u.userId} style={{
-                  display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap',
-                  padding: '0.7rem 1rem', borderRadius: '10px',
-                  background: u.fahrstundler ? 'rgba(34,197,94,0.05)' : 'rgba(255,255,255,0.025)',
-                  border: u.fahrstundler ? '1px solid rgba(34,197,94,0.18)' : '1px solid rgba(255,255,255,0.06)',
-                }}>
-                  {/* Avatar initial */}
-                  <div style={{
-                    width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
-                    background: u.fahrstundler ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
-                    border: `1.5px solid ${u.fahrstundler ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.78rem', fontWeight: 800,
-                    color: u.fahrstundler ? '#22c55e' : 'var(--text-dim)',
-                  }}>
-                    {u.username[0]?.toUpperCase()}
+                <div key={u.userId} style={{ display: 'flex', alignItems: 'center', gap: '.85rem', flexWrap: 'wrap', padding: '.7rem 1rem', borderRadius: 10, background: u.fahrstundler ? 'rgba(34,197,94,.05)' : 'rgba(255,255,255,.025)', border: u.fahrstundler ? '1px solid rgba(34,197,94,.18)' : '1px solid rgba(255,255,255,.06)' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, background: u.fahrstundler ? 'rgba(34,197,94,.15)' : 'rgba(255,255,255,.06)', border: `1.5px solid ${u.fahrstundler ? 'rgba(34,197,94,.4)' : 'rgba(255,255,255,.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.78rem', fontWeight: 800, color: u.fahrstundler ? '#22c55e' : '#6b6b8a' }}>{u.username[0]?.toUpperCase()}</div>
+                  <div style={{ flex: 1, minWidth: 140 }}>
+                    <p style={{ margin: 0, fontSize: '.8rem', fontWeight: 700, color: '#e8e8f0' }}>{u.username}</p>
+                    <p style={{ margin: 0, fontSize: '.65rem', color: '#6b6b8a' }}>{u.email}</p>
                   </div>
-
-                  {/* Info */}
-                  <div style={{ flex: 1, minWidth: '140px' }}>
-                    <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>{u.username}</p>
-                    <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{u.email}</p>
+                  <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexShrink: 0 }}>
+                    {u.appApproved ? <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(201,162,39,.1)', border: '1px solid rgba(201,162,39,.25)', color: '#c9a227' }}>App ✓</span> : <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', color: '#f87171' }}>App ✗</span>}
+                    {u.fahrstundler && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.25)', color: '#22c55e' }}>Fahrschüler ✓</span>}
                   </div>
-
-                  {/* Badges */}
-                  <div style={{ display: 'flex', gap: '5px', alignItems: 'center', flexShrink: 0 }}>
-                    {u.appApproved ? (
-                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.25)', color: 'var(--gold)' }}>
-                        App ✓
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
-                        App ✗
-                      </span>
-                    )}
-                    {u.fahrstundler && (
-                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '2px 7px', borderRadius: '100px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22c55e' }}>
-                        Fahrschüler ✓
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Toggle button */}
-                  <button
-                    onClick={() => toggleFahrstundler(u.userId, u.fahrstundler)}
-                    disabled={acting === u.userId}
-                    style={{
-                      padding: '5px 14px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 700,
-                      background: u.fahrstundler ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.1)',
-                      border: u.fahrstundler ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(34,197,94,0.3)',
-                      color: u.fahrstundler ? '#f87171' : '#22c55e',
-                      cursor: acting === u.userId ? 'default' : 'pointer',
-                      opacity: acting === u.userId ? 0.5 : 1,
-                      flexShrink: 0, whiteSpace: 'nowrap',
-                      transition: 'all 0.15s',
-                    }}
-                  >
+                  <button onClick={() => toggle(u.userId, u.fahrstundler)} disabled={acting === u.userId} style={{ padding: '5px 14px', borderRadius: 8, fontSize: '.7rem', fontWeight: 700, background: u.fahrstundler ? 'rgba(239,68,68,.08)' : 'rgba(34,197,94,.1)', border: u.fahrstundler ? '1px solid rgba(239,68,68,.25)' : '1px solid rgba(34,197,94,.3)', color: u.fahrstundler ? '#f87171' : '#22c55e', cursor: acting === u.userId ? 'default' : 'pointer', opacity: acting === u.userId ? .5 : 1, flexShrink: 0, whiteSpace: 'nowrap', transition: 'all .15s' }}>
                     {acting === u.userId ? '…' : u.fahrstundler ? '✕ Entziehen' : '✓ Freigeben'}
                   </button>
                 </div>
@@ -1227,150 +851,52 @@ function AdminFahrstundler({ token }: { token: string }) {
   )
 }
 
-/* ── Admin Termine ──────────────────────────────────────── */
-
-function AdminTermine({
-  appointments, filter, setFilter, acting, onUpdate,
-}: {
-  appointments: Appointment[]
-  filter: 'pending' | 'accepted' | 'rejected' | 'all'
-  setFilter: (f: 'pending' | 'accepted' | 'rejected' | 'all') => void
-  acting: string | null
-  onUpdate: (id: string, status: 'accepted' | 'rejected' | 'pending') => void
-}) {
-  const pending = appointments.filter(a => a.status === 'pending')
+function AdminTermine({ appointments, filter, setFilter, acting, onUpdate }: { appointments: Appointment[]; filter: 'pending'|'accepted'|'rejected'|'all'; setFilter: (f: 'pending'|'accepted'|'rejected'|'all') => void; acting: string|null; onUpdate: (id: string, status: 'accepted'|'rejected'|'pending') => void }) {
+  const pending  = appointments.filter(a => a.status === 'pending')
   const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter)
-
-  const filterLabels: Record<string, string> = {
-    pending: 'Offen', accepted: 'Bestätigt', rejected: 'Abgelehnt', all: 'Alle',
-  }
-
+  const labels: Record<string,string> = { pending: 'Offen', accepted: 'Bestätigt', rejected: 'Abgelehnt', all: 'Alle' }
+  const sc: Record<string,string>     = { pending: '#c9a227', accepted: '#22c55e', rejected: '#f87171' }
+  const sl: Record<string,string>     = { pending: 'Ausstehend', accepted: 'Bestätigt', rejected: 'Abgelehnt' }
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(239,68,68,0.04) 0%, rgba(14,12,8,0.95) 100%)',
-      border: '1px solid rgba(239,68,68,0.2)',
-      borderRadius: '1.75rem',
-      padding: '1.5rem 2rem',
-      marginBottom: '1.25rem',
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #ef4444, rgba(239,68,68,0.3))' }} />
-          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
-            🚗 Fahrstunden-Anfragen
-          </p>
-          {pending.length > 0 && (
-            <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: '0.68rem', fontWeight: 800 }}>
-              {pending.length} offen
-            </span>
-          )}
+    <div style={{ background: 'linear-gradient(135deg,rgba(239,68,68,.04),rgba(14,12,8,.95))', border: '1px solid rgba(239,68,68,.2)', borderRadius: '1.75rem', padding: '1.5rem 2rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '.75rem', marginBottom: '1.1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 3, height: 22, borderRadius: 2, background: 'linear-gradient(180deg,#ef4444,rgba(239,68,68,.3))' }} />
+          <p style={{ margin: 0, fontSize: '.95rem', fontWeight: 900, color: '#e8e8f0' }}>🚗 Fahrstunden-Anfragen</p>
+          {pending.length > 0 && <span style={{ padding: '2px 10px', borderRadius: 100, background: 'rgba(239,68,68,.12)', border: '1px solid rgba(239,68,68,.3)', color: '#f87171', fontSize: '.68rem', fontWeight: 800 }}>{pending.length} offen</span>}
         </div>
-        {/* Filter pills */}
-        <div style={{ display: 'flex', gap: '4px' }}>
-          {(['pending', 'accepted', 'rejected', 'all'] as const).map(f => {
-            const cnt = f === 'all' ? appointments.length : appointments.filter(a => a.status === f).length
-            return (
-              <button key={f} onClick={() => setFilter(f)} style={{
-                padding: '4px 12px', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 700,
-                border: filter === f ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(255,255,255,0.07)',
-                background: filter === f ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)',
-                color: filter === f ? '#f87171' : 'var(--text-dim)',
-                cursor: 'pointer',
-              }}>
-                {filterLabels[f]} ({cnt})
-              </button>
-            )
+        <div style={{ display: 'flex', gap: 4 }}>
+          {(['pending','accepted','rejected','all'] as const).map(f => {
+            const c2 = f === 'all' ? appointments.length : appointments.filter(a => a.status === f).length
+            return <button key={f} onClick={() => setFilter(f)} style={{ padding: '4px 12px', borderRadius: 100, fontSize: '.65rem', fontWeight: 700, border: filter === f ? '1px solid rgba(239,68,68,.35)' : '1px solid rgba(255,255,255,.07)', background: filter === f ? 'rgba(239,68,68,.1)' : 'rgba(255,255,255,.03)', color: filter === f ? '#f87171' : '#6b6b8a', cursor: 'pointer' }}>{labels[f]} ({c2})</button>
           })}
         </div>
       </div>
-
-      {/* List */}
-      {filtered.length === 0 ? (
-        <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.78rem', padding: '1.25rem 0' }}>
-          Keine Anfragen in dieser Kategorie.
-        </p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {filtered.length === 0 ? <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: '.78rem', padding: '1.25rem 0' }}>Keine Anfragen in dieser Kategorie.</p> : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {filtered.map(a => {
-            const dateStr = new Date(a.date + 'T12:00:00').toLocaleDateString('de-DE', {
-              weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric',
-            })
-            const timeStr = `${a.start_time.slice(0, 5)} – ${slotEnd(a.start_time, a.duration_min)} Uhr`
-            const statusColors: Record<string, string> = { pending: '#c9a227', accepted: '#22c55e', rejected: '#f87171' }
-            const statusLabels: Record<string, string> = { pending: 'Ausstehend', accepted: 'Bestätigt', rejected: 'Abgelehnt' }
-
+            const ds = new Date(a.date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })
+            const ts = `${a.start_time.slice(0,5)} – ${slotEnd(a.start_time, a.duration_min)} Uhr`
             return (
-              <div key={a.id} style={{
-                display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
-                padding: '0.85rem 1.1rem', borderRadius: '12px',
-                background: a.status === 'pending' ? 'rgba(201,162,39,0.04)' : 'rgba(255,255,255,0.025)',
-                border: a.status === 'pending' ? '1px solid rgba(201,162,39,0.15)' : '1px solid rgba(255,255,255,0.06)',
-              }}>
-                {/* Info */}
-                <div style={{ flex: 1, minWidth: '180px' }}>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', padding: '.85rem 1.1rem', borderRadius: 12, background: a.status === 'pending' ? 'rgba(201,162,39,.04)' : 'rgba(255,255,255,.025)', border: a.status === 'pending' ? '1px solid rgba(201,162,39,.15)' : '1px solid rgba(255,255,255,.06)' }}>
+                <div style={{ flex: 1, minWidth: 180 }}>
+                  <p style={{ margin: '0 0 2px', fontSize: '.82rem', fontWeight: 800, color: '#e8e8f0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     👤 {a.full_name ?? a.student_name}
-                    {a.full_name && a.full_name !== a.student_name && (
-                      <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', fontWeight: 500 }}>(@{a.student_name})</span>
-                    )}
-                    {a.appointment_type === 'regeltermin' && (
-                      <span style={{ fontSize: '0.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: '100px', background: 'rgba(201,162,39,0.1)', border: '1px solid rgba(201,162,39,0.25)', color: 'var(--gold)' }}>🔁 Regeltermin</span>
-                    )}
+                    {a.full_name && a.full_name !== a.student_name && <span style={{ fontSize: '.62rem', color: '#6b6b8a', fontWeight: 500 }}>(@{a.student_name})</span>}
+                    {a.appointment_type === 'regeltermin' && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: 100, background: 'rgba(201,162,39,.1)', border: '1px solid rgba(201,162,39,.25)', color: '#c9a227' }}>🔁 Regeltermin</span>}
                   </p>
-                  <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    {dateStr} · {timeStr} · {a.duration_min} Min.
-                  </p>
-                  {a.note && (
-                    <p style={{ margin: '2px 0 0', fontSize: '0.67rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                      „{a.note}"
-                    </p>
-                  )}
+                  <p style={{ margin: 0, fontSize: '.72rem', color: '#9090b8' }}>{ds} · {ts} · {a.duration_min} Min.</p>
+                  {a.note && <p style={{ margin: '2px 0 0', fontSize: '.67rem', color: '#6b6b8a', fontStyle: 'italic' }}>„{a.note}"</p>}
                 </div>
-
-                {/* Status + buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                  <span style={{
-                    fontSize: '0.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: '100px',
-                    background: `${statusColors[a.status]}18`,
-                    color: statusColors[a.status] ?? 'var(--text-dim)',
-                    border: `1px solid ${statusColors[a.status]}30`,
-                  }}>
-                    {statusLabels[a.status] ?? a.status}
-                  </span>
-
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: 100, background: `${sc[a.status]}18`, color: sc[a.status] ?? '#6b6b8a', border: `1px solid ${sc[a.status]}30` }}>{sl[a.status] ?? a.status}</span>
                   {a.status === 'pending' && (
                     <>
-                      <button
-                        onClick={() => onUpdate(a.id, 'accepted')}
-                        disabled={acting === a.id}
-                        style={{
-                          padding: '5px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
-                          background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
-                          color: '#22c55e', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
-                        }}
-                      >✓ OK</button>
-                      <button
-                        onClick={() => onUpdate(a.id, 'rejected')}
-                        disabled={acting === a.id}
-                        style={{
-                          padding: '5px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
-                          background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
-                          color: '#f87171', cursor: 'pointer', opacity: acting === a.id ? 0.5 : 1,
-                        }}
-                      >✕</button>
+                      <button onClick={() => onUpdate(a.id,'accepted')} disabled={acting===a.id} style={{ padding: '5px 12px', borderRadius: 7, fontSize: '.68rem', fontWeight: 700, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.3)', color: '#22c55e', cursor: 'pointer', opacity: acting===a.id?.5:1 }}>✓ OK</button>
+                      <button onClick={() => onUpdate(a.id,'rejected')} disabled={acting===a.id} style={{ padding: '5px 12px', borderRadius: 7, fontSize: '.68rem', fontWeight: 700, background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.25)', color: '#f87171', cursor: 'pointer', opacity: acting===a.id?.5:1 }}>✕</button>
                     </>
                   )}
-                  {a.status !== 'pending' && (
-                    <button
-                      onClick={() => onUpdate(a.id, 'pending')}
-                      style={{
-                        padding: '4px 9px', borderRadius: '6px', fontSize: '0.6rem', fontWeight: 600,
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-                        color: 'var(--text-dim)', cursor: 'pointer',
-                      }}
-                    >↩</button>
-                  )}
+                  {a.status !== 'pending' && <button onClick={() => onUpdate(a.id,'pending')} style={{ padding: '4px 9px', borderRadius: 6, fontSize: '.6rem', fontWeight: 600, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', color: '#6b6b8a', cursor: 'pointer' }}>↩</button>}
                 </div>
               </div>
             )
@@ -1381,141 +907,57 @@ function AdminTermine({
   )
 }
 
-/* ── Admin Blocked Days ──────────────────────────────────── */
-
 function AdminBlockedDays({ token }: { token: string }) {
-  const [blocked, setBlocked] = useState<{ date: string; reason: string | null }[]>([])
+  const [blocked, setBlocked] = useState<{ date: string; reason: string|null }[]>([])
   const [loading, setLoading] = useState(true)
-  const [open, setOpen] = useState(true)
-  const [newDate, setNewDate] = useState('')
+  const [open, setOpen]       = useState(true)
+  const [newDate, setNewDate]     = useState('')
   const [newReason, setNewReason] = useState('')
-  const [acting, setActing] = useState(false)
+  const [acting, setActing]       = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/blocked-days')
-      .then(r => r.json())
-      .then((d: { date: string; reason: string | null }[]) => {
-        if (Array.isArray(d)) setBlocked(d.sort((a, b) => a.date.localeCompare(b.date)))
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    fetch('/api/admin/blocked-days').then(r => r.json()).then((d: { date: string; reason: string|null }[]) => { if (Array.isArray(d)) setBlocked(d.sort((a,b) => a.date.localeCompare(b.date))) }).catch(()=>{}).finally(() => setLoading(false))
   }, [])
 
-  async function addBlock() {
-    if (!newDate || acting) return
+  async function add() {
+    if (!newDate || acting) return; setActing(true)
+    await fetch('/api/admin/blocked-days', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ date: newDate, reason: newReason.trim()||null }) })
+    setBlocked(prev => [...prev, { date: newDate, reason: newReason.trim()||null }].sort((a,b) => a.date.localeCompare(b.date)))
+    setNewDate(''); setNewReason(''); setActing(false)
+  }
+  async function remove(date: string) {
     setActing(true)
-    await fetch('/api/admin/blocked-days', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ date: newDate, reason: newReason.trim() || null }),
-    })
-    const entry = { date: newDate, reason: newReason.trim() || null }
-    setBlocked(prev => [...prev, entry].sort((a, b) => a.date.localeCompare(b.date)))
-    setNewDate('')
-    setNewReason('')
-    setActing(false)
+    await fetch('/api/admin/blocked-days', { method: 'DELETE', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ date }) })
+    setBlocked(prev => prev.filter(b => b.date !== date)); setActing(false)
   }
 
-  async function removeBlock(date: string) {
-    setActing(true)
-    await fetch('/api/admin/blocked-days', {
-      method: 'DELETE',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ date }),
-    })
-    setBlocked(prev => prev.filter(b => b.date !== date))
-    setActing(false)
-  }
-
-  const fmtDate = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })
-
+  const fmt = (d: string) => new Date(d+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'})
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(239,68,68,0.03) 0%, rgba(14,12,8,0.95) 100%)',
-      border: '1px solid rgba(239,68,68,0.15)',
-      borderRadius: '1.75rem',
-      padding: '1.5rem 2rem',
-      marginBottom: '1.25rem',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #ef4444, rgba(239,68,68,0.3))' }} />
-          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
-            🚫 Tage sperren
-          </p>
-          {blocked.length > 0 && (
-            <span style={{ padding: '2px 10px', borderRadius: '100px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: '0.65rem', fontWeight: 800 }}>
-              {blocked.length} gesperrt
-            </span>
-          )}
+    <div style={{ background: 'linear-gradient(135deg,rgba(239,68,68,.03),rgba(14,12,8,.95))', border: '1px solid rgba(239,68,68,.15)', borderRadius: '1.75rem', padding: '1.5rem 2rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 3, height: 22, borderRadius: 2, background: 'linear-gradient(180deg,#ef4444,rgba(239,68,68,.3))' }} />
+          <p style={{ margin: 0, fontSize: '.95rem', fontWeight: 900, color: '#e8e8f0' }}>🚫 Tage sperren</p>
+          {blocked.length > 0 && <span style={{ padding: '2px 10px', borderRadius: 100, background: 'rgba(239,68,68,.1)', border: '1px solid rgba(239,68,68,.25)', color: '#f87171', fontSize: '.65rem', fontWeight: 800 }}>{blocked.length} gesperrt</span>}
         </div>
-        <button onClick={() => setOpen(v => !v)} style={{
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
-        }}>
-          {open ? '▲ Einklappen' : '▼ Anzeigen'}
-        </button>
+        <button onClick={() => setOpen(v=>!v)} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', borderRadius: 8, color: '#9090b8', fontSize: '.7rem', padding: '4px 12px', cursor: 'pointer' }}>{open ? '▲ Einklappen':'▼ Anzeigen'}</button>
       </div>
-
       {open && (
         <>
-          {/* Add blocked day */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
-            <input
-              type="date"
-              value={newDate}
-              onChange={e => setNewDate(e.target.value)}
-              min="2026-01-01"
-              max="2026-12-31"
-              style={{
-                padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark',
-              }}
-            />
-            <input
-              value={newReason}
-              onChange={e => setNewReason(e.target.value)}
-              placeholder="Grund (z.B. Urlaub, Krank)"
-              style={{
-                flex: 1, minWidth: '140px', padding: '0.5rem 0.75rem',
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '9px', color: 'var(--text)', fontSize: '0.77rem', fontFamily: 'inherit', outline: 'none',
-              }}
-            />
-            <button onClick={addBlock} disabled={!newDate || acting} style={{
-              padding: '0.5rem 1.1rem', borderRadius: '9px', fontSize: '0.75rem', fontWeight: 700,
-              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-              color: '#f87171', cursor: (!newDate || acting) ? 'default' : 'pointer',
-              opacity: (!newDate || acting) ? 0.5 : 1, whiteSpace: 'nowrap',
-            }}>
-              🚫 Sperren
-            </button>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '.85rem' }}>
+            <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} min="2026-01-01" max="2026-12-31" style={{ padding: '.5rem .75rem', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 9, color: '#e8e8f0', fontSize: '.77rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
+            <input value={newReason} onChange={e => setNewReason(e.target.value)} placeholder="Grund (z.B. Urlaub)" style={{ flex: 1, minWidth: 140, padding: '.5rem .75rem', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 9, color: '#e8e8f0', fontSize: '.77rem', fontFamily: 'inherit', outline: 'none' }} />
+            <button onClick={add} disabled={!newDate||acting} style={{ padding: '.5rem 1.1rem', borderRadius: 9, fontSize: '.75rem', fontWeight: 700, background: 'rgba(239,68,68,.1)', border: '1px solid rgba(239,68,68,.3)', color: '#f87171', cursor: (!newDate||acting)?'default':'pointer', opacity: (!newDate||acting)?.5:1, whiteSpace: 'nowrap' }}>🚫 Sperren</button>
           </div>
-
-          {/* Blocked list */}
-          {loading ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.77rem', padding: '0.5rem 0' }}>Lädt…</p>
-          ) : blocked.length === 0 ? (
-            <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem' }}>Keine gesperrten Tage.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          {loading ? <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: '.77rem', padding: '.5rem 0' }}>Lädt…</p> : blocked.length===0 ? <p style={{ color: '#6b6b8a', fontSize: '.75rem' }}>Keine gesperrten Tage.</p> : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {blocked.map(b => (
-                <div key={b.date} style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap',
-                  padding: '0.6rem 0.85rem', borderRadius: '9px',
-                  background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.12)',
-                }}>
+                <div key={b.date} style={{ display: 'flex', alignItems: 'center', gap: '.75rem', flexWrap: 'wrap', padding: '.6rem .85rem', borderRadius: 9, background: 'rgba(239,68,68,.04)', border: '1px solid rgba(239,68,68,.12)' }}>
                   <div style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: '0.78rem', fontWeight: 700, color: 'var(--text)' }}>{fmtDate(b.date)}</p>
-                    {b.reason && <p style={{ margin: 0, fontSize: '0.65rem', color: '#f87171' }}>{b.reason}</p>}
+                    <p style={{ margin: 0, fontSize: '.78rem', fontWeight: 700, color: '#e8e8f0' }}>{fmt(b.date)}</p>
+                    {b.reason && <p style={{ margin: 0, fontSize: '.65rem', color: '#f87171' }}>{b.reason}</p>}
                   </div>
-                  <button onClick={() => removeBlock(b.date)} disabled={acting} style={{
-                    padding: '4px 12px', borderRadius: '7px', fontSize: '0.68rem', fontWeight: 700,
-                    background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
-                    color: '#22c55e', cursor: acting ? 'default' : 'pointer', opacity: acting ? 0.5 : 1,
-                  }}>
-                    ✓ Freigeben
-                  </button>
+                  <button onClick={() => remove(b.date)} disabled={acting} style={{ padding: '4px 12px', borderRadius: 7, fontSize: '.68rem', fontWeight: 700, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.25)', color: '#22c55e', cursor: acting?'default':'pointer', opacity: acting?.5:1 }}>✓ Freigeben</button>
                 </div>
               ))}
             </div>
@@ -1526,197 +968,56 @@ function AdminBlockedDays({ token }: { token: string }) {
   )
 }
 
-/* ── Admin Settings ─────────────────────────────────────── */
-
-function SettingRow({ label, desc, enabled, saving, onToggle }: {
-  label: string; desc: string; enabled: boolean; saving: boolean; onToggle: () => void
-}) {
+function SettingRow({ label, desc, enabled, saving, onToggle }: { label:string;desc:string;enabled:boolean;saving:boolean;onToggle:()=>void }) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
-      padding: '0.75rem 1rem', borderRadius: '10px',
-      background: enabled ? 'rgba(139,92,246,0.05)' : 'rgba(255,255,255,0.025)',
-      border: enabled ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(255,255,255,0.06)',
-    }}>
-      <div style={{ flex: 1, minWidth: '180px' }}>
-        <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>{label}</p>
-        <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)' }}>{desc}</p>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', padding: '.75rem 1rem', borderRadius: 10, background: enabled?'rgba(139,92,246,.05)':'rgba(255,255,255,.025)', border: enabled?'1px solid rgba(139,92,246,.2)':'1px solid rgba(255,255,255,.06)' }}>
+      <div style={{ flex: 1, minWidth: 180 }}>
+        <p style={{ margin: 0, fontSize: '.82rem', fontWeight: 700, color: '#e8e8f0' }}>{label}</p>
+        <p style={{ margin: 0, fontSize: '.65rem', color: '#6b6b8a' }}>{desc}</p>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        <span style={{
-          fontSize: '0.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: '100px',
-          background: enabled ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.08)',
-          color: enabled ? '#22c55e' : '#f87171',
-          border: `1px solid ${enabled ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.2)'}`,
-        }}>
-          {enabled ? 'AN' : 'AUS'}
-        </span>
-        <button
-          onClick={onToggle}
-          disabled={saving}
-          style={{
-            padding: '5px 16px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 700,
-            background: enabled ? 'rgba(239,68,68,0.08)' : 'rgba(139,92,246,0.12)',
-            border: enabled ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(139,92,246,0.3)',
-            color: enabled ? '#f87171' : '#a78bfa',
-            cursor: saving ? 'default' : 'pointer',
-            opacity: saving ? 0.5 : 1,
-            transition: 'all 0.15s',
-          }}
-        >
-          {saving ? '…' : enabled ? 'Sperren' : 'Freigeben'}
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '2px 8px', borderRadius: 100, background: enabled?'rgba(34,197,94,.1)':'rgba(239,68,68,.08)', color: enabled?'#22c55e':'#f87171', border: `1px solid ${enabled?'rgba(34,197,94,.25)':'rgba(239,68,68,.2)'}` }}>{enabled?'AN':'AUS'}</span>
+        <button onClick={onToggle} disabled={saving} style={{ padding: '5px 16px', borderRadius: 8, fontSize: '.7rem', fontWeight: 700, background: enabled?'rgba(239,68,68,.08)':'rgba(139,92,246,.12)', border: enabled?'1px solid rgba(239,68,68,.25)':'1px solid rgba(139,92,246,.3)', color: enabled?'#f87171':'#a78bfa', cursor: saving?'default':'pointer', opacity: saving?.5:1, transition: 'all .15s' }}>{saving?'…':enabled?'Sperren':'Freigeben'}</button>
       </div>
     </div>
   )
 }
 
 function AdminSettings({ token }: { token: string }) {
-  const [satEnabled, setSatEnabled] = useState<boolean | null>(null)
-  const [multiEnabled, setMultiEnabled] = useState<boolean | null>(null)
-  const [saving, setSaving] = useState<string | null>(null)
-  const [open, setOpen] = useState(true)
+  const [satEnabled,   setSatEnabled]   = useState<boolean|null>(null)
+  const [multiEnabled, setMultiEnabled] = useState<boolean|null>(null)
+  const [saving, setSaving] = useState<string|null>(null)
+  const [open,   setOpen]   = useState(true)
 
   useEffect(() => {
-    fetch('/api/admin/settings')
-      .then(r => r.json())
-      .then((d: Record<string, string>) => {
-        setSatEnabled(d.saturday_enabled === 'true')
-        setMultiEnabled(d.multi_booking_enabled === 'true')
-      })
-      .catch(() => {})
+    fetch('/api/admin/settings').then(r => r.json()).then((d: Record<string,string>) => { setSatEnabled(d.saturday_enabled==='true'); setMultiEnabled(d.multi_booking_enabled==='true') }).catch(()=>{})
   }, [])
 
-  async function toggle(key: string, current: boolean, setter: (v: boolean) => void) {
+  async function toggle(key: string, cur: boolean, setter: (v:boolean)=>void) {
     setSaving(key)
-    await fetch('/api/admin/settings', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ key, value: String(!current) }),
-    })
-    setter(!current)
-    setSaving(null)
+    await fetch('/api/admin/settings', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ key, value: String(!cur) }) })
+    setter(!cur); setSaving(null)
   }
 
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(139,92,246,0.04) 0%, rgba(14,12,8,0.95) 100%)',
-      border: '1px solid rgba(139,92,246,0.2)',
-      borderRadius: '1.75rem',
-      padding: '1.5rem 2rem',
-      marginBottom: '1.25rem',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: open ? '1.1rem' : 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '3px', height: '22px', borderRadius: '2px', background: 'linear-gradient(180deg, #8b5cf6, rgba(139,92,246,0.3))' }} />
-          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: 'var(--text)' }}>
-            ⚙️ Kalender-Einstellungen
-          </p>
+    <div style={{ background: 'linear-gradient(135deg,rgba(139,92,246,.04),rgba(14,12,8,.95))', border: '1px solid rgba(139,92,246,.2)', borderRadius: '1.75rem', padding: '1.5rem 2rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '.75rem', marginBottom: open ? '1.1rem' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 3, height: 22, borderRadius: 2, background: 'linear-gradient(180deg,#8b5cf6,rgba(139,92,246,.3))' }} />
+          <p style={{ margin: 0, fontSize: '.95rem', fontWeight: 900, color: '#e8e8f0' }}>⚙️ Kalender-Einstellungen</p>
         </div>
-        <button onClick={() => setOpen(v => !v)} style={{
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: '8px', color: 'var(--text-dim)', fontSize: '0.7rem', padding: '4px 12px', cursor: 'pointer',
-        }}>
-          {open ? '▲ Einklappen' : '▼ Anzeigen'}
-        </button>
+        <button onClick={() => setOpen(v=>!v)} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', borderRadius: 8, color: '#9090b8', fontSize: '.7rem', padding: '4px 12px', cursor: 'pointer' }}>{open?'▲ Einklappen':'▼ Anzeigen'}</button>
       </div>
-
       {open && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {satEnabled === null ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.75rem', padding: '0.75rem 0' }}>Lädt…</p>
-          ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {satEnabled === null ? <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: '.75rem', padding: '.75rem 0' }}>Lädt…</p> : (
             <>
-              <SettingRow
-                label="Samstag freigeben"
-                desc="Fahrschüler können Sa buchen · 12–15 Uhr & 19–23 Uhr"
-                enabled={satEnabled}
-                saving={saving === 'saturday_enabled'}
-                onToggle={() => toggle('saturday_enabled', satEnabled, setSatEnabled)}
-              />
-              <SettingRow
-                label="Mehrfachtermine erlauben"
-                desc="Mehr als 1 Termin pro Woche buchbar"
-                enabled={multiEnabled ?? false}
-                saving={saving === 'multi_booking_enabled'}
-                onToggle={() => multiEnabled !== null && toggle('multi_booking_enabled', multiEnabled, setMultiEnabled)}
-              />
+              <SettingRow label="Samstag freigeben" desc="Fahrschüler können Sa buchen · 12–15 Uhr & 19–23 Uhr" enabled={satEnabled} saving={saving==='saturday_enabled'} onToggle={() => toggle('saturday_enabled', satEnabled, setSatEnabled)} />
+              <SettingRow label="Mehrfachtermine erlauben" desc="Mehr als 1 Termin pro Woche buchbar" enabled={multiEnabled??false} saving={saving==='multi_booking_enabled'} onToggle={() => multiEnabled!==null && toggle('multi_booking_enabled', multiEnabled, setMultiEnabled)} />
             </>
           )}
         </div>
       )}
     </div>
   )
-}
-
-/* ── Feature Card ───────────────────────────────────────── */
-
-function FeatureCard({ icon, title, desc, href, soon, color, badge }: FeatureItem) {
-  const [hovered, setHovered] = useState(false)
-
-  const inner = (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: hovered && !soon ? `linear-gradient(135deg, ${color}18 0%, transparent 100%)` : 'transparent',
-        border: `1px solid ${hovered && !soon ? `${color}50` : 'rgba(var(--gold-rgb),0.25)'}`,
-        borderRadius: '1.1rem',
-        padding: '0.9rem 0.75rem',
-        cursor: soon ? 'default' : 'pointer',
-        transition: 'all 0.2s',
-        transform: hovered && !soon ? 'translateY(-2px)' : 'none',
-        boxShadow: hovered && !soon ? `0 8px 24px ${color}14` : 'none',
-        display: 'flex', flexDirection: 'column',
-        height: '100%', boxSizing: 'border-box',
-      }}
-    >
-      {/* Icon box */}
-      <div style={{
-        width: '38px', height: '38px', borderRadius: '10px', marginBottom: '0.6rem',
-        background: `linear-gradient(135deg, ${color}20, ${color}0d)`,
-        border: `1px solid ${color}25`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '1.1rem', flexShrink: 0,
-      }}>
-        {icon}
-      </div>
-
-      {/* Title */}
-      <p style={{
-        margin: '0 0 0.2rem', fontSize: '0.78rem', fontWeight: 800,
-        color: hovered && !soon ? color : 'var(--text)',
-        transition: 'color 0.2s', lineHeight: 1.2,
-      }}>
-        {title}
-      </p>
-
-      {/* Description */}
-      <p style={{ margin: '0 0 0.65rem', fontSize: '0.6rem', color: 'var(--text-dim)', lineHeight: 1.45, flex: 1 }}>
-        {desc}
-      </p>
-
-      {/* Badge footer */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{
-          fontSize: '0.55rem', fontWeight: 700,
-          color: soon ? '#ef4444' : color,
-          display: 'flex', alignItems: 'center', gap: '3px',
-        }}>
-          {soon ? '🔒' : '•'} {badge}
-        </span>
-        {!soon && (
-          <span style={{
-            width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-            background: `${color}15`, border: `1px solid ${color}25`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '0.55rem', color,
-          }}>←</span>
-        )}
-      </div>
-    </div>
-  )
-
-  if (soon) return inner
-  return <Link href={href} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}>{inner}</Link>
 }
