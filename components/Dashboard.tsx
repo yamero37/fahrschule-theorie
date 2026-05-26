@@ -452,7 +452,7 @@ export default function Dashboard() {
             <span style={{ fontSize: '.72rem', color: '#22c55e', fontWeight: 700 }}>✓ Bereits aktiv</span>
           ) : (
             <>
-              <p style={{ margin: '0 0 .65rem', fontSize: '.63rem', color: '#9090b8', lineHeight: 1.45 }}>Einmalig <strong style={{ color: '#e0e0f8' }}>9,99 €</strong> · kein Abo · zzgl. MwSt.</p>
+              <p style={{ margin: '0 0 .65rem', fontSize: '.63rem', color: '#9090b8', lineHeight: 1.45 }}>Einmalig <strong style={{ color: '#e0e0f8' }}>4,99 €</strong> · kein Abo · zzgl. MwSt.</p>
               <label style={{ display: 'flex', alignItems: 'flex-start', gap: 5, cursor: 'pointer', marginBottom: '.55rem' }}>
                 <input type="checkbox" checked={agbConsent} onChange={e => setAgbConsent(e.target.checked)} style={{ marginTop: 2, accentColor: '#a5b4fc', flexShrink: 0 }} />
                 <span style={{ fontSize: '.58rem', color: '#9090b8', lineHeight: 1.45 }}>

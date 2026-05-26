@@ -4,8 +4,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-// Preis in Cent — 9,99 € = 999
-const PREMIUM_PRICE_CENTS = parseInt(process.env.PREMIUM_PRICE_CENTS ?? '999', 10)
+// Preis in Cent — 4,99 € = 499
+const PREMIUM_PRICE_CENTS = parseInt(process.env.PREMIUM_PRICE_CENTS ?? '499', 10)
 
 export async function POST(req: NextRequest) {
   try {
