@@ -98,6 +98,7 @@ const CSS = `
   .db-scroll { padding:.85rem; padding-bottom:90px; }
   .db-quick-grid { grid-template-columns:repeat(2,1fr); }
   .db-stats-grid { grid-template-columns:repeat(2,1fr); }
+  .db-hero-stats { grid-template-columns:repeat(2,1fr) !important; }
   .db-two-col    { grid-template-columns:1fr; }
   .db-disc-grid  { grid-template-columns:1fr; }
 }
@@ -120,6 +121,7 @@ export default function Dashboard() {
   const [userId,   setUserId]           = useState('')
   const [userToken, setUserToken]       = useState('')
   const [points,   setPoints]           = useState(0)
+  const [fragenDone, setFragenDone]     = useState(0)
   const [isPremium, setIsPremium]       = useState(false)
   const [checkingOut, setCheckingOut]   = useState(false)
   const [agbConsent, setAgbConsent]     = useState(false)
@@ -174,6 +176,7 @@ export default function Dashboard() {
         setUserId(session.user.id)
         setUserToken(session.access_token ?? '')
         noteUserId.current = session.user.id
+        try { const ids = JSON.parse(localStorage.getItem('fragenCorrectIds') ?? '[]'); setFragenDone(Array.isArray(ids) ? ids.length : 0) } catch {}
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
         setLoading(false)
@@ -275,6 +278,8 @@ export default function Dashboard() {
   const nextRank  = RANKS[RANKS.indexOf(rank) + 1]
   const progVal   = Math.round(progress)
   const dailyPct  = dailyGoal > 0 ? Math.min(100, Math.round((dailyCount / dailyGoal) * 100)) : 0
+  const TOTAL_Q   = 2100
+  const fragenPct = Math.round((fragenDone / TOTAL_Q) * 100)
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eff7' }}>
@@ -394,23 +399,42 @@ export default function Dashboard() {
           </div>
 
           {/* ── HERO CARD ── */}
-          <div style={{ background: 'linear-gradient(135deg,#eef2ff 0%,#f0f4ff 50%,#ede9fe 100%)', borderRadius: '1.5rem', padding: '1.75rem 2rem', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid rgba(99,102,241,.12)' }}>
-            <svg style={{ position: 'absolute', bottom: 0, right: 0, opacity: .07, pointerEvents: 'none' }} width="260" height="110" viewBox="0 0 260 110">
-              <path d="M0,70 Q45,35 90,60 T180,42 T260,52 L260,110 L0,110 Z" fill="#6366f1"/>
-              <path d="M0,85 Q65,58 130,75 T260,65 L260,110 L0,110 Z" fill="#8b5cf6"/>
+          <div style={{ background: 'linear-gradient(135deg,#eef2ff 0%,#f0f4ff 50%,#ede9fe 100%)', borderRadius: '1.5rem', padding: '1.75rem 2rem 1.5rem', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid rgba(99,102,241,.12)' }}>
+            {/* Deko-Wellen */}
+            <svg style={{ position: 'absolute', bottom: 0, right: 0, opacity: .07, pointerEvents: 'none' }} width="260" height="140" viewBox="0 0 260 140">
+              <path d="M0,70 Q45,35 90,60 T180,42 T260,52 L260,140 L0,140 Z" fill="#6366f1"/>
+              <path d="M0,95 Q65,68 130,85 T260,75 L260,140 L0,140 Z" fill="#8b5cf6"/>
             </svg>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
-              <div>
-                <p style={{ margin: '0 0 .5rem', fontSize: '.7rem', fontWeight: 700, color: '#6366f1', letterSpacing: '.04em' }}>Führerschein Klasse B · 2026</p>
-                <h2 style={{ margin: '0 0 .4rem', fontSize: 'clamp(1.25rem,3.5vw,1.65rem)', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.2 }}>
+
+            {/* Top: Text + Fortschritts-Ring */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1.5rem', position: 'relative', marginBottom: '1.4rem' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: '0 0 .35rem', fontSize: '.7rem', fontWeight: 700, color: '#6366f1', letterSpacing: '.04em' }}>Führerschein Klasse B · 2026</p>
+                <h2 style={{ margin: '0 0 .2rem', fontSize: 'clamp(1.25rem,3.5vw,1.65rem)', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.2 }}>
                   Du bist auf dem<br />besten Weg!
                 </h2>
-                <p style={{ margin: '0 0 1.4rem', fontSize: '.82rem', color: '#6b7280' }}>Deine Lernreise läuft großartig.</p>
-                <Link href="/fragen" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '.65rem 1.25rem', borderRadius: 100, background: '#1a1a2e', color: '#fff', fontWeight: 700, fontSize: '.83rem', textDecoration: 'none' }}>
+                <p style={{ margin: '0 0 .6rem', fontSize: '.78rem', color: '#6b7280', fontStyle: 'italic' }}>Deine persönliche Lernzentrale</p>
+                <Link href="/fragen" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '.58rem 1.15rem', borderRadius: 100, background: '#1a1a2e', color: '#fff', fontWeight: 700, fontSize: '.82rem', textDecoration: 'none' }}>
                   Weiterlernen →
                 </Link>
               </div>
-              <CircularProg value={progVal} />
+              <CircularProg value={progVal} label="Rang-XP" />
+            </div>
+
+            {/* Stats-Reihe */}
+            <div className="db-hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '.65rem', position: 'relative' }}>
+              {[
+                { icon: '⭐', val: points.toLocaleString('de'), label: 'Punkte', color: '#6366f1', bg: 'rgba(99,102,241,.1)', border: 'rgba(99,102,241,.2)' },
+                { icon: rank.id === 'Legende' ? '👑' : '🏆', val: rank.id, label: rank.name, color: rank.color, bg: `${rank.color}18`, border: `${rank.color}35` },
+                { icon: '📖', val: `${fragenPct}%`, label: `${fragenDone} / ${TOTAL_Q}`, color: '#22c55e', bg: 'rgba(34,197,94,.1)', border: 'rgba(34,197,94,.22)' },
+                { icon: '🎯', val: nextRank ? `${nextRank.min - points} XP` : 'MAX', label: nextRank ? `bis Rang ${nextRank.id}` : 'Legende!', color: '#f97316', bg: 'rgba(249,115,22,.1)', border: 'rgba(249,115,22,.22)' },
+              ].map(s => (
+                <div key={s.label} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: '1rem', padding: '.65rem .75rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.1rem', marginBottom: '.2rem', lineHeight: 1 }}>{s.icon}</div>
+                  <p style={{ margin: '0 0 .1rem', fontSize: '.88rem', fontWeight: 900, color: '#1a1a2e', lineHeight: 1 }}>{s.val}</p>
+                  <p style={{ margin: 0, fontSize: '.55rem', color: '#6b7280', lineHeight: 1.3, fontWeight: 600 }}>{s.label}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -663,7 +687,7 @@ function SidebarNav() {
 }
 
 /* ── Circular Progress ─────────────────────────────────── */
-function CircularProg({ value }: { value: number }) {
+function CircularProg({ value, label = 'Fortschritt' }: { value: number; label?: string }) {
   const r = 38; const c = 2 * Math.PI * r
   return (
     <div style={{ position: 'relative', width: 100, height: 100, flexShrink: 0 }}>
@@ -679,7 +703,7 @@ function CircularProg({ value }: { value: number }) {
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1a1a2e', lineHeight: 1 }}>{value}%</span>
-        <span style={{ fontSize: '.42rem', color: '#9ca3af', letterSpacing: '.05em', marginTop: 3, textTransform: 'uppercase' }}>Fortschritt</span>
+        <span style={{ fontSize: '.42rem', color: '#9ca3af', letterSpacing: '.05em', marginTop: 3, textTransform: 'uppercase' }}>{label}</span>
       </div>
     </div>
   )
