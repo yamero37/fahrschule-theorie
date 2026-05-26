@@ -474,22 +474,59 @@ export default function TerminKalender({ userId, username }: { userId: string; u
               const mark = isHoliday ? '🎉' : isBlocked ? '🚫' : null
               const title = isHoliday ? HOLIDAY_NAMES[dateStr] : isBlocked ? 'Gesperrt' : undefined
 
+              const isToday = dateStr === todayIso
+
+              // Style logic
+              const selectable = !isDisabled
+              const bg = isSelected
+                ? 'rgba(var(--gold-rgb),0.22)'
+                : isHoliday
+                  ? 'rgba(var(--gold-rgb),0.04)'
+                  : isBlocked
+                    ? 'rgba(239,68,68,0.05)'
+                    : selectable
+                      ? 'rgba(var(--gold-rgb),0.10)'
+                      : 'transparent'
+              const border = isSelected
+                ? '2px solid var(--gold)'
+                : isToday && selectable
+                  ? '1.5px solid rgba(var(--gold-rgb),0.7)'
+                  : isHoliday
+                    ? '1px solid rgba(var(--gold-rgb),0.15)'
+                    : isBlocked
+                      ? '1px solid rgba(239,68,68,0.18)'
+                      : selectable
+                        ? '1.5px solid rgba(var(--gold-rgb),0.32)'
+                        : '1px solid transparent'
+              const color = isSelected
+                ? 'var(--gold)'
+                : selectable
+                  ? isSaturday
+                    ? 'rgba(var(--gold-rgb),0.9)'
+                    : 'var(--text)'
+                  : 'rgba(120,110,100,0.35)'
+              const fw = isSelected ? 900 : selectable ? 700 : 400
+
               return (
                 <button key={idx}
                   onClick={() => { if (!isDisabled) setSelectedDate(dateStr) }}
                   disabled={isDisabled}
                   title={title}
+                  className={selectable && !isSelected ? 'day-sel' : ''}
                   style={{
-                    aspectRatio: '1', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 600,
-                    border: isSelected ? '1.5px solid var(--gold)' : isHoliday ? '1px solid rgba(var(--gold-rgb),0.12)' : '1px solid transparent',
-                    background: isSelected ? 'rgba(var(--gold-rgb),0.18)' : isHoliday ? 'rgba(var(--gold-rgb),0.04)' : isBlocked ? 'rgba(239,68,68,0.04)' : isDisabled ? 'transparent' : 'var(--input-bg)',
-                    color: isSelected ? 'var(--gold)' : isDisabled ? '#2a2520' : isSaturday && saturdayEnabled ? 'rgba(var(--gold-rgb),0.7)' : 'var(--text-muted)',
+                    aspectRatio: '1', borderRadius: '8px', fontSize: '0.72rem', fontWeight: fw,
+                    border, background: bg, color,
                     cursor: isDisabled ? 'default' : 'pointer',
-                    transition: 'all 0.1s',
+                    transition: 'all 0.12s',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
+                    boxShadow: selectable && !isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                    position: 'relative',
                   }}
                 >
                   {day}
+                  {isToday && selectable && !isSelected && (
+                    <span style={{ position: 'absolute', bottom: '3px', width: '4px', height: '4px', borderRadius: '50%', background: 'var(--gold)', opacity: 0.9 }} />
+                  )}
                   {mark && <span style={{ fontSize: '0.35rem', lineHeight: 1.2 }}>{mark}</span>}
                 </button>
               )
@@ -622,7 +659,15 @@ export default function TerminKalender({ userId, username }: { userId: string; u
         </div>
       </div>
 
-      <style>{`@media (max-width: 640px) { .termin-grid { grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`
+        @media (max-width: 640px) { .termin-grid { grid-template-columns: 1fr !important; } }
+        .day-sel:hover {
+          background: rgba(var(--gold-rgb), 0.2) !important;
+          border-color: rgba(var(--gold-rgb), 0.55) !important;
+          transform: scale(1.07);
+          box-shadow: 0 2px 8px rgba(var(--gold-rgb), 0.18) !important;
+        }
+      `}</style>
     </div>
   )
 }
