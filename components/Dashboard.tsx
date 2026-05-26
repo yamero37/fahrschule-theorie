@@ -47,6 +47,7 @@ const QUICK = [
   { icon: '💬', title: 'Theoriefragen',   desc: 'Üben & Fragen beantworten',      href: '/fragen',      color: '#3b82f6', bg: '#eff6ff' },
   { icon: '✅', title: 'Prüfung starten', desc: 'Im Echtmodus prüfen',            href: '/quiz',        color: '#22c55e', bg: '#f0fdf4' },
   { icon: '🚗', title: 'Simulation',      desc: 'Prüfung realistisch simulieren', href: '/simulation',  color: '#f97316', bg: '#fff7ed' },
+  { icon: '🔧', title: 'Technik',         desc: 'Fahrzeug-Technik kennenlernen',  href: '/technik',     color: '#06b6d4', bg: '#ecfeff' },
   { icon: '▶️', title: 'Lernvideos',      desc: 'Erklärvideos ansehen',           href: '/videos',      color: '#ef4444', bg: '#fff1f2' },
 ]
 
@@ -485,9 +486,13 @@ export default function Dashboard() {
             </div>
           </Link>
 
-          {/* ── SCHNELLZUGRIFF ── */}
+          {/* ── PREMIUM BEREICHE ── */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Entdecke weitere Bereiche</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '.8rem' }}>
+              <span style={{ fontSize: '.82rem' }}>💎</span>
+              <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Premium Bereich</h3>
+              <span style={{ fontSize: '.58rem', fontWeight: 800, padding: '2px 8px', borderRadius: 100, background: 'linear-gradient(90deg,rgba(99,102,241,.12),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)', color: '#6366f1', letterSpacing: '.04em' }}>ALLE FEATURES</span>
+            </div>
             <div className="db-quick-grid">
               {QUICK.map(item => (
                 <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
