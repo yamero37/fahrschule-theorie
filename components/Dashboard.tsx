@@ -176,9 +176,9 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const timeout = new Promise<{ data: { session: null } }>(res =>
-          setTimeout(() => res({ data: { session: null } }), 6000))
-        const { data: { session } } = await Promise.race([supabase.auth.getSession(), timeout])
+        // getSession() liest zuerst aus localStorage (sofort) und refreshed Token falls nötig.
+        // Kein künstlicher Timeout — würde bei langsamem Refresh fälschlicherweise ausloggen.
+        const { data: { session } } = await supabase.auth.getSession()
         if (!session) { router.replace('/'); return }
 
         // ── 3-h Session-Check ──

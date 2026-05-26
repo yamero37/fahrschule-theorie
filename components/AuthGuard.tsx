@@ -2,39 +2,59 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { isAuthorized, getDemoExpiry, isSessionExpired, signOut } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
+import { isAuthorized, isSessionExpired, signOut } from '@/lib/auth'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [ready, setReady] = useState(false)
 
+  /* ── Initial check on mount ────────────────────────────── */
   useEffect(() => {
-    const timeout = setTimeout(() => setReady(true), 5000) // fallback: show content after 5s
+    // Fallback: nach 6 s Inhalt trotzdem zeigen (verhindert ewige Ladeanimation)
+    const fallback = setTimeout(() => setReady(true), 6000)
+
     async function check() {
-      clearTimeout(timeout)
-      // Session abgelaufen?
-      if (isSessionExpired()) { await signOut(); router.replace('/'); return }
+      clearTimeout(fallback)
+      // Unsere eigene 3-h-Sperre
+      if (isSessionExpired()) {
+        await signOut()
+        router.replace('/')
+        return
+      }
+      // Supabase-Session prüfen — bei Netzwerkfehler pessimistisch erlauben (catch → true)
       const ok = await isAuthorized().catch(() => true)
-      if (!ok) router.replace('/')
-      else setReady(true)
+      if (!ok) {
+        router.replace('/')
+      } else {
+        setReady(true)
+      }
     }
     check()
-    return () => clearTimeout(timeout)
+
+    return () => clearTimeout(fallback)
   }, [router])
 
-  // Check demo expiry + session expiry every 15s
+  /* ── Sofort auf Supabase-SIGNED_OUT reagieren ──────────── */
+  // Kein Polling nötig — onAuthStateChange feuert sofort bei echter Abmeldung
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        router.replace('/')
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [router])
+
+  /* ── Nur unsere 3-h-Sperre periodisch prüfen (kein Netzwerk) ── */
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (isSessionExpired()) { await signOut(); router.replace('/'); return }
-      isAuthorized().then(ok => { if (!ok) router.replace('/') })
-    }, 15000)
-    // Also watch for demo countdown hitting zero
-    const demoCheck = setInterval(() => {
-      if (getDemoExpiry() === null) {
-        isAuthorized().then(ok => { if (!ok) router.replace('/') })
+      if (isSessionExpired()) {
+        await signOut()
+        router.replace('/')
       }
-    }, 5000)
-    return () => { clearInterval(interval); clearInterval(demoCheck) }
+    }, 60_000) // alle 60 s, rein localStorage-basiert
+    return () => clearInterval(interval)
   }, [router])
 
   if (!ready) {

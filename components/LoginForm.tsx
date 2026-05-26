@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { loginUser, setSessionExpiry } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
 
 /* ── Force light theme on login page ── */
 function UseLightTheme() {
@@ -80,7 +81,19 @@ export default function LoginForm() {
       // 3-Stunden-Session starten
       setSessionExpiry()
 
-      // Jeder eingeloggte User kommt direkt zum Dashboard
+      // Warten bis Supabase die Session wirklich im Client gespeichert hat,
+      // dann erst navigieren — verhindert Race-Condition auf langsamem Gerät
+      await new Promise<void>(resolve => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+          if (event === 'SIGNED_IN') {
+            subscription.unsubscribe()
+            resolve()
+          }
+        })
+        // Fallback: nach 1 s trotzdem navigieren
+        setTimeout(resolve, 1000)
+      })
+
       router.replace('/dashboard')
     } catch (err: unknown) {
       let msg = 'Anmeldung fehlgeschlagen.'
