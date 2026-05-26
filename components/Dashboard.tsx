@@ -129,6 +129,8 @@ export default function Dashboard() {
   const [tutorialDone, setTutorialDone] = useState(false)
   const [loading,  setLoading]          = useState(true)
   const [topEntries, setTopEntries]     = useState<LeaderboardEntry[]>([])
+  const [streakCount, setStreakCount]   = useState(0)
+  const [streakDays,  setStreakDays]    = useState<boolean[]>([false,false,false,false,false,false,false])
   const [noteText, setNoteText]         = useState('')
   const [noteSaved, setNoteSaved]       = useState(false)
   const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -177,6 +179,21 @@ export default function Dashboard() {
         setUserToken(session.access_token ?? '')
         noteUserId.current = session.user.id
         try { const ids = JSON.parse(localStorage.getItem('fragenCorrectIds') ?? '[]'); setFragenDone(Array.isArray(ids) ? ids.length : 0) } catch {}
+        // ── Streak ──
+        try {
+          const today     = new Date().toISOString().slice(0, 10)
+          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+          const lastDate  = localStorage.getItem('streak_last') ?? ''
+          const saved     = parseInt(localStorage.getItem('streak_count') ?? '0', 10)
+          let count = lastDate === today ? saved : lastDate === yesterday ? saved + 1 : 1
+          if (lastDate !== today) { localStorage.setItem('streak_count', String(count)); localStorage.setItem('streak_last', today) }
+          setStreakCount(count)
+          // 7-day week view (Mo=0 … So=6)
+          const dow = new Date().getDay()
+          const todayIdx = dow === 0 ? 6 : dow - 1
+          const active = Array.from({ length: 7 }, (_, i) => i <= todayIdx && i >= todayIdx - (Math.min(count, todayIdx + 1) - 1))
+          setStreakDays(active)
+        } catch {}
         const admin = session.user.email === 'spieletolga@gmail.com'
         setIsAdmin(admin)
         setLoading(false)
@@ -222,7 +239,7 @@ export default function Dashboard() {
 
         fetch('/api/leaderboard', { signal: AbortSignal.timeout(4000) })
           .then(r => r.json())
-          .then((d: unknown) => { if (Array.isArray(d)) setTopEntries(d.slice(0, 3)) })
+          .then((d: unknown) => { if (Array.isArray(d)) setTopEntries(d.slice(0, 5)) })
           .catch(() => {})
       } catch { setLoading(false) }
     }
@@ -471,6 +488,115 @@ export default function Dashboard() {
                 <button onClick={() => setEditGoal(false)} style={{ padding: '.28rem .55rem', borderRadius: '.45rem', fontSize: '.72rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', cursor: 'pointer' }}>✕</button>
               </div>
             )}
+          </div>
+
+          {/* ── STREAK + COMMUNITY ── */}
+          <div className="db-two-col" style={{ marginBottom: '1.5rem' }}>
+
+            {/* Streak */}
+            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1.25rem', border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🔥</div>
+                <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Deine Streak</h3>
+              </div>
+
+              {/* Count */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '2.8rem', fontWeight: 900, color: '#1a1a2e', lineHeight: 1 }}>{streakCount}</span>
+                <div style={{ paddingBottom: '4px' }}>
+                  <p style={{ margin: 0, fontSize: '.72rem', fontWeight: 700, color: '#f97316' }}>Tage in Folge</p>
+                  <p style={{ margin: 0, fontSize: '.62rem', color: '#9ca3af' }}>
+                    {streakCount >= 7 ? '🏆 Mega-Streak!' : streakCount >= 3 ? '💪 Weiter so!' : 'Jeden Tag lernen!'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Week dots */}
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {['Mo','Di','Mi','Do','Fr','Sa','So'].map((day, i) => (
+                  <div key={day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                    <div style={{
+                      width: '100%', aspectRatio: '1', borderRadius: '8px',
+                      background: streakDays[i] ? 'linear-gradient(135deg,#f97316,#fb923c)' : '#f3f4f6',
+                      border: `1px solid ${streakDays[i] ? 'rgba(249,115,22,0.35)' : '#e5e7eb'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '.55rem', color: streakDays[i] ? '#fff' : '#d1d5db', fontWeight: 800,
+                      boxShadow: streakDays[i] ? '0 2px 8px rgba(249,115,22,0.25)' : 'none',
+                    }}>
+                      {streakDays[i] ? '✓' : ''}
+                    </div>
+                    <span style={{ fontSize: '.52rem', color: streakDays[i] ? '#f97316' : '#9ca3af', fontWeight: 700 }}>{day}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Progress bar */}
+              <div style={{ marginTop: '.85rem', height: 5, borderRadius: 3, background: '#f3f4f6', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 3,
+                  width: `${Math.min(100, (streakCount / 7) * 100)}%`,
+                  background: 'linear-gradient(90deg,#f97316,#fb923c)',
+                  transition: 'width 0.6s ease',
+                }} />
+              </div>
+              <p style={{ margin: '.4rem 0 0', fontSize: '.6rem', color: '#9ca3af' }}>
+                {streakCount >= 7 ? 'Ziel erreicht 🎉' : `${7 - Math.min(streakCount, 7)} Tage bis zur 7-Tage-Streak`}
+              </p>
+            </div>
+
+            {/* Community – Top Lernende */}
+            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1.25rem', border: '1px solid #e5e7eb' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🏆</div>
+                  <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Community</h3>
+                </div>
+                <Link href="/rangliste" style={{ fontSize: '.7rem', fontWeight: 700, color: '#6366f1', textDecoration: 'none', padding: '4px 10px', borderRadius: '100px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.18)' }}>
+                  Alle →
+                </Link>
+              </div>
+
+              {topEntries.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '1.5rem 0', color: '#9ca3af', fontSize: '.78rem' }}>Wird geladen…</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {topEntries.map((e, i) => {
+                    const rc  = RANK_COLORS[getRankId(e.points)]
+                    const me  = e.userId === userId
+                    const medals = ['🥇','🥈','🥉']
+                    return (
+                      <div key={e.userId} style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '.6rem .85rem', borderRadius: '10px',
+                        background: me ? 'rgba(99,102,241,0.07)' : '#f9fafb',
+                        border: me ? '1px solid rgba(99,102,241,0.22)' : '1px solid #f3f4f6',
+                      }}>
+                        {/* Position */}
+                        <div style={{ width: 24, flexShrink: 0, textAlign: 'center', fontSize: i < 3 ? '1.05rem' : '.72rem', fontWeight: 800, color: '#9ca3af' }}>
+                          {i < 3 ? medals[i] : `${i + 1}.`}
+                        </div>
+                        {/* Avatar */}
+                        <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: `${rc}20`, border: `1.5px solid ${rc}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.78rem', fontWeight: 900, color: rc }}>
+                          {e.displayName[0]?.toUpperCase()}
+                        </div>
+                        {/* Name */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ margin: 0, fontSize: '.78rem', fontWeight: me ? 800 : 700, color: me ? '#6366f1' : '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {e.displayName}{me ? ' (Du)' : ''}
+                          </p>
+                          <p style={{ margin: 0, fontSize: '.6rem', color: '#9ca3af', fontWeight: 600 }}>{getRankId(e.points)}</p>
+                        </div>
+                        {/* Points */}
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <p style={{ margin: 0, fontSize: '.8rem', fontWeight: 900, color: '#1a1a2e' }}>{e.points.toLocaleString('de')}</p>
+                          <p style={{ margin: 0, fontSize: '.55rem', color: '#9ca3af' }}>Punkte</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── SCHNELLZUGRIFF ── */}
