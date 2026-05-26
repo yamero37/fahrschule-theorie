@@ -166,6 +166,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
   const [note, setNote] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
   const [step, setStep] = useState<'pick' | 'success'>('pick')
   const [submitting, setSubmitting] = useState(false)
   const [myAppts, setMyAppts] = useState<Appointment[]>([])
@@ -176,6 +177,19 @@ export default function TerminKalender({ userId, username }: { userId: string; u
   const [saturdayEnabled, setSaturdayEnabled] = useState(false)
   const [multiBookingEnabled, setMultiBookingEnabled] = useState(false)
   const [settingsLoaded, setSettingsLoaded] = useState(false)
+
+  /* Profildaten aus localStorage vorausfüllen */
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('termin_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.firstName) setFirstName(p.firstName)
+        if (p.lastName)  setLastName(p.lastName)
+        if (p.phone)     setPhone(p.phone)
+      }
+    } catch {}
+  }, [])
 
   /* load settings + blocked days */
   useEffect(() => {
@@ -269,7 +283,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
 
   async function submitBooking() {
     if (!selectedDate || selectedSlot === null || submitting) return
-    if (!firstName.trim() || !lastName.trim()) return
+    if (!firstName.trim() || !lastName.trim() || !phone.trim()) return
     setSubmitting(true)
     const ok = await checkWeekLimit(selectedDate)
     if (!ok) { setSubmitting(false); return }
@@ -277,6 +291,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
       student_id: userId,
       student_name: username,
       full_name: `${firstName.trim()} ${lastName.trim()}`,
+      phone: phone.trim(),
       date: selectedDate,
       start_time: minsToTime(selectedSlot),
       duration_min: duration,
@@ -285,7 +300,11 @@ export default function TerminKalender({ userId, username }: { userId: string; u
       appointment_type: apptMode,
     })
     setSubmitting(false)
-    if (!error) { setStep('success') }
+    if (!error) {
+      // Profildaten für nächstes Mal speichern
+      try { localStorage.setItem('termin_profile', JSON.stringify({ firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() })) } catch {}
+      setStep('success')
+    }
   }
 
   /* Calendar grid */
@@ -531,8 +550,11 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                     Ausgewählt: {slotLabel(selectedSlot, duration)}
                   </p>
 
-                  {/* Name fields */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '4px' }}>
+                  {/* Persönliche Daten */}
+                  <p style={{ margin: '0 0 0.5rem', fontSize: '0.6rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Deine Kontaktdaten
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
                     <input value={firstName} onChange={e => setFirstName(e.target.value)}
                       placeholder="Vorname *"
                       style={{ padding: '0.5rem 0.65rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
@@ -542,8 +564,13 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                       style={{ padding: '0.5rem 0.65rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}
                     />
                   </div>
-                  <p style={{ margin: '0 0 0.6rem', fontSize: '0.6rem', color: 'var(--text-dim)' }}>
-                    Nur für deinen Fahrlehrer sichtbar.
+                  <input value={phone} onChange={e => setPhone(e.target.value)}
+                    placeholder="Telefonnummer * (z.B. 0176 12345678)"
+                    type="tel"
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem 0.65rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none', marginBottom: '4px' }}
+                  />
+                  <p style={{ margin: '0 0 0.75rem', fontSize: '0.6rem', color: 'var(--text-dim)' }}>
+                    Nur für deinen Fahrlehrer sichtbar · wird für Rückfragen gespeichert.
                   </p>
 
                   <textarea value={note} onChange={e => setNote(e.target.value)}
@@ -551,13 +578,13 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                     style={{ width: '100%', boxSizing: 'border-box', padding: '0.55rem 0.75rem', background: 'var(--input-bg)', border: `1px solid var(--border)`, borderRadius: '8px', color: 'var(--text)', fontSize: '0.76rem', fontFamily: 'inherit', outline: 'none', resize: 'none', marginBottom: '0.75rem' }}
                   />
                   <button onClick={submitBooking}
-                    disabled={submitting || !firstName.trim() || !lastName.trim()}
+                    disabled={submitting || !firstName.trim() || !lastName.trim() || !phone.trim()}
                     style={{
                       width: '100%', padding: '0.8rem', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 800,
                       background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
                       color: '#0a0800', border: 'none',
-                      cursor: (submitting || !firstName.trim() || !lastName.trim()) ? 'default' : 'pointer',
-                      opacity: (submitting || !firstName.trim() || !lastName.trim()) ? 0.6 : 1,
+                      cursor: (submitting || !firstName.trim() || !lastName.trim() || !phone.trim()) ? 'default' : 'pointer',
+                      opacity: (submitting || !firstName.trim() || !lastName.trim() || !phone.trim()) ? 0.6 : 1,
                     }}>
                     {submitting ? 'Wird gesendet…' : '🚗 Fahrstunde anfragen'}
                   </button>

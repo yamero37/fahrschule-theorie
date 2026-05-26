@@ -36,7 +36,7 @@ function slotEnd(t: string, dur: number) {
 /* ── Types ─────────────────────────────────────────────── */
 type LeaderboardEntry = { position: number; userId: string; displayName: string; points: number }
 type Appointment = {
-  id: string; student_name: string; full_name?: string; date: string
+  id: string; student_name: string; full_name?: string; phone?: string; date: string
   start_time: string; duration_min: number; status: string; note?: string
   created_at: string; appointment_type?: string
 }
@@ -981,6 +981,7 @@ function AdminTermine({ appointments, filter, setFilter, acting, onUpdate }: { a
                     {a.full_name && a.full_name !== a.student_name && <span style={{ fontSize: '.62rem', color: '#6b6b8a', fontWeight: 500 }}>(@{a.student_name})</span>}
                     {a.appointment_type === 'regeltermin' && <span style={{ fontSize: '.58rem', fontWeight: 700, padding: '1px 7px', borderRadius: 100, background: 'rgba(var(--gold-rgb),.1)', border: '1px solid rgba(var(--gold-rgb),.25)', color: 'var(--gold)' }}>🔁 Regeltermin</span>}
                   </p>
+                  {a.phone && <p style={{ margin: '0 0 2px', fontSize: '.72rem', color: '#9090b8' }}>📞 {a.phone}</p>}
                   <p style={{ margin: 0, fontSize: '.72rem', color: '#9090b8' }}>{ds} · {ts} · {a.duration_min} Min.</p>
                   {a.note && <p style={{ margin: '2px 0 0', fontSize: '.67rem', color: '#6b6b8a', fontStyle: 'italic' }}>„{a.note}"</p>}
                 </div>
