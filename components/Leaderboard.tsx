@@ -19,7 +19,24 @@ function getRank(points: number) {
 
 const MEDAL = ['🥇', '🥈', '🥉']
 
-type Entry = { position: number; userId: string; displayName: string; points: number }
+type Entry = { position: number; userId: string; displayName: string; points: number; avatarUrl?: string | null }
+
+function Avatar({ url, name, size = 36 }: { url?: string | null; name: string; size?: number }) {
+  const initials = name.slice(0, 2).toUpperCase()
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0,
+      background: 'rgba(var(--gold-rgb),0.12)', border: '1.5px solid rgba(var(--gold-rgb),0.25)',
+      overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: size * 0.32 + 'px', fontWeight: 800, color: 'var(--gold)',
+    }}>
+      {url
+        ? <img src={url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : initials
+      }
+    </div>
+  )
+}
 
 export default function Leaderboard() {
   const [entries, setEntries] = useState<Entry[]>([])
@@ -79,9 +96,10 @@ export default function Leaderboard() {
           const rank = getRank(entry.points)
           return (
             <div key={entry.userId} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
-              <div style={{ fontSize: '1.6rem' }}>{MEDAL[entry.position - 1]}</div>
+              <div style={{ fontSize: '1.4rem' }}>{MEDAL[entry.position - 1]}</div>
+              <Avatar url={entry.avatarUrl} name={entry.displayName} size={visualIdx === 1 ? 52 : 42} />
               <div style={{
-                fontWeight: 800, fontSize: '0.85rem', color: isMe ? 'var(--gold)' : 'var(--text)',
+                fontWeight: 800, fontSize: '0.82rem', color: isMe ? 'var(--gold)' : 'var(--text)',
                 textAlign: 'center', maxWidth: '90px',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
@@ -132,8 +150,8 @@ export default function Leaderboard() {
             const rank = getRank(entry.points)
             return (
               <div key={entry.userId} style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '0.85rem 1.25rem',
+                display: 'flex', alignItems: 'center', gap: '0.75rem',
+                padding: '0.75rem 1.25rem',
                 borderBottom: i < rest.length - 1 ? '1px solid var(--input-bg)' : 'none',
                 background: isMe ? 'rgba(var(--gold-rgb),0.06)' : 'transparent',
                 transition: 'background 0.15s',
@@ -141,6 +159,7 @@ export default function Leaderboard() {
                 <span style={{ width: '28px', textAlign: 'right', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-dim)', flexShrink: 0 }}>
                   #{entry.position}
                 </span>
+                <Avatar url={entry.avatarUrl} name={entry.displayName} size={32} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                   <span style={{
                     fontSize: '0.85rem', fontWeight: 700,

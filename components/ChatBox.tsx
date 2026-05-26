@@ -32,8 +32,25 @@ function getChatRank(pts: number) {
   return CHAT_RANKS[0]
 }
 
-type UserRankInfo = { rankId: string; color: string }
+type UserRankInfo = { rankId: string; color: string; avatarUrl?: string | null }
 type UserRankMap  = Record<string, UserRankInfo>
+
+function ChatAvatar({ url, name }: { url?: string | null; name: string }) {
+  const initials = name.slice(0, 2).toUpperCase()
+  return (
+    <div style={{
+      width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
+      background: 'rgba(var(--gold-rgb),0.12)', border: '1px solid rgba(var(--gold-rgb),0.2)',
+      overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: '0.5rem', fontWeight: 800, color: 'var(--gold)',
+    }}>
+      {url
+        ? <img src={url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : initials
+      }
+    </div>
+  )
+}
 
 type Group = {
   id: string
@@ -106,12 +123,13 @@ function MsgList({ msgs, userId, bottomRef, typingUsers, userRanks }: {
 
         return (
           <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
-            {/* Name + badge row */}
+            {/* Avatar + name row */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '3px',
-              paddingLeft: mine ? 0 : '4px', paddingRight: mine ? '4px' : 0,
+              paddingLeft: mine ? 0 : '2px', paddingRight: mine ? '2px' : 0,
               flexDirection: mine ? 'row-reverse' : 'row',
             }}>
+              <ChatAvatar url={rankInfo?.avatarUrl} name={adminMsg ? 'Admin' : m.username} />
               <span style={{
                 fontSize: '0.6rem', fontWeight: 800,
                 color: adminMsg ? '#a78bfa' : mine ? 'var(--gold)' : 'var(--text-muted)',
@@ -123,7 +141,7 @@ function MsgList({ msgs, userId, bottomRef, typingUsers, userRanks }: {
             </div>
 
             {/* Bubble + time */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', flexDirection: mine ? 'row-reverse' : 'row' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', flexDirection: mine ? 'row-reverse' : 'row', paddingLeft: mine ? 0 : '31px', paddingRight: mine ? '31px' : 0 }}>
               <div style={{
                 maxWidth: '80%', padding: '7px 11px',
                 borderRadius: mine ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
@@ -231,18 +249,18 @@ export default function ChatBox({ userId, username, isAdmin = false, isPremium =
   const presenceRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  /* ── Fetch ranks for a list of user-ids (merges into state) ── */
+  /* ── Fetch ranks + avatars for a list of user-ids (merges into state) ── */
   async function fetchRanksFor(uids: string[]) {
     if (!uids.length) return
     try {
       const { data } = await supabase
-        .from('user_stats').select('user_id, points').in('user_id', uids)
+        .from('user_stats').select('user_id, points, avatar_url').in('user_id', uids)
       if (data) {
         setUserRanks(prev => {
           const next = { ...prev }
-          data.forEach((s: { user_id: string; points: number }) => {
+          data.forEach((s: { user_id: string; points: number; avatar_url?: string | null }) => {
             const r = getChatRank(s.points ?? 0)
-            next[s.user_id] = { rankId: r.id, color: r.color }
+            next[s.user_id] = { rankId: r.id, color: r.color, avatarUrl: s.avatar_url ?? null }
           })
           return next
         })

@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const { data: stats, error } = await supabaseAdmin
       .from('user_stats')
-      .select('user_id, points')
+      .select('user_id, points, avatar_url')
       .order('points', { ascending: false })
       .limit(50)
 
@@ -29,7 +29,7 @@ export async function GET() {
     const leaderboard = stats.map((s, i) => {
       const user = users.find(u => u.id === s.user_id)
       const displayName = user?.user_metadata?.username || user?.email?.split('@')[0] || `Spieler ${i + 1}`
-      return { position: i + 1, userId: s.user_id, displayName, points: s.points }
+      return { position: i + 1, userId: s.user_id, displayName, points: s.points, avatarUrl: (s as Record<string, unknown>).avatar_url as string | null ?? null }
     })
 
     return NextResponse.json(leaderboard)

@@ -269,6 +269,41 @@ export default function Dashboard() {
     load()
   }, [router])
 
+  /* ── Termin-Benachrichtigungen (Browser Notification API) ── */
+  useEffect(() => {
+    if (!userId) return
+    let pref = false
+    try { pref = localStorage.getItem('notif_appointments') === 'true' } catch {}
+    if (!pref || typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+
+    // Track already-seen accepted appointment IDs in this session
+    const seenKey = `notif_seen_${userId}`
+    let seen: Set<string>
+    try { seen = new Set(JSON.parse(sessionStorage.getItem(seenKey) ?? '[]')) } catch { seen = new Set() }
+
+    const ch = supabase
+      .channel(`appt-notif:${userId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'appointments',
+        filter: `student_id=eq.${userId}`,
+      }, (payload) => {
+        const row = payload.new as { id: string; status: string; date: string; start_time: string }
+        if (row.status === 'accepted' && !seen.has(row.id)) {
+          seen.add(row.id)
+          try { sessionStorage.setItem(seenKey, JSON.stringify([...seen])) } catch {}
+          const d = new Date(row.date + 'T12:00:00')
+          const dateStr = d.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })
+          new Notification('🚗 Termin bestätigt!', {
+            body: `Dein Termin am ${dateStr} um ${row.start_time.slice(0, 5)} Uhr wurde bestätigt.`,
+            icon: '/favicon.ico',
+          })
+        }
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(ch) }
+  }, [userId])
+
   const saveNote = useCallback(async (text: string, uid: string) => {
     try { localStorage.setItem(`note_${uid}`, text) } catch {}
     try { await supabase.from('user_notes').upsert({ user_id: uid, content: text, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }) } catch {}
