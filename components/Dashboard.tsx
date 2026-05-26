@@ -314,7 +314,7 @@ export default function Dashboard() {
         <div style={{ padding: '1.2rem 1.25rem 1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/avatar.jpeg" alt="TolDrive" style={{
-            width: 36, height: 36, borderRadius: 10, objectFit: 'cover',
+            width: 36, height: 36, borderRadius: '50%', objectFit: 'cover',
             border: '1.5px solid rgba(255,255,255,0.25)',
             boxShadow: '0 0 0 3px rgba(139,92,246,0.35)',
             flexShrink: 0,
