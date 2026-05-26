@@ -285,6 +285,24 @@ export default function Dashboard() {
     setActingAppt(id)
     await supabase.from('appointments').update({ status }).eq('id', id)
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
+
+    // WhatsApp-Benachrichtigung bei Bestätigung
+    if (status === 'accepted') {
+      const appt = appointments.find(a => a.id === id)
+      if (appt?.phone) {
+        fetch('/api/whatsapp/send', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            phone: appt.phone,
+            name:  appt.full_name ?? appt.student_name,
+            date:  appt.date,
+            time:  appt.start_time,
+          }),
+        }).catch(() => {}) // Fehler still schlucken – Termin ist trotzdem bestätigt
+      }
+    }
+
     setActingAppt(null)
   }
 
