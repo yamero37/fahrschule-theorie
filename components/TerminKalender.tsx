@@ -55,7 +55,7 @@ const HOLIDAY_NAMES: Record<string, string> = {
 /* ── Slot generation (all in minutes) ── */
 function makeSlots(startMin: number, endMin: number, durMin: number): number[] {
   const out: number[] = []
-  for (let t = startMin; t + durMin <= endMin; t += 45) out.push(t)
+  for (let t = startMin; t + durMin <= endMin; t += durMin) out.push(t)
   return out
 }
 
@@ -160,7 +160,7 @@ export default function TerminKalender({ userId, username }: { userId: string; u
 
   const [month, setMonth] = useState(0)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [duration, setDuration] = useState<45 | 90>(45)
+  const duration = 90
   const [bookedSlots, setBookedSlots] = useState<Booked[]>([])
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [note, setNote] = useState('')
@@ -476,18 +476,9 @@ export default function TerminKalender({ userId, username }: { userId: string; u
                 {isSat && <span style={{ marginLeft: '8px', fontSize: '0.62rem', color: 'rgba(var(--gold-rgb),0.8)', fontWeight: 700 }}>Samstag-Zeiten</span>}
               </p>
 
-              {/* Duration toggle */}
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '1rem' }}>
-                {([45, 90] as const).map(d => (
-                  <button key={d} onClick={() => { setDuration(d); setSelectedSlot(null) }} style={{
-                    flex: 1, padding: '7px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700,
-                    border: duration === d ? '1px solid rgba(var(--gold-rgb),0.4)' : `1px solid var(--border)`,
-                    background: duration === d ? 'rgba(var(--gold-rgb),0.12)' : 'var(--input-bg)',
-                    color: duration === d ? 'var(--gold)' : 'var(--text-muted)', cursor: 'pointer',
-                  }}>
-                    {d} Min
-                  </button>
-                ))}
+              {/* Duration info */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '1rem', padding: '5px 12px', borderRadius: '100px', background: 'rgba(var(--gold-rgb),0.08)', border: '1px solid rgba(var(--gold-rgb),0.2)' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--gold)' }}>⏱ 90 Minuten pro Fahrstunde</span>
               </div>
 
               {/* Slots */}
