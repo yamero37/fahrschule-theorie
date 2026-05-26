@@ -13,6 +13,16 @@ export default function RegisterForm() {
   const [demoExpired, setDemoExpired] = useState(false)
 
   useEffect(() => {
+    // Force light theme on register page
+    document.documentElement.setAttribute('data-theme', 'light')
+    return () => {
+      const saved = localStorage.getItem('toldrive_theme')
+      if (saved) document.documentElement.setAttribute('data-theme', saved)
+      else document.documentElement.removeAttribute('data-theme')
+    }
+  }, [])
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       if (params.get('reason') === 'demo_expired') setDemoExpired(true)
@@ -61,17 +71,17 @@ export default function RegisterForm() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#080808',
+      background: 'var(--bg)',
       padding: '2rem',
     }}>
       <div style={{
         width: '100%',
         maxWidth: '420px',
-        background: 'var(--surface)',
-        border: '1px solid rgba(var(--gold-rgb),0.25)',
+        background: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
         borderRadius: '1.25rem',
         padding: '2.5rem 2rem',
-        boxShadow: '0 0 60px rgba(var(--gold-rgb),0.07), 0 20px 60px rgba(0,0,0,0.6)',
+        boxShadow: 'var(--card-shadow)',
       }}>
 
         {/* Avatar + Logo */}

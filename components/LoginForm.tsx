@@ -5,52 +5,19 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { loginUser } from '@/lib/auth'
 
-/* ── Theme Toggle ── */
-function ThemeToggle() {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-
+/* ── Force light theme on login page ── */
+function UseLightTheme() {
   useEffect(() => {
-    const saved = localStorage.getItem('toldrive_theme') as 'dark' | 'light' | null
-    if (saved) setTheme(saved)
+    // Always show light theme on login page
+    document.documentElement.setAttribute('data-theme', 'light')
+    // Restore saved theme when leaving the page
+    return () => {
+      const saved = localStorage.getItem('toldrive_theme')
+      if (saved) document.documentElement.setAttribute('data-theme', saved)
+      else document.documentElement.removeAttribute('data-theme')
+    }
   }, [])
-
-  const toggle = () => {
-    const next = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    localStorage.setItem('toldrive_theme', next)
-    document.documentElement.setAttribute('data-theme', next)
-  }
-
-  const isDark = theme === 'dark'
-
-  return (
-    <button
-      onClick={toggle}
-      title={isDark ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'}
-      style={{
-        position: 'fixed', top: '1rem', right: '1rem', zIndex: 100,
-        width: '42px', height: '42px', borderRadius: '12px',
-        background: 'var(--input-bg)',
-        border: '1px solid rgba(var(--gold-rgb),0.3)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        cursor: 'pointer', fontSize: '1.1rem',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
-        transition: 'background 0.2s, border-color 0.2s, transform 0.15s',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(var(--gold-rgb),0.1)'
-        e.currentTarget.style.borderColor = 'rgba(var(--gold-rgb),0.55)'
-        e.currentTarget.style.transform = 'scale(1.08)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background = 'var(--input-bg)'
-        e.currentTarget.style.borderColor = 'rgba(var(--gold-rgb),0.3)'
-        e.currentTarget.style.transform = 'scale(1)'
-      }}
-    >
-      {isDark ? '☀️' : '🌙'}
-    </button>
-  )
+  return null
 }
 
 /* ── Botanical leaf SVG decorations ── */
@@ -150,7 +117,7 @@ export default function LoginForm() {
       overflowX: 'hidden',
     }}>
 
-      <ThemeToggle />
+      <UseLightTheme />
 
       {/* Background spotlight — teal on light, rose gold on dark */}
       <div style={{
@@ -455,7 +422,7 @@ export default function LoginForm() {
               width: '96px', height: '96px',
               borderRadius: '50%', objectFit: 'cover',
               border: '2.5px solid rgba(var(--gold-rgb),0.4)',
-              boxShadow: '0 0 0 5px rgba(var(--gold-rgb),0.05), 0 8px 32px rgba(0,0,0,0.35)',
+              boxShadow: '0 0 0 5px rgba(var(--gold-rgb),0.08), 0 8px 24px rgba(0,0,0,0.12)',
             }}
           />
           <div style={{ textAlign: 'center' }}>
@@ -499,6 +466,10 @@ export default function LoginForm() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         input::placeholder { color: var(--text-dim) !important; }
+        .leaf-main   { fill: #6366f1; }
+        .leaf-dark   { fill: #4f46e5; }
+        .leaf-darker { fill: #3730a3; }
+        .leaf-light  { fill: #818cf8; }
       `}</style>
     </div>
   )
