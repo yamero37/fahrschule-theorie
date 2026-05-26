@@ -32,7 +32,7 @@ export async function signOut() {
 // ── Session timeout (3 hours) ────────────────────────────
 
 const SESSION_KEY      = 'toldrive_session_expires'
-const SESSION_DURATION = 3 * 60 * 60 * 1000   // 3 h in ms
+const SESSION_DURATION = 24 * 60 * 60 * 1000  // 24 h in ms
 
 export function setSessionExpiry() {
   if (typeof window === 'undefined') return

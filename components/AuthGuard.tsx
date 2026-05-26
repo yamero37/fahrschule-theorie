@@ -1,59 +1,76 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { isAuthorized, isSessionExpired, signOut } from '@/lib/auth'
+import { isSessionExpired, signOut } from '@/lib/auth'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [ready, setReady] = useState(false)
+  const initializedRef = useRef(false)
 
-  /* ── Initial check on mount ────────────────────────────── */
   useEffect(() => {
-    // Fallback: nach 6 s Inhalt trotzdem zeigen (verhindert ewige Ladeanimation)
-    const fallback = setTimeout(() => setReady(true), 6000)
+    // onAuthStateChange fires INITIAL_SESSION once Supabase has fully
+    // initialized (token refreshed if needed) — far more reliable than
+    // calling getSession() directly which can return null mid-refresh.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        initializedRef.current = true
 
-    async function check() {
-      clearTimeout(fallback)
-      // Unsere eigene 3-h-Sperre
-      if (isSessionExpired()) {
-        await signOut()
+        if (!session) {
+          // Definitely not logged in
+          router.replace('/')
+          return
+        }
+
+        // Custom expiry check (localStorage-only, no network)
+        if (isSessionExpired()) {
+          await signOut()
+          router.replace('/')
+          return
+        }
+
+        setReady(true)
+
+      } else if (event === 'SIGNED_OUT') {
+        // Real logout (manual or token revoked)
+        setReady(false)
         router.replace('/')
-        return
-      }
-      // Supabase-Session prüfen — bei Netzwerkfehler pessimistisch erlauben (catch → true)
-      const ok = await isAuthorized().catch(() => true)
-      if (!ok) {
-        router.replace('/')
-      } else {
+
+      } else if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        // Token successfully refreshed or new login detected — ensure ready
         setReady(true)
       }
-    }
-    check()
-
-    return () => clearTimeout(fallback)
-  }, [router])
-
-  /* ── Sofort auf Supabase-SIGNED_OUT reagieren ──────────── */
-  // Kein Polling nötig — onAuthStateChange feuert sofort bei echter Abmeldung
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
-        router.replace('/')
-      }
     })
-    return () => subscription.unsubscribe()
+
+    // Safety fallback: if INITIAL_SESSION never fires (rare) show content
+    // after 8s so the user doesn't see a permanent spinner.
+    const fallback = setTimeout(async () => {
+      if (!initializedRef.current) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session && !isSessionExpired()) {
+          setReady(true)
+        } else {
+          router.replace('/')
+        }
+      }
+    }, 8000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(fallback)
+    }
   }, [router])
 
-  /* ── Nur unsere 3-h-Sperre periodisch prüfen (kein Netzwerk) ── */
+  // Periodic custom-expiry check (localStorage only, no network calls)
   useEffect(() => {
     const interval = setInterval(async () => {
       if (isSessionExpired()) {
         await signOut()
         router.replace('/')
       }
-    }, 60_000) // alle 60 s, rein localStorage-basiert
+    }, 60_000)
     return () => clearInterval(interval)
   }, [router])
 

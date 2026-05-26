@@ -67,7 +67,8 @@ export default function LoginForm() {
       setSessionExpiry()
 
       // Warten bis Supabase die Session wirklich im Client gespeichert hat,
-      // dann erst navigieren — verhindert Race-Condition auf langsamem Gerät
+      // dann erst navigieren — verhindert Race-Condition auf langsamem Gerät.
+      // Fallback auf 5 s erhöht (Free-Tier Supabase kann 2–3 s brauchen).
       await new Promise<void>(resolve => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
           if (event === 'SIGNED_IN') {
@@ -75,8 +76,7 @@ export default function LoginForm() {
             resolve()
           }
         })
-        // Fallback: nach 1 s trotzdem navigieren
-        setTimeout(resolve, 1000)
+        setTimeout(resolve, 5000)
       })
 
       router.replace('/dashboard')
