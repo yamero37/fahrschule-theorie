@@ -122,6 +122,7 @@ const CSS = `
 export default function Dashboard() {
   const router = useRouter()
   const [username, setUsername]         = useState('')
+  const [avatarUrl, setAvatarUrl]       = useState<string | null>(null)
   const [userId,   setUserId]           = useState('')
   const [userToken, setUserToken]       = useState('')
   const [points,   setPoints]           = useState(0)
@@ -245,9 +246,10 @@ export default function Dashboard() {
         ;(async () => {
           try {
             const { data: stats } = await supabase.from('user_stats')
-              .select('points,tutorial_done,is_premium').eq('user_id', uid).single()
+              .select('points,tutorial_done,is_premium,avatar_url').eq('user_id', uid).single()
             if (stats) {
               setPoints(stats.points ?? 0); setIsPremium(!!stats.is_premium)
+              if (stats.avatar_url) setAvatarUrl(stats.avatar_url)
               const done = !!stats.tutorial_done || localDone
               setTutorialDone(done); if (!done) setShowTutorial(true)
             } else { if (localDone) setTutorialDone(true); else setShowTutorial(true) }
@@ -445,8 +447,11 @@ export default function Dashboard() {
 
         {/* User */}
         <div style={{ padding: '.7rem 1.1rem .9rem', borderTop: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '.82rem', fontWeight: 800, color: '#fff' }}>
-            {username[0]?.toUpperCase()}
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '.82rem', fontWeight: 800, color: '#fff', overflow: 'hidden' }}>
+            {avatarUrl
+              ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : username[0]?.toUpperCase()
+            }
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: '.75rem', fontWeight: 700, color: '#e0e0f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{username}</p>
