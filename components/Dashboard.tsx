@@ -42,13 +42,16 @@ type Appointment = {
 }
 
 /* ── Quick-access items ────────────────────────────────── */
-const QUICK = [
-  { icon: '📚', title: 'Theorie lernen',  desc: 'Lektionen & Erklärungen',       href: '/unterricht',  color: '#8b5cf6', bg: '#f3f0ff' },
-  { icon: '💬', title: 'Theoriefragen',   desc: 'Üben & Fragen beantworten',      href: '/fragen',      color: '#3b82f6', bg: '#eff6ff' },
-  { icon: '✅', title: 'Prüfung starten', desc: 'Im Echtmodus prüfen',            href: '/quiz',        color: '#22c55e', bg: '#f0fdf4' },
-  { icon: '🚗', title: 'Simulation',      desc: 'Prüfung realistisch simulieren', href: '/simulation',  color: '#f97316', bg: '#fff7ed' },
-  { icon: '🔧', title: 'Technik',         desc: 'Fahrzeug-Technik kennenlernen',  href: '/technik',     color: '#06b6d4', bg: '#ecfeff' },
-  { icon: '▶️', title: 'Lernvideos',      desc: 'Erklärvideos ansehen',           href: '/videos',      color: '#ef4444', bg: '#fff1f2' },
+const QUICK_STANDARD = [
+  { icon: '📚', title: 'Theorie lernen',  desc: 'Lektionen & Erklärungen',  href: '/unterricht', color: '#8b5cf6', bg: '#f3f0ff' },
+  { icon: '💬', title: 'Theoriefragen',   desc: 'Üben & Fragen beantworten', href: '/fragen',     color: '#3b82f6', bg: '#eff6ff' },
+  { icon: '✅', title: 'Prüfung starten', desc: 'Im Echtmodus prüfen',       href: '/quiz',       color: '#22c55e', bg: '#f0fdf4' },
+  { icon: '▶️', title: 'Lernvideos',      desc: 'Erklärvideos ansehen',      href: '/videos',     color: '#ef4444', bg: '#fff1f2' },
+]
+
+const QUICK_PREMIUM = [
+  { icon: '🔧', title: 'Technik',    desc: 'Fahrzeug-Technik kennenlernen',  href: '/technik',    color: '#06b6d4', bg: '#ecfeff' },
+  { icon: '🚗', title: 'Simulation', desc: 'Prüfung realistisch simulieren', href: '/simulation', color: '#f97316', bg: '#fff7ed' },
 ]
 
 /* ── CSS ───────────────────────────────────────────────── */
@@ -504,21 +507,41 @@ export default function Dashboard() {
             </div>
           </Link>
 
-          {/* ── PREMIUM BEREICHE ── */}
+          {/* ── DEINE BEREICHE ── */}
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '.8rem' }}>
-              <span style={{ fontSize: '.82rem' }}>💎</span>
-              <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Premium Bereich</h3>
-              <span style={{ fontSize: '.58rem', fontWeight: 800, padding: '2px 8px', borderRadius: 100, background: 'linear-gradient(90deg,rgba(99,102,241,.12),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)', color: '#6366f1', letterSpacing: '.04em' }}>ALLE FEATURES</span>
+              <span style={{ fontSize: '.82rem' }}>📖</span>
+              <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Deine Bereiche</h3>
             </div>
-            <div className="db-quick-grid">
-              {QUICK.map(item => (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '.75rem' }} className="db-quick-grid">
+              {QUICK_STANDARD.map(item => (
                 <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
                   <div className="db-qcard" style={{ background: '#fff', borderRadius: '1.1rem', padding: '1rem .9rem', border: '1px solid #e5e7eb', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
                     <div style={{ width: 42, height: 42, borderRadius: 11, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '.7rem' }}>{item.icon}</div>
                     <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>{item.title}</p>
                     <p style={{ margin: '0 0 .6rem', fontSize: '.65rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
                     <span style={{ fontSize: '.85rem', color: item.color }}>→</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── PREMIUM BEREICH ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '.8rem' }}>
+              <span style={{ fontSize: '.82rem' }}>💎</span>
+              <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Premium Bereich</h3>
+              <span style={{ fontSize: '.58rem', fontWeight: 800, padding: '2px 8px', borderRadius: 100, background: 'linear-gradient(90deg,rgba(99,102,241,.12),rgba(139,92,246,.12))', border: '1px solid rgba(99,102,241,.25)', color: '#6366f1', letterSpacing: '.04em' }}>EXKLUSIV</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '.75rem' }}>
+              {QUICK_PREMIUM.map(item => (
+                <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
+                  <div className="db-qcard" style={{ background: 'linear-gradient(135deg,rgba(99,102,241,.04),rgba(139,92,246,.04))', borderRadius: '1.1rem', padding: '1.1rem 1rem', border: '1px solid rgba(99,102,241,.18)', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: '.75rem' }}>{item.icon}</div>
+                    <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.85rem', color: '#1a1a2e' }}>{item.title}</p>
+                    <p style={{ margin: '0 0 .7rem', fontSize: '.67rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
+                    <span style={{ fontSize: '.75rem', fontWeight: 800, color: item.color }}>Öffnen →</span>
                   </div>
                 </Link>
               ))}
