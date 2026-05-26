@@ -52,11 +52,31 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
   const advInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
+    // Sofort aus localStorage laden (schnell)
+    let localCorrect: string[] = []
     try {
-      setCorrectIds(new Set(JSON.parse(localStorage.getItem(CORRECT_KEY) ?? '[]')))
+      localCorrect = JSON.parse(localStorage.getItem(CORRECT_KEY) ?? '[]')
+      setCorrectIds(new Set(localCorrect))
       setWrongIds(new Set(JSON.parse(localStorage.getItem(WRONG_KEY) ?? '[]')))
     } catch {}
-    supabase.auth.getUser().then(({ data }) => { if (data.user) setUserId(data.user.id) })
+
+    // Dann aus Supabase laden und zusammenführen (geräteübergreifend)
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return
+      setUserId(data.user.id)
+      try {
+        const { data: s } = await supabase
+          .from('user_stats')
+          .select('correct_ids')
+          .eq('user_id', data.user.id)
+          .single()
+        if (s?.correct_ids?.length) {
+          const merged = new Set([...localCorrect, ...s.correct_ids])
+          setCorrectIds(merged)
+          localStorage.setItem(CORRECT_KEY, JSON.stringify([...merged]))
+        }
+      } catch {}
+    })
   }, [])
 
   const clearTimers = () => {
@@ -66,10 +86,17 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
   useEffect(() => clearTimers, [])
 
   /* ── Gruppe starten ── */
-  const startGroup = (group: GroupDef, onlyWrong = false) => {
+  // skipDone=true → bereits richtig beantwortete überspringen (Standard)
+  // skipDone=false → alle Fragen zeigen (Wiederholen)
+  const startGroup = (group: GroupDef, onlyWrong = false, skipDone = true) => {
     let qs = questions.filter(q => group.topics.includes(q.topic))
     if (onlyWrong) qs = qs.filter(q => wrongIds.has(q.id))
-    if (!qs.length) return
+    else if (skipDone) qs = qs.filter(q => !correctIds.has(q.id))
+    if (!qs.length) {
+      // Alle erledigt → mit allen Fragen nochmal (Wiederholen)
+      startGroup(group, false, false)
+      return
+    }
     setActiveGroup(group)
     setQuizQs(shuffle(qs))
     setCurrentIdx(0); setSelected(null); setResults([]); setAdvPct(0)
@@ -98,16 +125,20 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
       if (firstTime) {
         const n = new Set(correctIds); n.add(q.id); setCorrectIds(n)
         localStorage.setItem(CORRECT_KEY, JSON.stringify([...n]))
+        if (userId) {
+          try {
+            const { data: s } = await supabase.from('user_stats').select('points, correct_ids').eq('user_id', userId).single()
+            await supabase.from('user_stats').upsert({
+              user_id: userId,
+              points: (s?.points ?? 0) + 2,
+              correct_ids: [...n],
+            }, { onConflict: 'user_id' })
+          } catch {}
+        }
       }
       if (wrongIds.has(q.id)) {
         const nw = new Set(wrongIds); nw.delete(q.id); setWrongIds(nw)
         localStorage.setItem(WRONG_KEY, JSON.stringify([...nw]))
-      }
-      if (firstTime && userId) {
-        try {
-          const { data: s } = await supabase.from('user_stats').select('points').eq('user_id', userId).single()
-          await supabase.from('user_stats').upsert({ user_id: userId, points: (s?.points ?? 0) + 2 }, { onConflict: 'user_id' })
-        } catch {}
       }
     } else {
       if (!correctIds.has(q.id)) {
@@ -144,7 +175,8 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
   const stats = (g: GroupDef) => {
     const qs = questions.filter(q => g.topics.includes(q.topic))
     const ok = qs.filter(q => correctIds.has(q.id)).length
-    return { total: qs.length, ok, wrong: qs.filter(q => wrongIds.has(q.id)).length, pct: qs.length ? Math.round((ok / qs.length) * 100) : 0 }
+    const remaining = qs.length - ok
+    return { total: qs.length, ok, wrong: qs.filter(q => wrongIds.has(q.id)).length, pct: qs.length ? Math.round((ok / qs.length) * 100) : 0, remaining }
   }
 
   const totalCorrect = questions.filter(q => correctIds.has(q.id)).length
@@ -227,33 +259,50 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.6rem' }}>
           {GROUPS.map(g => {
             const s = stats(g)
+            const allDone = s.remaining === 0
             return (
               <button
                 key={g.label}
                 onClick={() => startGroup(g)}
                 style={{
                   textAlign: 'left', padding: '0.9rem', borderRadius: '1.1rem', cursor: 'pointer',
-                  background: 'transparent', border: `1px solid ${g.color}35`,
+                  background: allDone ? 'rgba(34,197,94,0.06)' : 'transparent',
+                  border: `1px solid ${allDone ? 'rgba(34,197,94,0.35)' : `${g.color}35`}`,
                   transition: 'border-color 0.2s, background 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = `${g.color}0d`; e.currentTarget.style.borderColor = `${g.color}60` }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = `${g.color}35` }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = allDone ? 'rgba(34,197,94,0.1)' : `${g.color}0d`
+                  e.currentTarget.style.borderColor = allDone ? 'rgba(34,197,94,0.6)' : `${g.color}60`
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = allDone ? 'rgba(34,197,94,0.06)' : 'transparent'
+                  e.currentTarget.style.borderColor = allDone ? 'rgba(34,197,94,0.35)' : `${g.color}35`
+                }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.55rem' }}>
                   <div style={{
                     width: '36px', height: '36px', borderRadius: '9px',
-                    background: `${g.color}18`, border: `1px solid ${g.color}30`,
+                    background: allDone ? 'rgba(34,197,94,0.15)' : `${g.color}18`,
+                    border: `1px solid ${allDone ? 'rgba(34,197,94,0.35)' : `${g.color}30`}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem',
-                  }}>{g.icon}</div>
-                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: g.color, background: `${g.color}15`, border: `1px solid ${g.color}25`, padding: '2px 7px', borderRadius: '100px' }}>
-                    {s.pct}%
-                  </span>
+                  }}>{allDone ? '✅' : g.icon}</div>
+                  {allDone ? (
+                    <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', padding: '2px 7px', borderRadius: '100px' }}>
+                      Fertig 🎉
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.58rem', fontWeight: 700, color: g.color, background: `${g.color}15`, border: `1px solid ${g.color}25`, padding: '2px 7px', borderRadius: '100px' }}>
+                      {s.remaining} offen
+                    </span>
+                  )}
                 </div>
                 <p style={{ margin: '0 0 0.2rem', fontWeight: 800, fontSize: '0.8rem', color: 'var(--text)', lineHeight: 1.2 }}>{g.label}</p>
-                <p style={{ margin: '0 0 0.5rem', fontSize: '0.6rem', color: 'var(--text-dim)' }}>{s.total} Fragen</p>
+                <p style={{ margin: '0 0 0.5rem', fontSize: '0.6rem', color: 'var(--text-dim)' }}>
+                  {allDone ? '🔁 Nochmal wiederholen' : `${s.remaining} von ${s.total} ausstehend`}
+                </p>
                 {/* Mini-Fortschrittsbalken */}
-                <div style={{ height: '3px', borderRadius: '2px', background: `${g.color}18`, overflow: 'hidden' }}>
-                  <div style={{ width: `${s.pct}%`, height: '100%', background: g.color, borderRadius: '2px', transition: 'width 0.5s' }} />
+                <div style={{ height: '3px', borderRadius: '2px', background: allDone ? 'rgba(34,197,94,0.15)' : `${g.color}18`, overflow: 'hidden' }}>
+                  <div style={{ width: `${s.pct}%`, height: '100%', background: allDone ? '#22c55e' : g.color, borderRadius: '2px', transition: 'width 0.5s' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.4rem' }}>
                   <span style={{ fontSize: '0.55rem', color: '#22c55e' }}>✓ {s.ok}</span>
@@ -443,11 +492,21 @@ export default function FragenClient({ questions }: { questions: Question[] }) {
           </div>
           {/* Buttons */}
           <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => startGroup(activeGroup)} style={{
+            {/* Verbleibende Fragen (noch nicht richtig beantwortet) */}
+            {(() => {
+              const remaining = questions.filter(q => activeGroup.topics.includes(q.topic) && !correctIds.has(q.id)).length
+              return remaining > 0 ? (
+                <button onClick={() => startGroup(activeGroup)} style={{
+                  padding: '0.6rem 1.2rem', borderRadius: '100px', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem',
+                  background: `linear-gradient(135deg, ${activeGroup.color}cc, ${activeGroup.color})`,
+                  color: '#fff', border: 'none',
+                }}>▶ {remaining} verbleibend</button>
+              ) : null
+            })()}
+            <button onClick={() => startGroup(activeGroup, false, false)} style={{
               padding: '0.6rem 1.2rem', borderRadius: '100px', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem',
-              background: `linear-gradient(135deg, ${activeGroup.color}cc, ${activeGroup.color})`,
-              color: '#fff', border: 'none',
-            }}>🔄 Nochmal</button>
+              background: 'transparent', border: `1px solid ${activeGroup.color}50`, color: activeGroup.color,
+            }}>🔄 Alle wiederholen</button>
             {wrongCount > 0 && (
               <button onClick={() => startGroup(activeGroup, true)} style={{
                 padding: '0.6rem 1.2rem', borderRadius: '100px', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem',
