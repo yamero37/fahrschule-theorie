@@ -131,6 +131,7 @@ export default function Dashboard() {
   const [topEntries, setTopEntries]     = useState<LeaderboardEntry[]>([])
   const [streakCount, setStreakCount]   = useState(0)
   const [streakDays,  setStreakDays]    = useState<boolean[]>([false,false,false,false,false,false,false])
+  const [chatOpen,    setChatOpen]      = useState(false)
   const [noteText, setNoteText]         = useState('')
   const [noteSaved, setNoteSaved]       = useState(false)
   const noteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -359,6 +360,19 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Notizblock */}
+        <div style={{ margin: '0 .85rem .75rem', padding: '.85rem', borderRadius: '1rem', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.5rem' }}>
+            <p style={{ margin: 0, fontSize: '.72rem', fontWeight: 700, color: '#e0e0f8' }}>📝 Notizblock</p>
+            <span style={{ fontSize: '.55rem', color: noteSaved ? '#22c55e' : '#6b6b8a', transition: 'color .3s' }}>{noteSaved ? '✓ Gespeichert' : 'Auto-Save'}</span>
+          </div>
+          <textarea value={noteText} onChange={e => handleNoteChange(e.target.value)} placeholder="Notizen…" rows={4}
+            style={{ width: '100%', resize: 'vertical', minHeight: 80, padding: '.5rem .6rem', borderRadius: '.5rem', fontSize: '.72rem', background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', color: '#e0e0f8', outline: 'none', lineHeight: 1.6, fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color .15s' }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,.6)' }}
+            onBlur={e =>  { e.currentTarget.style.borderColor = 'rgba(255,255,255,.1)' }}
+          />
+        </div>
+
         {/* User */}
         <div style={{ padding: '.7rem 1.1rem .9rem', borderTop: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.6rem' }}>
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '.82rem', fontWeight: 800, color: '#fff' }}>
@@ -459,35 +473,33 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ── DAILY GOAL ── */}
-          <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.25rem', marginBottom: '1.25rem', border: '1px solid #e5e7eb' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem', flexWrap: 'wrap' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f3f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🎯</div>
-              <div style={{ flex: 1, minWidth: 160 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.45rem' }}>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: '.85rem', color: '#1a1a2e' }}>Dein Tagesziel</p>
-                  <span style={{ fontSize: '.7rem', color: '#6b7280' }}>
-                    {dailyCount < dailyGoal ? `${dailyCount}/${dailyGoal} Aufgaben erledigt` : `${dailyCount} erledigt 🎉`}
-                  </span>
-                </div>
-                <div style={{ height: 8, borderRadius: 4, background: '#f3f4f6', overflow: 'hidden' }}>
-                  <div style={{ width: `${dailyPct}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#8b5cf6)', borderRadius: 4, transition: 'width .8s ease' }} />
-                </div>
+          {/* ── TERMIN ── */}
+          <Link href="/termin" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.25rem' }}>
+            <div style={{ borderRadius: '1.25rem', padding: '1.1rem 1.5rem', background: 'linear-gradient(135deg,rgba(34,197,94,.07),rgba(34,197,94,.03))', border: '1px solid rgba(34,197,94,.3)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>📅</div>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: '0 0 .15rem', fontWeight: 800, fontSize: '.9rem', color: '#1a1a2e' }}>Termin wählen</p>
+                <p style={{ margin: 0, fontSize: '.72rem', color: '#6b7280' }}>Fahrstunde buchen · Montag – Samstag</p>
               </div>
-              <button onClick={() => { setEditGoal(v => !v); setEditGoalVal(String(dailyGoal)) }}
-                style={{ fontSize: '.7rem', color: '#6366f1', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                Ziel bearbeiten ✏️
-              </button>
+              <span style={{ color: '#22c55e', fontSize: '1.2rem', fontWeight: 700 }}>→</span>
             </div>
-            {editGoal && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginTop: '.65rem', flexWrap: 'wrap' }}>
-                <input type="number" min={1} max={700} value={editGoalVal} onChange={e => setEditGoalVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveGoal()} placeholder="1–700" autoFocus
-                  style={{ width: 72, padding: '.32rem .6rem', borderRadius: '.5rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1a1a2e', fontSize: '.82rem', outline: 'none' }} />
-                <span style={{ fontSize: '.68rem', color: '#6b7280' }}>Fragen/Tag</span>
-                <button onClick={saveGoal} style={{ padding: '.28rem .6rem', borderRadius: '.45rem', fontSize: '.72rem', fontWeight: 700, background: 'rgba(34,197,94,.1)', border: '1px solid rgba(34,197,94,.3)', color: '#22c55e', cursor: 'pointer' }}>✓</button>
-                <button onClick={() => setEditGoal(false)} style={{ padding: '.28rem .55rem', borderRadius: '.45rem', fontSize: '.72rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#6b7280', cursor: 'pointer' }}>✕</button>
-              </div>
-            )}
+          </Link>
+
+          {/* ── SCHNELLZUGRIFF ── */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Entdecke weitere Bereiche</h3>
+            <div className="db-quick-grid">
+              {QUICK.map(item => (
+                <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
+                  <div className="db-qcard" style={{ background: '#fff', borderRadius: '1.1rem', padding: '1rem .9rem', border: '1px solid #e5e7eb', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ width: 42, height: 42, borderRadius: 11, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '.7rem' }}>{item.icon}</div>
+                    <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>{item.title}</p>
+                    <p style={{ margin: '0 0 .6rem', fontSize: '.65rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
+                    <span style={{ fontSize: '.85rem', color: item.color }}>→</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* ── STREAK + COMMUNITY ── */}
@@ -599,81 +611,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ── SCHNELLZUGRIFF ── */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Schnellzugriff</h3>
-            <div className="db-quick-grid">
-              {QUICK.map(item => (
-                <Link key={item.title} href={item.href} style={{ textDecoration: 'none' }}>
-                  <div className="db-qcard" style={{ background: '#fff', borderRadius: '1.1rem', padding: '1rem .9rem', border: '1px solid #e5e7eb', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
-                    <div style={{ width: 42, height: 42, borderRadius: 11, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '.7rem' }}>{item.icon}</div>
-                    <p style={{ margin: '0 0 .22rem', fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>{item.title}</p>
-                    <p style={{ margin: '0 0 .6rem', fontSize: '.65rem', color: '#9ca3af', lineHeight: 1.4 }}>{item.desc}</p>
-                    <span style={{ fontSize: '.85rem', color: item.color }}>→</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-
-          {/* ── ENTDECKE MEHR ── */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: '0 0 .8rem', fontSize: '.95rem', fontWeight: 800, color: '#1a1a2e' }}>Entdecke mehr</h3>
-            <div className="db-disc-grid">
-              {[
-                { title: 'Battle',     desc: 'Tritt gegen Freunde an und sammle Punkte',    icon: '⚔️', href: '/battle',    bg: '#1a1a2e', tc: '#ef4444' },
-                { title: 'Rangliste',  desc: 'Sieh, wie du im Vergleich abschneidest',      icon: '🏆', href: '/rangliste', bg: '#0f1a0f', tc: '#22c55e' },
-                { title: 'Community', desc: 'Tausche dich mit anderen Lernenden aus',       icon: '👥', href: '/rangliste', bg: '#0f0f1f', tc: '#6366f1' },
-              ].map(c => (
-                <Link key={c.title} href={c.href} style={{ textDecoration: 'none' }}>
-                  <div className="db-disc" style={{ borderRadius: '1.1rem', padding: '1.2rem', background: c.bg, border: '1px solid rgba(255,255,255,.07)', cursor: 'pointer', height: '100%', boxSizing: 'border-box' }}>
-                    <p style={{ margin: '0 0 .3rem', fontWeight: 800, fontSize: '.88rem', color: '#f0f0ff' }}>{c.title}</p>
-                    <p style={{ margin: '0 0 .8rem', fontSize: '.68rem', color: '#9090b8', lineHeight: 1.4 }}>{c.desc}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '.82rem', color: c.tc }}>→</span>
-                      <span style={{ fontSize: '1.35rem' }}>{c.icon}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* ── TERMIN ── */}
-          <Link href="/termin" style={{ textDecoration: 'none', display: 'block', marginBottom: '1rem' }}>
-            <div style={{ borderRadius: '1.25rem', padding: '1rem 1.25rem', background: 'linear-gradient(135deg,rgba(34,197,94,.07),rgba(34,197,94,.03))', border: '1px solid rgba(34,197,94,.3)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{ fontSize: '1.4rem' }}>📅</span>
-              <div style={{ flex: 1 }}>
-                <p style={{ margin: '0 0 .18rem', fontWeight: 800, fontSize: '.88rem', color: '#1a1a2e' }}>Termin wählen</p>
-                <p style={{ margin: 0, fontSize: '.7rem', color: '#6b7280' }}>Fahrstunde buchen · Montag – Samstag</p>
-              </div>
-              <span style={{ color: '#22c55e', fontSize: '1.1rem' }}>→</span>
-            </div>
-          </Link>
-
-          {/* ── LEADERBOARD ── */}
-          {topEntries.length > 0 && (
-            <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.2rem', marginBottom: '1rem', border: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.7rem' }}>
-                <p style={{ margin: 0, fontSize: '.88rem', fontWeight: 800, color: '#1a1a2e' }}>🏅 Top Spieler</p>
-                <Link href="/rangliste" style={{ fontSize: '.7rem', fontWeight: 700, color: '#6366f1', textDecoration: 'none' }}>Alle →</Link>
-              </div>
-              {topEntries.map((e, i) => {
-                const rc = RANK_COLORS[getRankId(e.points)]
-                const me = e.userId === userId
-                return (
-                  <div key={e.userId} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '.48rem .65rem', borderRadius: 9, background: me ? '#f3f0ff' : '#f9fafb', border: me ? '1px solid rgba(99,102,241,.2)' : '1px solid #f3f4f6', marginBottom: i < topEntries.length - 1 ? 5 : 0 }}>
-                    <span style={{ fontSize: '.95rem', flexShrink: 0 }}>{['🥇','🥈','🥉'][i]}</span>
-                    <span style={{ flex: 1, fontSize: '.75rem', fontWeight: 700, color: me ? '#6366f1' : '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.displayName}</span>
-                    <span style={{ fontSize: '.65rem', color: '#9ca3af', flexShrink: 0 }}>{e.points}</span>
-                    <span style={{ fontSize: '.52rem', fontWeight: 800, padding: '2px 6px', borderRadius: 6, border: `1px solid ${rc}40`, background: `${rc}10`, color: rc, flexShrink: 0 }}>{getRankId(e.points)}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
           {/* ── PREMIUM BANNER ── */}
           {!isPremium && (
             <div style={{ background: 'linear-gradient(135deg,#f0f0ff,#f5f3ff)', borderRadius: '1.25rem', padding: '1.2rem', marginBottom: '1rem', border: '1px solid rgba(99,102,241,.2)' }}>
@@ -699,22 +636,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* ── NOTEPAD ── */}
-          <div style={{ background: '#fff', borderRadius: '1.25rem', padding: '1rem 1.2rem', marginBottom: '1rem', border: '1px solid #e5e7eb' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.6rem' }}>
-              <p style={{ margin: 0, fontSize: '.82rem', fontWeight: 700, color: '#1a1a2e' }}>📝 Notizblock</p>
-              <span style={{ fontSize: '.62rem', color: noteSaved ? '#22c55e' : '#9ca3af', transition: 'color .3s' }}>{noteSaved ? '✓ Gespeichert' : 'Auto-Save'}</span>
-            </div>
-            <textarea value={noteText} onChange={e => handleNoteChange(e.target.value)} placeholder="Notizen, Merkhilfen…" rows={4}
-              style={{ width: '100%', resize: 'vertical', minHeight: 90, padding: '.6rem .75rem', borderRadius: '.6rem', fontSize: '.78rem', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#1a1a2e', outline: 'none', lineHeight: 1.6, fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color .15s' }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#6366f1' }}
-              onBlur={e =>  { e.currentTarget.style.borderColor = '#e5e7eb' }}
-            />
-          </div>
-
-          {/* Chat */}
-          <ChatBox userId={userId} username={username} isAdmin={isAdmin} />
-
           {/* Mobile bottom padding */}
           <div className="db-mob-pad" style={{ height: 84 }} />
         </div>
@@ -722,6 +643,48 @@ export default function Dashboard() {
         {/* Bottom nav — mobile only */}
         <BottomNav />
       </div>
+
+      {/* ── FLOATING CHAT ── */}
+      {/* Toggle button */}
+      <button
+        onClick={() => setChatOpen(v => !v)}
+        title="Live-Chat öffnen"
+        style={{
+          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 60,
+          width: 52, height: 52, borderRadius: '50%',
+          background: chatOpen ? '#1a1a2e' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+          border: chatOpen ? '2px solid rgba(99,102,241,.4)' : 'none',
+          boxShadow: '0 4px 20px rgba(99,102,241,.4)',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all .2s',
+        }}
+      >
+        {chatOpen ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        ) : (
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        )}
+      </button>
+
+      {/* Chat panel */}
+      {chatOpen && (
+        <div style={{
+          position: 'fixed', bottom: '5rem', right: '1.5rem', zIndex: 59,
+          width: 'min(380px, calc(100vw - 2rem))',
+          maxHeight: '70vh',
+          borderRadius: '1.25rem',
+          boxShadow: '0 12px 48px rgba(0,0,0,.18)',
+          overflow: 'hidden',
+          border: '1px solid rgba(99,102,241,.2)',
+          background: '#fff',
+        }}>
+          <ChatBox userId={userId} username={username} isAdmin={isAdmin} />
+        </div>
+      )}
     </div>
   )
 }
