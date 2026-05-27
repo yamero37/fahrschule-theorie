@@ -10,12 +10,22 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 export const metadata: Metadata = {
   title: 'TolDrive – Führerschein Theorie',
   description: 'Alle Theoriefragen für die Führerscheinprüfung Klasse B – Lernen und Quiz-Modus',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'TolDrive',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" className={geist.variable}>
       <head>
+        <link rel="apple-touch-icon" href="/avatar.jpeg" />
+        <meta name="theme-color" content="#6366f1" />
       </head>
       <body>
         <ShootingStars />
