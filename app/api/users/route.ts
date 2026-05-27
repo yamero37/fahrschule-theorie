@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const { data: stats } = await supabaseAdmin
       .from('user_stats')
-      .select('user_id, points')
+      .select('user_id, points, avatar_url, last_seen')
       .order('points', { ascending: false })
 
     if (!stats || stats.length === 0) return NextResponse.json([])
@@ -23,8 +23,15 @@ export async function GET() {
 
     const list = stats.map((s, i) => {
       const user = users.find(u => u.id === s.user_id)
-      const displayName = user?.user_metadata?.username || user?.email?.split('@')[0] || `Spieler ${i + 1}`
-      return { userId: s.user_id, displayName, points: s.points }
+      const raw = user?.user_metadata?.username || user?.email || `Spieler ${i + 1}`
+      const displayName = raw.includes('@') ? raw.split('@')[0] : raw
+      return {
+        userId:      s.user_id,
+        displayName,
+        points:      s.points ?? 0,
+        avatarUrl:   s.avatar_url ?? null,
+        lastSeen:    s.last_seen ?? null,
+      }
     })
 
     return NextResponse.json(list)
