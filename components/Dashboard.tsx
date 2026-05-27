@@ -178,9 +178,18 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        // getSession() liest zuerst aus localStorage (sofort) und refreshed Token falls nötig.
-        // Kein künstlicher Timeout — würde bei langsamem Refresh fälschlicherweise ausloggen.
-        const { data: { session } } = await supabase.auth.getSession()
+        // getSession() liest aus dem In-Memory-State. Falls Supabase den Token
+        // gerade im Hintergrund refresht, kann null zurückkommen (Race Condition).
+        // Fallback: auf INITIAL_SESSION warten, bevor wir ausloggen.
+        let { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+          session = await new Promise(resolve => {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+              if (event === 'INITIAL_SESSION') { subscription.unsubscribe(); resolve(s) }
+            })
+            setTimeout(() => { subscription.unsubscribe(); resolve(null) }, 5000)
+          })
+        }
         if (!session) { router.replace('/'); return }
 
         // ── 3-h Session-Check ──
