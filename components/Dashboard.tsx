@@ -179,18 +179,27 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        // getSession() liest aus dem In-Memory-State. Falls Supabase den Token
-        // gerade im Hintergrund refresht, kann null zurückkommen (Race Condition).
-        // Fallback: auf INITIAL_SESSION warten, bevor wir ausloggen.
-        let { data: { session } } = await supabase.auth.getSession()
+        // Listener ZUERST registrieren (vor getSession), damit INITIAL_SESSION
+        // nicht verpasst wird falls Token-Refresh noch läuft.
+        type Session = Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']
+        let _resolve: (s: Session) => void = () => {}
+        const sessionPromise = new Promise<Session>(r => { _resolve = r })
+        const { data: { subscription: initSub } } = supabase.auth.onAuthStateChange((event, s) => {
+          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            initSub.unsubscribe(); _resolve(s)
+          }
+        })
+        const fallbackTimer = setTimeout(() => { initSub.unsubscribe(); _resolve(null) }, 8000)
+
+        // Fast path: Session bereits im Speicher?
+        const { data: { session: quick } } = await supabase.auth.getSession()
+        let session: Session = quick
         if (!session) {
-          session = await new Promise(resolve => {
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
-              if (event === 'INITIAL_SESSION') { subscription.unsubscribe(); resolve(s) }
-            })
-            setTimeout(() => { subscription.unsubscribe(); resolve(null) }, 5000)
-          })
+          session = await sessionPromise   // warten auf Auth-Event
+        } else {
+          clearTimeout(fallbackTimer); initSub.unsubscribe()
         }
+
         if (!session) { router.replace('/'); return }
 
         // ── 3-h Session-Check ──
