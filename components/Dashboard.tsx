@@ -365,7 +365,7 @@ export default function Dashboard() {
   const nextRank  = RANKS[RANKS.indexOf(rank) + 1]
   const progVal   = Math.round(progress)
   const dailyPct  = dailyGoal > 0 ? Math.min(100, Math.round((dailyCount / dailyGoal) * 100)) : 0
-  const TOTAL_Q   = 2100
+  const TOTAL_Q   = 700
   const fragenPct = Math.round((fragenDone / TOTAL_Q) * 100)
 
   if (loading) return (
