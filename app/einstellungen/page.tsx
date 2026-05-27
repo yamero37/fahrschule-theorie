@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
+import HomeScreenModal from '@/components/HomeScreenModal'
 
 /* ── Toggle Switch ── */
 function Toggle({ on, disabled }: { on: boolean; disabled?: boolean }) {
@@ -70,6 +71,9 @@ export default function EinstellungenPage() {
   const [uploading, setUploading] = useState(false)
   const [avatarErr, setAvatarErr] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+
+  /* ── Homescreen tutorial ── */
+  const [hsOpen, setHsOpen] = useState(false)
 
   /* ── Notifications ── */
   const [notifOn, setNotifOn]               = useState(false)
@@ -298,6 +302,23 @@ export default function EinstellungenPage() {
         {/* ── App ── */}
         <Section title="App" icon="📱">
 
+          {/* Homescreen tutorial row */}
+          <div
+            onClick={() => setHsOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', gap: '1rem', borderBottom: '1px solid var(--divider-color)', cursor: 'pointer', transition: 'background 0.15s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(var(--gold-rgb),0.04)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+              <span style={{ fontSize: '1.15rem', flexShrink: 0 }}>📲</span>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)' }}>Zum Homescreen hinzufügen</p>
+                <p style={{ margin: '1px 0 0', fontSize: '0.63rem', color: 'var(--text-dim)' }}>Tutorial anzeigen – wie eine echte App installieren</p>
+              </div>
+            </div>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>›</span>
+          </div>
+
           {/* Notifications row */}
           <div
             onClick={notifPerm !== 'denied' ? toggleNotif : undefined}
@@ -431,6 +452,9 @@ export default function EinstellungenPage() {
         </p>
 
       </div>
+
+      {/* Homescreen Tutorial Modal */}
+      <HomeScreenModal open={hsOpen} onClose={() => setHsOpen(false)} />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { registerUser } from '@/lib/auth'
+import { markHomeScreenTutorialPending } from './HomeScreenModal'
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -42,6 +43,7 @@ export default function RegisterForm() {
     setLoading(true)
     try {
       await registerUser(form.username.trim(), form.email.trim(), form.password)
+      markHomeScreenTutorialPending()   // zeigt Tutorial beim ersten Dashboard-Besuch
       router.replace('/warten')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Registrierung fehlgeschlagen.'

@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { signOut, setSessionExpiry, getSessionExpiry, isSessionExpired } from '@/lib/auth'
 import TutorialModal from './TutorialModal'
 import ChatBox from './ChatBox'
+import HomeScreenModal, { useHomeScreenModal } from './HomeScreenModal'
 
 /* ── Ranks ─────────────────────────────────────────────── */
 const RANKS = [
@@ -139,6 +140,7 @@ export default function Dashboard() {
   const [streakCount, setStreakCount]   = useState(0)
   const [streakDays,  setStreakDays]    = useState<boolean[]>([false,false,false,false,false,false,false])
   const [chatOpen,    setChatOpen]      = useState(false)
+  const homeScreen = useHomeScreenModal()
   const [noteText, setNoteText]         = useState('')
   const [noteSaved, setNoteSaved]       = useState(false)
   const noteSaveTimer    = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -399,6 +401,7 @@ export default function Dashboard() {
             onComplete={pts => { setPoints(pts); setShowTutorial(false); setTutorialDone(true) }} />
         </div>
       )}
+      <HomeScreenModal open={homeScreen.open} onClose={homeScreen.close} />
       {isAdmin && showAdmin && (
         <AdminDrawer onClose={() => setShowAdmin(false)} appointments={appointments}
           filter={apptFilter} setFilter={setApptFilter} acting={actingAppt}
