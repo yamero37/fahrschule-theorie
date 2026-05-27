@@ -96,6 +96,7 @@ const CSS = `
   .db-mob-pad { display:none !important; }
   .db-bottomnav { display:none !important; }
   .db-mob-admin { display:none !important; }
+  .db-mob-social { display:none !important; }
 }
 
 /* ── Mobile (<900px) ── */
@@ -774,6 +775,50 @@ export default function Dashboard() {
                   })}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* ── SOCIAL LINKS (Mobile only) ── */}
+          <div className="db-mob-social" style={{ marginBottom: '1.25rem' }}>
+            <div style={{ borderRadius: '1.25rem', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#fff' }}>
+              {/* Header */}
+              <div style={{ padding: '1rem 1.1rem .75rem', background: 'linear-gradient(135deg,#1a1a2e,#2d1b69)', display: 'flex', alignItems: 'center', gap: '.75rem' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/avatar.jpeg" alt="Tolga" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,.25)', flexShrink: 0 }} />
+                <div>
+                  <p style={{ margin: 0, fontWeight: 800, fontSize: '.88rem', color: '#fff' }}>Tolga Arslan</p>
+                  <p style={{ margin: 0, fontSize: '.68rem', color: 'rgba(255,255,255,.55)' }}>Fahrlehrer · Folg mir auf Social Media</p>
+                </div>
+              </div>
+              {/* Social cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                {/* Instagram */}
+                <a href="https://www.instagram.com/tolga_ar/" target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '.6rem', padding: '.9rem 1rem', textDecoration: 'none', background: 'rgba(225,48,108,.04)', borderRight: '1px solid #f3f4f6', borderTop: '1px solid #f3f4f6' }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>Instagram</p>
+                    <p style={{ margin: 0, fontSize: '.65rem', color: '#e1306c', fontWeight: 600 }}>@tolga_ar</p>
+                  </div>
+                </a>
+                {/* TikTok */}
+                <a href="https://www.tiktok.com/@fahrlehrertolga" target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '.6rem', padding: '.9rem 1rem', textDecoration: 'none', background: 'rgba(0,0,0,.02)', borderTop: '1px solid #f3f4f6' }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 11, background: '#010101', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, fontWeight: 800, fontSize: '.8rem', color: '#1a1a2e' }}>TikTok</p>
+                    <p style={{ margin: 0, fontSize: '.65rem', color: '#6b7280', fontWeight: 600 }}>@fahrlehrerTolga</p>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
 
