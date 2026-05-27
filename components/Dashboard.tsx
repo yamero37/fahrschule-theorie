@@ -52,6 +52,7 @@ const QUICK_STANDARD = [
 const QUICK_PREMIUM = [
   { icon: '🔧', title: 'Technik',    desc: 'Fahrzeug-Technik kennenlernen',  href: '/technik',    color: '#06b6d4', bg: '#ecfeff' },
   { icon: '🚗', title: 'Simulation', desc: 'Prüfung realistisch simulieren', href: '/simulation', color: '#f97316', bg: '#fff7ed' },
+  { icon: '⚔️', title: 'Battle',      desc: 'Live-Duell gegen Freunde',       href: '/battle',     color: '#8b5cf6', bg: '#f5f3ff' },
 ]
 
 /* ── CSS ───────────────────────────────────────────────── */
