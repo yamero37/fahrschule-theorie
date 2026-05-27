@@ -516,13 +516,12 @@ export default function BattleGame() {
         )}
 
         {/* ── Question card ── */}
-        <div style={{
+        <div key={currentQIdx} style={{
           background: 'var(--surface)', borderRadius: '1.25rem',
           border: '1px solid rgba(var(--gold-rgb),.15)',
           padding: '1.4rem 1.35rem', marginBottom: '.85rem',
           boxShadow: '0 2px 16px rgba(0,0,0,.06)',
           animation: 'fadeUp .3s ease both',
-          key: currentQIdx,
         }}>
           <p style={{ margin: '0 0 .35rem', fontSize: '.62rem', fontWeight: 800, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(var(--gold-rgb),.7)' }}>
             {q.topic}
