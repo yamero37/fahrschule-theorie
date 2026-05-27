@@ -41,13 +41,13 @@ function pickRandomQuestions(): Question[] {
   return copy.slice(0, TOTAL_Q)
 }
 
-function kiDecide(q: Question, accuracy: number, minMs: number, maxMs: number): KiAnswer & { questionIndex: number } {
+function kiDecide(q: Question, accuracy: number, minMs: number, maxMs: number): Omit<KiAnswer, 'questionIndex'> {
   const correct = Math.random() < accuracy
   const correctAns = q.answers.find(a => a.correct)!
   const wrongAns   = q.answers.filter(a => !a.correct)
   const chosen     = correct ? correctAns : wrongAns[Math.floor(Math.random() * wrongAns.length)]
   const responseMs = Math.floor(minMs + Math.random() * (maxMs - minMs))
-  return { questionIndex: 0, answerId: chosen.id, isCorrect: correct, responseMs }
+  return { answerId: chosen.id, isCorrect: correct, responseMs }
 }
 
 /* ── CSS ── */
