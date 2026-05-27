@@ -108,6 +108,7 @@ const CSS = `
   .db-hero-stats { grid-template-columns:repeat(2,1fr) !important; }
   .db-two-col    { grid-template-columns:1fr; }
   .db-disc-grid  { grid-template-columns:1fr; }
+  .db-chat-btn   { bottom:calc(env(safe-area-inset-bottom,0px) + 5.5rem) !important; }
 }
 
 /* ── Sidebar nav ── */
@@ -847,6 +848,7 @@ export default function Dashboard() {
       <button
         onClick={() => setChatOpen(v => !v)}
         title="Live-Chat öffnen"
+        className="db-chat-btn"
         style={{
           position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 60,
           width: 52, height: 52, borderRadius: '50%',
